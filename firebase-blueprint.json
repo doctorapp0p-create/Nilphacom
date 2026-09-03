@@ -1,0 +1,446 @@
+{
+  "entities": {
+    "Profile": {
+      "title": "Profile",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "full_name": { "type": "string" },
+        "phone": { "type": "string" },
+        "role": { "type": "string", "enum": ["PATIENT", "DOCTOR", "ADMIN", "RURAL_DOCTOR"] },
+        "status": { "type": "string", "enum": ["active", "pending", "suspended"] },
+        "referral_code": { "type": "string" },
+        "referred_by_code": { "type": "string" }
+      },
+      "required": ["id", "full_name", "role", "status"]
+    },
+    "Doctor": {
+      "title": "Doctor",
+      "description": "Doctor information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "degree": { "type": "string" },
+        "specialty": { "type": "string" },
+        "districts": { "type": "array", "items": { "type": "string" } },
+        "clinics": { "type": "array", "items": { "type": "string" } },
+        "schedule": { "type": "string" },
+        "availableToday": { "type": "boolean" },
+        "rating": { "type": "number" },
+        "image": { "type": "string" },
+        "isVideoConsultant": { "type": "boolean" },
+        "consultationFee": { "type": "number" }
+      },
+      "required": ["id", "name", "specialty", "districts", "clinics"]
+    },
+    "Hospital": {
+      "title": "Hospital",
+      "description": "Hospital/Clinic information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "district": { "type": "string" },
+        "address": { "type": "string" },
+        "doctors": { "type": "array", "items": { "type": "string" } },
+        "image": { "type": "string" }
+      },
+      "required": ["id", "name", "district", "address"]
+    },
+    "LabTest": {
+      "title": "LabTest",
+      "description": "Lab test information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "number" }
+      },
+      "required": ["id", "name", "price"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Healthcare service orders",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "user_id": { "type": "string" },
+        "user_email": { "type": "string" },
+        "item_name": { "type": "string" },
+        "amount": { "type": "number" },
+        "shipping": { "type": "number" },
+        "payment_method": { "type": "string" },
+        "payment_type": { "type": "string", "enum": ["online", "offline"] },
+        "sender_name": { "type": "string" },
+        "sender_contact": { "type": "string" },
+        "patient_name": { "type": "string" },
+        "trx_id": { "type": "string" },
+        "hospital_name": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "verified", "processing", "completed", "cancelled"] }
+      },
+      "required": ["user_id", "item_name", "amount", "status"]
+    },
+    "Prescription": {
+      "title": "Prescription",
+      "description": "Medical prescriptions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "patient_id": { "type": "string" },
+        "patient_name": { "type": "string" },
+        "doctor_id": { "type": "string" },
+        "doctor_name": { "type": "string" },
+        "doctor_specialty": { "type": "string" },
+        "medicines": { "type": "string" },
+        "notes": { "type": "string" },
+        "next_visit_date": { "type": "string" }
+      },
+      "required": ["patient_id", "doctor_id", "medicines"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Application settings",
+      "type": "object",
+      "properties": {
+        "key": { "type": "string" },
+        "value": { "type": "string" }
+      },
+      "required": ["key", "value"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Doctor appointments history log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "patient_id": { "type": "string" },
+        "patient_name": { "type": "string" },
+        "patient_phone": { "type": "string" },
+        "doctor_id": { "type": "string" },
+        "doctor_name": { "type": "string" },
+        "doctor_specialty": { "type": "string" },
+        "date": { "type": "string" },
+        "problems": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "completed"] },
+        "referred_by_code": { "type": "string" }
+      },
+      "required": ["id", "patient_id", "patient_name", "doctor_name", "date"]
+    },
+    "Quiz": {
+      "title": "Quiz",
+      "description": "YouTube quiz competition and rewards",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "video_title": { "type": "string" },
+        "upload_date": { "type": "string" },
+        "question": { "type": "string" },
+        "prize_amount": { "type": "number" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["video_title", "upload_date", "question", "prize_amount"]
+    },
+    "QuizSubmission": {
+      "title": "QuizSubmission",
+      "description": "User answers for quiz",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "quiz_id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "user_full_name": { "type": "string" },
+        "user_phone": { "type": "string" },
+        "upload_date_selected": { "type": "string" },
+        "answer": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "correct", "incorrect"] },
+        "prize_amount": { "type": "number" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["quiz_id", "user_id", "answer", "status"]
+    },
+    "Withdrawal": {
+      "title": "Withdrawal",
+      "description": "Withdrawal requests for converting reward to money",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "user_full_name": { "type": "string" },
+        "user_phone": { "type": "string" },
+        "method": { "type": "string", "enum": ["bkash", "nagad"] },
+        "account_number": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "completed", "rejected"] },
+        "created_at": { "type": "string" }
+      },
+      "required": ["user_id", "method", "account_number", "amount", "status"]
+    },
+    "PharmacyStore": {
+      "title": "PharmacyStore",
+      "description": "Medicine shop repository information registered by rural doctors or pharmacies",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "owner_id": { "type": "string" },
+        "shop_name": { "type": "string" },
+        "phone": { "type": "string" },
+        "district": { "type": "string" },
+        "address": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved"] },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "owner_id", "shop_name", "phone", "district", "address", "status"]
+    },
+    "ShopReview": {
+      "title": "ShopReview",
+      "description": "Reviews left by customers for a pharmacy store",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "shop_id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "user_name": { "type": "string" },
+        "rating": { "type": "number" },
+        "is_good": { "type": "boolean" },
+        "comment": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "shop_id", "user_id", "user_name", "rating", "is_good", "comment", "created_at"]
+    },
+    "MaternityDonationApplication": {
+      "title": "MaternityDonationApplication",
+      "description": "Maternity C-Section 2000 BDT donation application records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "applicationCode": { "type": "string" },
+        "applicantName": { "type": "string" },
+        "husbandOrGuardianName": { "type": "string" },
+        "phone": { "type": "string" },
+        "district": { "type": "string" },
+        "upazilaOrArea": { "type": "string" },
+        "fullAddress": { "type": "string" },
+        "familyMonthlyIncome": { "type": "string" },
+        "occupation": { "type": "string" },
+        "expectedDeliveryDate": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "nilphaDoctorConsulted": { "type": "string" },
+        "paymentMethod": { "type": "string", "enum": ["bkash", "nagad"] },
+        "payoutNumber": { "type": "string" },
+        "grantAmount": { "type": "number" },
+        "wifeNidNumber": { "type": "string" },
+        "husbandNidNumber": { "type": "string" },
+        "wifePhotoUrl": { "type": "string" },
+        "husbandPhotoUrl": { "type": "string" },
+        "wifeNidFrontUrl": { "type": "string" },
+        "wifeNidBackUrl": { "type": "string" },
+        "husbandNidFrontUrl": { "type": "string" },
+        "husbandNidBackUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected", "completed"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "applicationCode", "applicantName", "husbandOrGuardianName", "phone", "district", "paymentMethod", "payoutNumber", "status", "createdAt"]
+    },
+    "DonationRecord": {
+      "title": "DonationRecord",
+      "description": "Donor contributions for healthcare welfare funds, maternity grants, and free treatments",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "donationCode": { "type": "string" },
+        "donorName": { "type": "string" },
+        "isAnonymous": { "type": "boolean" },
+        "donorPhone": { "type": "string" },
+        "donorDistrict": { "type": "string" },
+        "causeId": { "type": "string" },
+        "causeTitle": { "type": "string" },
+        "amount": { "type": "number" },
+        "beneficiaryUnits": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["bkash", "nagad", "rocket", "bank"] },
+        "senderNumber": { "type": "string" },
+        "trxId": { "type": "string" },
+        "donorMessage": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "verified", "acknowledged", "rejected"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "donationCode", "donorName", "isAnonymous", "donorPhone", "causeId", "causeTitle", "amount", "paymentMethod", "senderNumber", "trxId", "status", "createdAt"]
+    },
+    "SponsorSlide": {
+      "title": "SponsorSlide",
+      "description": "Customizable carousel sponsor banner slides with per-slide display durations and actions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "badge": { "type": "string" },
+        "image": { "type": "string" },
+        "durationValue": { "type": "number" },
+        "durationUnit": { "type": "string", "enum": ["seconds", "minutes", "hours"] },
+        "actionType": { "type": "string", "enum": ["none", "category", "hospital", "specialty", "link", "whatsapp"] },
+        "actionTarget": { "type": "string" },
+        "buttonText": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "image", "durationValue", "durationUnit", "isActive", "order"]
+    },
+    "ZakatApplication": {
+      "title": "ZakatApplication",
+      "description": "Zakat donor applications, pledges, and direct healthcare zakat records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "applicationCode": { "type": "string" },
+        "donorName": { "type": "string" },
+        "donorPhone": { "type": "string" },
+        "donorAddress": { "type": "string" },
+        "donorDistrict": { "type": "string" },
+        "zakatSectorId": { "type": "string" },
+        "zakatSectorTitle": { "type": "string" },
+        "estimatedAmount": { "type": "number" },
+        "paymentMethodPreference": { "type": "string", "enum": ["bkash", "nagad", "rocket", "bank", "in_person", "undecided"] },
+        "specialInstructions": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "contacted", "approved", "collected", "cancelled"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "applicationCode", "donorName", "donorPhone", "donorAddress", "donorDistrict", "zakatSectorId", "zakatSectorTitle", "status", "createdAt"]
+    },
+    "MedicalAssistanceApplication": {
+      "title": "MedicalAssistanceApplication",
+      "description": "Patients and pregnant mothers applying for healthcare donation and zakat aid",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "applicationCode": { "type": "string" },
+        "patientName": { "type": "string" },
+        "phone": { "type": "string" },
+        "district": { "type": "string" },
+        "upazilaOrArea": { "type": "string" },
+        "villageOrUnion": { "type": "string" },
+        "fullAddress": { "type": "string" },
+        "category": { "type": "string" },
+        "categoryTitle": { "type": "string" },
+        "illnessDetails": { "type": "string" },
+        "requestedAmount": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "payoutNumber": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "verified", "sponsored", "disbursed", "rejected"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "applicationCode", "patientName", "phone", "district", "upazilaOrArea", "villageOrUnion", "category", "requestedAmount", "payoutNumber", "status", "createdAt"]
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "description": "Healthcare membership subscription cards (Tier 1: 30% test discount, Tier 2: 30% test discount + Free online doctor)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "user_name": { "type": "string" },
+        "user_phone": { "type": "string" },
+        "user_email": { "type": "string" },
+        "district": { "type": "string" },
+        "address": { "type": "string" },
+        "plan_type": { "type": "string", "enum": ["tier1_test_discount", "tier2_test_and_doctor"] },
+        "plan_name": { "type": "string" },
+        "duration_years": { "type": "number", "enum": [3, 5] },
+        "fee": { "type": "number" },
+        "payment_method": { "type": "string", "enum": ["bkash", "nagad", "rocket"] },
+        "payment_sender_phone": { "type": "string" },
+        "trx_id": { "type": "string" },
+        "card_number": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected", "expired"] },
+        "valid_from": { "type": "string" },
+        "valid_until": { "type": "string" },
+        "created_at": { "type": "string" },
+        "approved_at": { "type": "string" },
+        "admin_notes": { "type": "string" }
+      },
+      "required": ["id", "user_id", "user_name", "user_phone", "plan_type", "duration_years", "fee", "payment_method", "payment_sender_phone", "trx_id", "status", "created_at"]
+    }
+  },
+  "firestore": {
+    "/profiles/{profileId}": {
+      "schema": "Profile",
+      "description": "User profiles"
+    },
+    "/doctors/{doctorId}": {
+      "schema": "Doctor",
+      "description": "Doctors list"
+    },
+    "/hospitals/{hospitalId}": {
+      "schema": "Hospital",
+      "description": "Hospitals and Clinics"
+    },
+    "/lab_tests/{testId}": {
+      "schema": "LabTest",
+      "description": "Laboratory tests"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer orders"
+    },
+    "/prescriptions/{prescriptionId}": {
+      "schema": "Prescription",
+      "description": "Patient prescriptions"
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "Global app settings"
+    },
+    "/appointments/{appointmentId}": {
+      "schema": "Appointment",
+      "description": "Doctor appointments"
+    },
+    "/quizzes/{quizId}": {
+      "schema": "Quiz",
+      "description": "YouTube quizzes"
+    },
+    "/quiz_submissions/{submissionId}": {
+      "schema": "QuizSubmission",
+      "description": "User quiz submissions"
+    },
+    "/withdrawals/{withdrawalId}": {
+      "schema": "Withdrawal",
+      "description": "Withdrawal requests"
+    },
+    "/pharmacy_stores/{storeId}": {
+      "schema": "PharmacyStore",
+      "description": "Registered pharmacy store repositories"
+    },
+    "/shop_reviews/{reviewId}": {
+      "schema": "ShopReview",
+      "description": "Reviews left for registered pharmacy stores"
+    },
+    "/maternity_donations/{donationId}": {
+      "schema": "MaternityDonationApplication",
+      "description": "Maternity C-Section assistance applications"
+    },
+    "/donations/{donationId}": {
+      "schema": "DonationRecord",
+      "description": "General and specific welfare donations from donors"
+    },
+    "/sponsor_slides/{slideId}": {
+      "schema": "SponsorSlide",
+      "description": "Customizable homepage carousel sponsor banner slides"
+    },
+    "/zakat_applications/{applicationId}": {
+      "schema": "ZakatApplication",
+      "description": "Zakat donor pledges, applications, and direct healthcare zakat records"
+    },
+    "/medical_assistance_applications/{applicationId}": {
+      "schema": "MedicalAssistanceApplication",
+      "description": "Public patient and maternity medical assistance requests"
+    },
+    "/subscriptions/{subscriptionId}": {
+      "schema": "Subscription",
+      "description": "User subscriptions and health discount membership cards"
+    }
+  }
+}
