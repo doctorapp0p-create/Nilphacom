@@ -3823,7 +3823,7 @@ export default function App() {
                   id: firebaseUser.uid,
                   full_name: firebaseUser.displayName || 'User',
                   phone: '',
-                  role: firebaseUser.email === 'doctorapp0p@gmail.com' ? UserRole.ADMIN : UserRole.PATIENT,
+                  role: (firebaseUser.email === 'jagadbandhutum@gmail.com' || firebaseUser.email === 'doctorapp0p@gmail.com') ? UserRole.ADMIN : UserRole.PATIENT,
                   status: 'active',
                   referral_code: refCode,
                   reward_points: 0,
@@ -3857,7 +3857,7 @@ export default function App() {
               } else {
                 let prof = profileSnap.data() as Profile;
                 // Force update role if it's the owner email
-                if (firebaseUser.email === 'doctorapp0p@gmail.com' && prof.role !== UserRole.ADMIN) {
+                if ((firebaseUser.email === 'jagadbandhutum@gmail.com' || firebaseUser.email === 'doctorapp0p@gmail.com') && prof.role !== UserRole.ADMIN) {
                   prof.role = UserRole.ADMIN;
                   await updateDoc(profileRef, { role: UserRole.ADMIN });
                 }
@@ -5077,7 +5077,7 @@ export default function App() {
       const profileSnap = await getDoc(profileRef);
       let prof = profileSnap.data() as Profile;
       
-      const isAdminEmail = firebaseUser.email === 'doctorapp0p@gmail.com';
+      const isAdminEmail = firebaseUser.email === 'jagadbandhutum@gmail.com' || firebaseUser.email === 'doctorapp0p@gmail.com';
       
       if (!prof) {
         prof = {
@@ -5951,120 +5951,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Government Health Portal Quick Banner */}
-                    <div className="bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 rounded-3xl p-4 sm:p-5 text-white shadow-lg border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-left">
-                      <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 bg-emerald-500/20 border border-emerald-400/40 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-inner">
-                          🏛️
-                        </div>
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="bg-emerald-400 text-slate-950 font-black text-[9px] px-2 py-0.5 rounded-md uppercase">সরকারি সেবা</span>
-                            <span className="text-xs font-black text-white">সরকারি হাসপাতালের ১০ টাকার ই-টিকিট ও স্বাস্থ্য পোর্টাল</span>
-                          </div>
-                          <p className="text-[11px] text-emerald-200/90 font-medium">
-                            অনলাইনে 'আমার স্বাস্থ্য' (amarswasthyo.mohfw.gov.bd) থেকে সরাসরি আউটডোর টিকিট ও নিবন্ধন করুন।
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
-                        <button
-                          onClick={() => {
-                            setHomeSubCategory('govt_health');
-                            const el = document.getElementById('govt-health-portal');
-                            if (el) el.scrollIntoView({ behavior: 'smooth' });
-                          }}
-                          className="flex-1 sm:flex-none px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
-                        >
-                          🏛️ সরকারি সেবা দেখুন
-                        </button>
-                        <a
-                          href="https://amarswasthyo.mohfw.gov.bd/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl border border-white/20 active:scale-95 transition-all"
-                          title="নতুন ট্যাবে খুলুন"
-                        >
-                          ওয়েবসাইট ↗
-                        </a>
-                      </div>
-                    </div>
-
-                    {/* Live Doctor Consultation Showcase Banner */}
-                    <div className="relative overflow-hidden bg-gradient-to-br from-red-600 via-rose-600 to-indigo-700 rounded-3xl p-5 sm:p-6 text-white shadow-xl shadow-red-500/15 border border-red-400/30 text-left">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
-                        <div className="space-y-1.5 max-w-xl">
-                          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-white border border-white/20">
-                            <span className="flex h-2 w-2 relative">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                            </span>
-                            <span>অনলাইন লাইভ ডক্টর সার্ভিস</span>
-                            <span className="bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded font-black text-[9px]">ভিডিও কল</span>
-                          </div>
-                          <h3 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2">
-                            <span>👨‍⚕️ ঘরে বসেই লাইভ বিশেষজ্ঞ চিকিৎসকের সাথে ভিডিও কলে কথা বলুন</span>
-                          </h3>
-                          <p className="text-xs font-bold text-red-100 leading-relaxed">
-                            অনলাইন ভিডিও/অডিও কলে সরাসরি বিশেষজ্ঞ চিকিৎসকের পরামর্শ নিন। ভিজিট ফি: <strong className="text-amber-300 font-extrabold">৳২০০ টাকা</strong> (বিকাশ/নগদ) • <span className="bg-emerald-500/90 text-white px-2 py-0.5 rounded-md font-extrabold text-[10px]">সাবস্ক্রিপশন কার্ডধারীদের জন্য ১০০% ফ্রি (৳০)</span>
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
-                          <button
-                            onClick={() => setShowLiveDoctorModal(true)}
-                            className="flex-1 sm:flex-none px-4 py-2.5 bg-white text-rose-700 hover:bg-rose-50 font-black text-xs rounded-xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                          >
-                            <Video size={14} className="text-rose-600" />
-                            <span>লাইভ ডক্টর কল করুন</span>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setHomeSubCategory('subscriptions');
-                              const subTarget = document.getElementById('subscription-section');
-                              if (subTarget) subTarget.scrollIntoView({ behavior: 'smooth' });
-                            }}
-                            className="px-3.5 py-2.5 bg-white/20 hover:bg-white/30 text-white font-black text-xs rounded-xl border border-white/30 active:scale-95 transition-all cursor-pointer"
-                            title="সাবস্ক্রিপশন কার্ড নিয়ে আনলিমিটেড ফ্রি ডক্টর পান"
-                          >
-                            <span>কার্ড নিন</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Blood Donation Quick Action Banner */}
-                    <div className="bg-gradient-to-r from-red-700 via-rose-800 to-slate-950 rounded-3xl p-4 sm:p-5 text-white shadow-lg border border-red-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-left">
-                      <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 bg-red-500/25 border border-red-400/40 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-inner">
-                          🩸
-                        </div>
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="bg-red-500 text-white font-black text-[9px] px-2 py-0.5 rounded-md uppercase">জরুরি রক্ত সেবা</span>
-                            <span className="text-xs font-black text-white">ব্লাড ডোনেট ও জরুরি রক্তদাতা ডিরেক্টরি</span>
-                          </div>
-                          <p className="text-[11px] text-rose-200/90 font-medium">
-                            A+, A-, B+, B-, O+, O-, AB+, AB- গ্রুপের রক্তদাতা খুঁজুন অথবা নিজে রক্তদাতা হয়ে জীবন বাঁচান।
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
-                        <button
-                          onClick={() => {
-                            setHomeSubCategory('blood_donation');
-                            const el = document.getElementById('blood-donation-section');
-                            if (el) el.scrollIntoView({ behavior: 'smooth' });
-                          }}
-                          className="flex-1 sm:flex-none px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-black text-xs rounded-xl shadow-md active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                        >
-                          <span>🩸 রক্তদাতা খুঁজুন / ডোনার হন</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Today's Doctors Banner */}
-                    <TodaysDoctorsBanner doctors={doctors} />
-
                     <div className="space-y-6">
                        <div className="flex justify-between items-center bg-slate-100/50 p-2 rounded-2xl">
                            <h2 className="text-[11px] font-black text-slate-800 uppercase ml-2 tracking-wide">
@@ -6088,6 +5974,8 @@ export default function App() {
 
                        {homeSubCategory === 'doctors' && (
                          <div className="space-y-6">
+                            {/* Today's Doctors Highlight Banner (Only inside Doctors section) */}
+                            <TodaysDoctorsBanner doctors={doctors} />
                             {/* Location Filter Bar (Right above Saturday/Sunday Day selector) */}
                             <div className="space-y-1.5">
                                <div className="flex items-center justify-between text-[10px] font-black uppercase text-slate-500 tracking-wider px-1">
@@ -7751,7 +7639,7 @@ export default function App() {
 
               {profile?.role !== UserRole.ADMIN && (
                 <nav className="fixed bottom-6 left-6 right-6 z-50 bg-slate-900/95 backdrop-blur-2xl flex justify-around items-center py-5 rounded-[40px] shadow-2xl border border-white/10 overflow-hidden">
-                  <button onClick={() => { setActiveTab('home'); navigate('/'); }} className={`flex flex-col items-center gap-1 transition-all duration-300 ${activeTab === 'home' ? 'text-blue-400 scale-125' : 'text-slate-500 opacity-60'}`}>
+                  <button onClick={() => { setActiveTab('home'); setHomeSubCategory('doctors'); setSelectedHospitalId(null); setSelectedSpecialty(null); setSelectedDay(null); setSelectedLocation(null); navigate('/'); }} className={`flex flex-col items-center gap-1 transition-all duration-300 ${activeTab === 'home' ? 'text-blue-400 scale-125' : 'text-slate-500 opacity-60'}`}>
                     <span className="text-2xl">🏠</span>
                     <span className="text-[8px] font-black uppercase tracking-[0.2em]">Home</span>
                   </button>
