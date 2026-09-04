@@ -189,10 +189,20 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
   const [myDonorRegistration, setMyDonorRegistration] = useState<BloodDonor | null>(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [showRegModal, setShowRegModal] = useState(false);
+  const [showPhoneLookupModal, setShowPhoneLookupModal] = useState(false);
   const [phoneLookupInput, setPhoneLookupInput] = useState('');
   const [lookupError, setLookupError] = useState('');
   const [isSubmittingReg, setIsSubmittingReg] = useState(false);
   const [regSuccessMessage, setRegSuccessMessage] = useState('');
+
+  // Helper to normalize Bengali digits to English digits
+  const normalizeDigits = (str: string) => {
+    const bnToEn: { [key: string]: string } = {
+      '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
+      '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9'
+    };
+    return str.replace(/[০-৯]/g, (d) => bnToEn[d] || d);
+  };
 
   // Filtering States
   // Category tabs: 'all' | 'group_a' | 'group_b' | 'group_o' | 'group_ab' | 'a_neg' | 'b_neg' | 'o_neg' | 'ab_neg'
@@ -324,23 +334,24 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
   const handlePhoneLookup = (e: React.FormEvent) => {
     e.preventDefault();
     setLookupError('');
-    const cleaned = phoneLookupInput.trim().replace(/[^0-9]/g, '');
+    const cleaned = normalizeDigits(phoneLookupInput.trim()).replace(/[^0-9]/g, '');
     if (cleaned.length < 10) {
       setLookupError('অনুগ্রহ করে সঠিক ১১ ডিজিটের মোবাইল নম্বর লিখুন');
       return;
     }
 
-    const matched = donors.find(d => d.phone.replace(/[^0-9]/g, '').includes(cleaned));
+    const matched = donors.find(d => normalizeDigits(d.phone).replace(/[^0-9]/g, '').includes(cleaned));
     if (matched) {
       setMyDonorRegistration(matched);
       setIsUnlocked(true);
+      setShowPhoneLookupModal(false);
       try {
         localStorage.setItem('nilpha_blood_donor_record', JSON.stringify(matched));
       } catch (e) {}
-      setRegSuccessMessage(`স্বাগতম ${matched.name}! আপনার রক্তদাতা প্রোফাইল সক্রিয় রয়েছে।`);
+      setRegSuccessMessage(`স্বাগতম ${matched.name}! আপনার রক্তদাতা প্রোফাইল সক্রিয় রয়েছে। সকল নম্বর এখন আনলক করা হয়েছে।`);
       setTimeout(() => setRegSuccessMessage(''), 4000);
     } else {
-      setLookupError('এই মোবাইল নম্বর দিয়ে কোনো ডোনার নিবন্ধন পাওয়া যায়নি। নিচের ফর্মটি পূরণ করে এখনই নিবন্ধন করুন।');
+      setLookupError('এই মোবাইল নম্বর দিয়ে কোনো ডোনার নিবন্ধন পাওয়া যায়নি। আপনি নতুন রক্তদাতা হিসেবে নিবন্ধন করতে পারেন।');
     }
   };
 
@@ -351,7 +362,7 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
       alert('অনুগ্রহ করে আপনার পুরো নাম লিখুন');
       return;
     }
-    const cleanPhone = formData.phone.trim().replace(/[^0-9]/g, '');
+    const cleanPhone = normalizeDigits(formData.phone.trim()).replace(/[^0-9]/g, '');
     if (cleanPhone.length < 11) {
       alert('অনুগ্রহ করে সঠিক ১১ ডিজিটের মোবাইল নম্বর প্রদান করুন');
       return;
@@ -643,93 +654,66 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
       )}
 
       {/* ========================================================================= */}
-      {/* 🔒 GATED ACCESS STATE: IF USER HAS NOT REGISTERED AS DONOR */}
+      {/* 🛡️ PRIVACY & ACCESS POLICY BANNER (FOR NEW / UNREGISTERED USERS) */}
       {/* ========================================================================= */}
       {!isUnlocked ? (
-        <div className="bg-white p-6 sm:p-10 rounded-3xl border-2 border-red-100 shadow-xl space-y-8 text-center max-w-3xl mx-auto">
-          <div className="w-20 h-20 bg-rose-50 border-2 border-rose-200 text-rose-600 rounded-3xl flex items-center justify-center text-4xl mx-auto shadow-inner">
-            🩸
-          </div>
-
-          <div className="space-y-3 max-w-xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 bg-rose-100 text-rose-800 px-3 py-1 rounded-full text-xs font-black">
-              <Lock size={13} />
-              <span>নিবন্ধন বাধ্যতামূলক এক্সেস পলিসি</span>
-            </div>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
-              রক্তদাতা তালিকা দেখতে আগে রক্তদাতা হিসেবে নিবন্ধন করুন
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-              স্বেচ্ছাসেবী রক্তের নিরাপত্তা ও পারস্পরিক সহযোগিতার নীতি অনুসারে, <strong>ব্লাড ডোনেট অপশনের রক্তদাতাদের যোগাযোগ নম্বর ও বিস্তারিত তালিকা দেখতে হলে আপনাকেও রক্তদাতা হিসেবে নাম, রক্তের গ্রুপ ও ফোন নম্বর দিয়ে একবার নিবন্ধন করতে হবে।</strong>
-            </p>
-          </div>
-
-          {/* Feature Highlights for Registration */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
-            <div className="p-4 rounded-2xl bg-rose-50/60 border border-rose-100 space-y-1">
-              <div className="text-xl">🤝</div>
-              <h5 className="font-black text-xs text-slate-800">পারস্পরিক নেটওয়ার্ক</h5>
-              <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
-                আপনি অন্যকে রক্ত দিয়ে সাহায্য করবেন, আপনার প্রয়োজনেও অন্যরা রক্ত দেবে।
+        <div className="bg-gradient-to-r from-rose-50 via-amber-50 to-orange-50 border border-rose-200/80 p-5 sm:p-6 rounded-3xl shadow-sm space-y-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 bg-rose-100 text-rose-800 px-3 py-1 rounded-full text-xs font-black">
+                <Lock size={13} />
+                <span>রক্তদাতা সুরক্ষা ও নম্বর গোপনীয়তা পলিসি</span>
+              </div>
+              <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                রক্তদাতাদের নাম ও রক্তের গ্রুপ সবার জন্য উন্মুক্ত • নম্বর দেখতে ডোনার রেজিস্ট্রেশন আবশ্যক
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed max-w-3xl">
+                যেকোনো ভিজিটর প্রতিটি গ্রুপের রক্তদাতার সংখ্যা, নাম ও রক্তের গ্রুপ সরাসরি দেখতে পারবেন। তবে রক্তদাতাদের অযাচিত কল বা প্রাইভেসি সুরক্ষার জন্য <strong>শুধুমাত্র যারা রক্তদাতা হিসেবে নাম ও রক্তের গ্রুপ দিয়ে রেজিস্ট্রেশন করেছেন</strong>, তারাই ডোনারদের মোবাইল নম্বর দেখতে ও সরাসরি কল করতে পারবেন।
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-teal-50/60 border border-teal-100 space-y-1">
-              <div className="text-xl">🔐</div>
-              <h5 className="font-black text-xs text-slate-800">নিরাপদ ডিরেক্টরি</h5>
-              <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
-                ভুয়া বা অপ্রয়োজনীয় কল প্রতিরোধে শুধুমাত্র নিবন্ধিত সদস্যরাই রক্তদাতাদের নম্বর দেখতে পারেন।
-              </p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-100 space-y-1">
-              <div className="text-xl">⚡</div>
-              <h5 className="font-black text-xs text-slate-800">মুহূর্তেই আনলক</h5>
-              <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
-                নিবন্ধন সম্পন্ন হওয়ামাত্রই সকল ব্লাড গ্রুপের রক্তদাতাদের ডিরেক্টরি আনলক হয়ে যাবে।
-              </p>
-            </div>
-          </div>
-
-          {/* Main Action Button to Register */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button
-              onClick={() => setShowRegModal(true)}
-              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-red-600/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <PlusCircle size={18} />
-              <span>রক্তদাতা হিসেবে নিবন্ধন করুন ও তালিকা আনলক করুন</span>
-            </button>
-          </div>
-
-          {/* Quick Lookup for previously registered users */}
-          <div className="pt-6 border-t border-slate-100 max-w-md mx-auto space-y-3">
-            <h5 className="text-xs font-black text-slate-700">পূর্বে নিবন্ধন করে থাকলে মোবাইল নম্বর দিয়ে আনলক করুন:</h5>
-            <form onSubmit={handlePhoneLookup} className="flex gap-2">
-              <input
-                type="tel"
-                placeholder="আপনার মোবাইল নম্বর (যেমন: 017...)"
-                value={phoneLookupInput}
-                onChange={(e) => setPhoneLookupInput(e.target.value)}
-                className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
-              />
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
               <button
-                type="submit"
-                className="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-black rounded-xl cursor-pointer"
+                onClick={() => setShowRegModal(true)}
+                className="px-5 py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg shadow-red-600/20 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
               >
-                যাচাই করুন
+                <PlusCircle size={16} />
+                <span>রক্তদাতা হিসেবে নিবন্ধন করুন</span>
               </button>
-            </form>
-            {lookupError && (
-              <p className="text-[11px] text-rose-600 font-bold">{lookupError}</p>
-            )}
+              <button
+                onClick={() => {
+                  setLookupError('');
+                  setShowPhoneLookupModal(true);
+                }}
+                className="px-4 py-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-bold text-xs sm:text-sm rounded-2xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+              >
+                <Phone size={14} />
+                <span>পূর্বে নিবন্ধিত? নম্বর দিন</span>
+              </button>
+            </div>
           </div>
         </div>
       ) : (
-        /* ========================================================================= */
-        /* 🔓 UNLOCKED STATE: FULL BLOOD DONOR DIRECTORY & ADVANCED FILTERS */
-        /* ========================================================================= */
-        <div className="space-y-6">
+        <div className="bg-emerald-50/80 border border-emerald-200 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-emerald-900 font-bold">
+            <ShieldCheck size={18} className="text-emerald-600 shrink-0" />
+            <span>
+              আপনার রক্তদাতা প্রোফাইল সক্রিয় রয়েছে। আপনি সকল রক্তদাতার <strong>নাম</strong>, <strong>রক্তের গ্রুপ</strong> ও <strong>মোবাইল নম্বর</strong> দেখতে এবং সরাসরি কল করতে পারছেন।
+            </span>
+          </div>
+          <button
+            onClick={() => setShowRegModal(true)}
+            className="text-[11px] font-black text-emerald-800 underline hover:text-emerald-950 cursor-pointer"
+          >
+            প্রোফাইল তথ্য এডিট করুন
+          </button>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 🩸 BLOOD DONOR DIRECTORY & ADVANCED FILTERS (ACCESSIBLE TO ALL USERS) */}
+      {/* ========================================================================= */}
+      <div className="space-y-6">
           {/* Main Blood Group Categorization Tabs (As requested by user: A, B, O, A-, B-, O-, AB-) */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -1023,36 +1007,62 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
                       </div>
 
                       {/* Contact & Call Action Buttons */}
-                      <div className="pt-1 flex items-center gap-2">
-                        {/* Direct Call */}
-                        <a
-                          href={`tel:${donor.phone}`}
-                          className="flex-1 py-2.5 px-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black text-xs rounded-xl shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                        >
-                          <Phone size={13} />
-                          <span>কল করুন ({donor.phone})</span>
-                        </a>
+                      {isUnlocked ? (
+                        <div className="pt-1 flex items-center gap-2">
+                          {/* Direct Call */}
+                          <a
+                            href={`tel:${donor.phone}`}
+                            className="flex-1 py-2.5 px-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black text-xs rounded-xl shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                          >
+                            <Phone size={13} />
+                            <span>কল করুন ({donor.phone})</span>
+                          </a>
 
-                        {/* WhatsApp Button */}
-                        <a
-                          href={`https://wa.me/88${donor.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`আসসালামু আলাইকুম ${donor.name} ভাই/আপু, Nilpha ডিজিটাল স্বাস্থ্য অ্যাপে আপনার রক্তদাতা প্রোফাইল দেখে জরুরি রক্তের প্রয়োজনে যোগাযোগ করছি।`)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl transition-all"
-                          title="হোয়াটসঅ্যাপে মেসেজ পাঠান"
-                        >
-                          <MessageSquare size={15} />
-                        </a>
+                          {/* WhatsApp Button */}
+                          <a
+                            href={`https://wa.me/88${donor.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`আসসালামু আলাইকুম ${donor.name} ভাই/আপু, Nilpha ডিজিটাল স্বাস্থ্য অ্যাপে আপনার রক্তদাতা প্রোফাইল দেখে জরুরি রক্তের প্রয়োজনে যোগাযোগ করছি।`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl transition-all"
+                            title="হোয়াটসঅ্যাপে মেসেজ পাঠান"
+                          >
+                            <MessageSquare size={15} />
+                          </a>
 
-                        {/* Copy Phone */}
-                        <button
-                          onClick={() => handleCopyPhone(donor.phone)}
-                          className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all cursor-pointer"
-                          title="নম্বর কপি করুন"
-                        >
-                          {copiedPhone === donor.phone ? <Check size={15} className="text-emerald-600" /> : <Copy size={15} />}
-                        </button>
-                      </div>
+                          {/* Copy Phone */}
+                          <button
+                            onClick={() => handleCopyPhone(donor.phone)}
+                            className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all cursor-pointer"
+                            title="নম্বর কপি করুন"
+                          >
+                            {copiedPhone === donor.phone ? <Check size={15} className="text-emerald-600" /> : <Copy size={15} />}
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="pt-1 space-y-2">
+                          <div className="flex items-center justify-between text-xs px-1">
+                            <span className="text-[11px] text-slate-400 font-bold flex items-center gap-1">
+                              <Phone size={11} /> মোবাইল নম্বর:
+                            </span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono font-black text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200 text-xs">
+                                {donor.phone && donor.phone.length >= 5 ? `${donor.phone.slice(0, 3)}••••••${donor.phone.slice(-2)}` : '০১৭•••••••'}
+                              </span>
+                              <span className="text-[9px] font-black text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                <Lock size={9} /> গোপন
+                              </span>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => setShowRegModal(true)}
+                            className="w-full py-2.5 px-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black text-xs rounded-xl shadow-xs hover:shadow active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                          >
+                            <Lock size={13} />
+                            <span>মোবাইল নম্বর দেখতে ডোনার নিবন্ধন করুন</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -1060,7 +1070,6 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
             )}
           </div>
         </div>
-      )}
 
       {/* ========================================================================= */}
       {/* 📝 REGISTRATION MODAL FORM */}
@@ -1356,6 +1365,96 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
                   >
                     <MessageSquare size={14} />
                     <span>হোয়াটসঅ্যাপে সাপোর্ট টিমকে জানান</span>
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ========================================================================= */}
+      {/* 📱 QUICK PHONE LOOKUP MODAL (FOR RETURNING DONORS) */}
+      {/* ========================================================================= */}
+      <AnimatePresence>
+        {showPhoneLookupModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-5"
+            >
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2 text-slate-800">
+                  <div className="w-9 h-9 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-lg">
+                    📱
+                  </div>
+                  <div>
+                    <h4 className="font-black text-sm">পূর্বে নিবন্ধিত রক্তদাতা আনলক</h4>
+                    <p className="text-[11px] text-slate-500 font-medium">আপনার মোবাইল নম্বর যাচাই করুন</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowPhoneLookupModal(false)}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                আপনি যদি ইতিপূর্বে রক্তদাতা হিসেবে রেজিস্ট্রেশন করে থাকেন, তবে নিচে আপনার মোবাইল নম্বরটি লিখুন। নম্বর মিলে গেলে সকল রক্তদাতার নম্বর তাৎক্ষণিকভাবে আপনার জন্য আনলক হয়ে যাবে।
+              </p>
+
+              <form onSubmit={handlePhoneLookup} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black text-slate-700">আপনার মোবাইল নম্বর</label>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      required
+                      autoFocus
+                      placeholder="যেমন: 01712345678"
+                      value={phoneLookupInput}
+                      onChange={(e) => {
+                        setPhoneLookupInput(e.target.value);
+                        setLookupError('');
+                      }}
+                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-rose-500"
+                    />
+                    <Phone size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
+                  </div>
+                  {lookupError && (
+                    <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-bold space-y-2">
+                      <p>{lookupError}</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowPhoneLookupModal(false);
+                          setShowRegModal(true);
+                        }}
+                        className="text-xs text-rose-800 underline font-black cursor-pointer"
+                      >
+                        নতুন রক্তদাতা হিসেবে নিবন্ধন করতে এখানে ক্লিক করুন →
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setShowPhoneLookupModal(false)}
+                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl cursor-pointer"
+                  >
+                    বাতিল
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-xs font-black rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
+                  >
+                    যাচাই ও আনলক করুন
                   </button>
                 </div>
               </form>
