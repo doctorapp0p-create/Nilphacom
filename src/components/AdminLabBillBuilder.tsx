@@ -111,7 +111,6 @@ export const AdminLabBillBuilder: React.FC<AdminLabBillBuilderProps> = ({ hospit
     }
     messageFoot += `👉 *সর্বমোট প্রদেয় বিল:* *৳${toBn(grandTotal)}*\n`;
     messageFoot += `-------------------------------\n\n`;
-    messageFoot += `📢 *বিশেষ সতর্কতা:* ডিজিটাল অ্যাপয়েন্টমেন্ট অথবা ওয়েবসাইটের মাধ্যমে বুকিং করলে বিশেষ ছাড় ও অগ্রাধিকার পাওয়া যাবে।\n\n`;
     messageFoot += `💬 *সিরিয়াল ও যোগাযোগের জন্য কল করুন:* ০১৫১৮৩৯৫৭৭২\n`;
     messageFoot += `🌐 *ভিজিট করুন:* https://nilpha.com`;
 

@@ -435,6 +435,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+              {authMode === 'login' && (
+                <p className="text-[10px] text-slate-400 font-medium ml-1 text-left">
+                  💡 পাসওয়ার্ড মনে না থাকলে ডিফল্ট পাসওয়ার্ড <span className="text-blue-600 font-mono font-bold">123456</span> চেষ্টা করতে পারেন।
+                </p>
+              )}
             </div>
 
             <button

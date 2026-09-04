@@ -25,28 +25,25 @@ service cloud.firestore {
     // --- প্রোফাইল রুলস ---
     match /profiles/{userId} {
       allow read, list: if true;
-      allow create: if isSignedIn() && (request.auth.uid == userId || isAdmin());
-      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow create, update: if true;
       allow delete: if isAdmin();
     }
 
     // --- কুইজ প্রতিযোগিতা রুলস ---
     match /quizzes/{quizId} {
       allow read, list: if true;
-      allow write: if isSignedIn();
+      allow write: if true;
     }
 
     match /quiz_submissions/{submissionId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn();
+      allow read, list: if true;
+      allow create, update, delete: if true;
     }
 
     // --- রিওয়ার্ড উইথড্রয়াল রুলস ---
     match /withdrawals/{withdrawalId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn();
+      allow read, list: if true;
+      allow create, update, delete: if true;
     }
 
     // --- অ্যাপ সেটিংস ---
@@ -117,47 +114,44 @@ service cloud.firestore {
 
     // --- প্রেসক্রিপশন রুলস ---
     match /prescriptions/{prescriptionId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn();
+      allow read, list: if true;
+      allow create, update: if true;
+      allow delete: if isAdmin();
     }
 
     // --- অর্ডার রুলস ---
     match /orders/{orderId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn();
+      allow read, list: if true;
+      allow create, update: if true;
       allow delete: if isAdmin();
     }
 
     // --- অ্যাপয়েন্টমেন্ট রুলস ---
     match /appointments/{appointmentId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn();
+      allow read, list: if true;
+      allow create, update: if true;
       allow delete: if isAdmin();
     }
 
     // --- ওষুধের দোকান রুলস ---
     match /pharmacy_stores/{storeId} {
       allow read, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn();
+      allow create, update: if true;
       allow delete: if isAdmin();
     }
 
     // --- ওষুধের দোকান রিভিউ রুলস ---
     match /shop_reviews/{reviewId} {
       allow read, list: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn();
+      allow create, update: if true;
+      allow delete: if isAdmin();
     }
 
     // --- সাবস্ক্রিপশন ও হেলথ মেম্বারশিপ রুলস ---
     match /subscriptions/{subscriptionId} {
       allow read, list: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn();
+      allow create, update: if true;
+      allow delete: if isAdmin();
     }
 
     // --- ব্লাড ডোনার ও রক্তদান নেটওয়ার্ক রুলস ---

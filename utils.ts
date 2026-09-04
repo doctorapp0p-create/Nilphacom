@@ -11,6 +11,16 @@ export const slugify = (text: string): string => {
     .replace(/-+$/, '');       // Trim - from end of text
 };
 
+export const normalizeDigits = (str: string | number | undefined | null): string => {
+  if (str === undefined || str === null) return '';
+  const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  let res = str.toString().trim();
+  for (let i = 0; i < 10; i++) {
+    res = res.replace(new RegExp(bengaliDigits[i], 'g'), i.toString());
+  }
+  return res;
+};
+
 export const normalizePhoneNumber = (phone: string): string => {
   if (!phone) return '';
   const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
