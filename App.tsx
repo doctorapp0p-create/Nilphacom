@@ -3421,20 +3421,6 @@ const LandingPage: React.FC<{ onStart: () => void }> = ({ onStart }) => {
 
       {/* Features Section */}
       <section className="px-8 py-20 space-y-12 bg-white">
-        {/* Discount Banner */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="bg-blue-50 border-2 border-blue-100 p-6 rounded-[32px] flex items-center gap-5 shadow-xl shadow-blue-500/5"
-        >
-          <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg animate-bounce">
-            <Percent size={28} />
-          </div>
-          <p className="text-[13px] font-black text-blue-900 leading-snug">
-            অ্যাপস বা ওয়েব সাইটের মাধ্যমে রোগীর সিরিয়াল দিলে সকল পরীক্ষা-নিরীক্ষায় ২০ % পর্যন্ত ডিসকাউন্ট।
-          </p>
-        </motion.div>
 
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">আমাদের সেবাসমূহ</h2>
@@ -5865,15 +5851,6 @@ export default function App() {
 
                       {/* RIGHT SIDE: Compact Action Buttons Stacked Vertically */}
                       <div className="md:col-span-5 flex flex-col gap-2 justify-between">
-                        {/* 1. 20% Discount Banner / Button (Compact) */}
-                        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-2 rounded-2xl shadow-sm flex items-center gap-2.5 border border-blue-400/30">
-                          <div className="w-7 h-7 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center shrink-0">
-                            <Percent size={14} className="text-white" />
-                          </div>
-                          <p className="text-[11px] font-bold leading-tight">
-                            অ্যাপস বা ওয়েবসাইটে রোগী সিরিয়ালে <span className="text-amber-300 font-black">২০% ডিসকাউন্ট!</span>
-                          </p>
-                        </div>
 
                         {/* 2. WhatsApp Button (Compact) */}
                         <button 
