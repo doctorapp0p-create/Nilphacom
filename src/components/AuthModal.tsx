@@ -389,7 +389,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
                 {authMode === 'moderator' 
-                  ? 'মডারেটর ইউজারনেম' 
+                  ? 'মডারেটর / সুপার এডমিন ইউজারনেম' 
                   : authMode === 'register' 
                   ? 'ইউজারনেম বা ইমেইল (ঐচ্ছিক)' 
                   : 'ইউজারনেম, মোবাইল নম্বর বা ইমেইল'}
@@ -401,7 +401,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   required={authMode !== 'register'}
                   placeholder={
                     authMode === 'moderator' 
-                      ? 'ইউজারনেম দিন...' 
+                      ? 'যেমন: moderator' 
                       : authMode === 'register' 
                       ? 'যেমন: sabir বা email@example.com (ফাঁকা রাখলেও সমস্যা নেই)' 
                       : 'মোবাইল নম্বর, ইউজারনেম বা ইমেইল দিন'
@@ -452,7 +452,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               ) : (
                 <>
                   {authMode === 'login' ? <LogIn size={14} /> : authMode === 'register' ? <UserPlus size={14} /> : <ShieldAlert size={14} />}
-                  {authMode === 'login' ? 'লগইন করুন' : authMode === 'register' ? 'অ্যাকাউন্ট তৈরি করুন' : 'মডারেটর প্রবেশ'}
+                  {authMode === 'login' ? 'লগইন করুন' : authMode === 'register' ? 'অ্যাকাউন্ট তৈরি করুন' : 'মডারেটর ও সুপার এডমিন প্রবেশ'}
                 </>
               )}
             </button>

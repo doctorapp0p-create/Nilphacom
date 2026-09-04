@@ -4883,8 +4883,8 @@ export default function App() {
     const trimmed = rawEmail.trim().toLowerCase();
 
     try {
-      // Recognized universal admin/moderator passwords
-      const validAdminPasswords = ['jagad01750', 'admin123', '123456', 'nilpha2026', 'doctorapp0p', 'admin'];
+      // Recognized universal admin/moderator passwords (unified: jagad@01750)
+      const validAdminPasswords = ['jagad@01750', 'jagad01750', 'admin123', '123456', 'nilpha2026', 'doctorapp0p', 'admin'];
 
       // 1. Moderator & Admin Universal Handling
       const isModOrAdminUser = 
@@ -4920,16 +4920,18 @@ export default function App() {
 
         if (isPassCorrect) {
           const isSuperAdminEmail = 
+            trimmed === 'moderator' ||
+            trimmed === 'modaretor' ||
+            trimmed === 'moderator@nilpha.com' ||
             trimmed === 'doctorapp0p' || 
             trimmed === 'doctorapp0p@gmail.com' || 
             trimmed === 'jagadbandhu' || 
             trimmed === 'jagadbandhutum@gmail.com' ||
+            passVal === 'jagad@01750' ||
             passVal === 'jagad01750';
-          const targetEmail = isSuperAdminEmail 
-            ? (trimmed.includes('@') ? trimmed : 'jagadbandhutum@gmail.com') 
-            : 'moderator@nilpha.com';
-          const targetName = isSuperAdminEmail ? 'Super Admin' : 'Main Moderator';
-          const targetUid = isSuperAdminEmail ? 'admin_master_001' : 'moderator_master_001';
+          const targetEmail = trimmed.includes('@') ? trimmed : 'jagadbandhutum@gmail.com';
+          const targetName = 'Super Admin & Moderator';
+          const targetUid = 'admin_master_001';
           let firebaseUser: any = null;
           
           try {
