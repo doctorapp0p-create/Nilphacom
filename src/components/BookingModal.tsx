@@ -898,11 +898,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
                       <div className="mt-1 ml-1">
                         {referredDocName ? (
                           <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
-                            ✔ পল্লী চিকিৎসক: <span className="font-extrabold">{referredDocName}</span>
+                            ✔ রেফারেল পার্টনার: <span className="font-extrabold">{referredDocName}</span>
                           </span>
                         ) : (
                           <span className="text-[10px] font-bold text-amber-500 flex items-center gap-1">
-                            ⚠ এই কোডধারী কোনো পল্লী চিকিৎসক পাওয়া যায়নি
+                            ⚠ এই রেফার কোডটি পাওয়া যায়নি
                           </span>
                         )}
                       </div>

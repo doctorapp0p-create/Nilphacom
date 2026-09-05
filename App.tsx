@@ -54,6 +54,7 @@ import { DonationPortalSection } from './src/components/DonationPortalSection';
 import { SubscriptionSection } from './src/components/SubscriptionSection';
 import { DoctorPortal } from './src/components/DoctorPortal';
 import { SponsorBannerSlider } from './src/components/SponsorBannerSlider';
+import { DoctorProfileAdBannerCard } from './src/components/DoctorProfileAdBannerCard';
 import { LiveDoctorModal } from './src/components/LiveDoctorModal';
 import { GovtHealthPortal } from './src/components/GovtHealthPortal';
 import { BloodDonationSection } from './src/components/BloodDonationSection';
@@ -3856,11 +3857,23 @@ export default function App() {
   useEffect(() => {
     const handleInitialPath = () => {
       const path = window.location.pathname;
+      const params = new URLSearchParams(window.location.search);
       if (path === '/admin' || path === '/wp-admin') {
         setAuthMode('moderator');
         setShowAuthModal(true);
-        // Clean up the URL
         window.history.replaceState({}, '', '/');
+      } else if (path === '/register' || path === '/signup' || params.get('auth') === 'register' || params.get('register') !== null) {
+        setAuthMode('register');
+        setShowAuthModal(true);
+        if (path === '/register' || path === '/signup') {
+          window.history.replaceState({}, '', '/');
+        }
+      } else if (path === '/login' || path === '/signin' || params.get('auth') === 'login' || params.get('login') !== null) {
+        setAuthMode('login');
+        setShowAuthModal(true);
+        if (path === '/login' || path === '/signin') {
+          window.history.replaceState({}, '', '/');
+        }
       }
     };
     handleInitialPath();
@@ -6487,7 +6500,20 @@ export default function App() {
                        {profile?.full_name?.[0].toUpperCase() || '👤'}
                      </button>
                    ) : (
-                     <button onClick={() => setShowAuthModal(true)} className="text-[10px] font-black uppercase bg-blue-600 text-white px-4 py-2 rounded-xl">লগিন</button>
+                     <div className="flex items-center gap-1.5">
+                       <button 
+                         onClick={() => { setAuthMode('register'); setShowAuthModal(true); }} 
+                         className="text-[10px] sm:text-[11px] font-black uppercase bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl transition-all shadow-sm shadow-emerald-500/20 active:scale-95 cursor-pointer whitespace-nowrap"
+                       >
+                         রেজিস্ট্রেশন
+                       </button>
+                       <button 
+                         onClick={() => { setAuthMode('login'); setShowAuthModal(true); }} 
+                         className="text-[10px] sm:text-[11px] font-black uppercase bg-blue-600 hover:bg-blue-700 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl transition-all shadow-sm shadow-blue-500/20 active:scale-95 cursor-pointer whitespace-nowrap"
+                       >
+                         লগিন
+                       </button>
+                     </div>
                    )}
                 </div>
               </header>
@@ -6661,6 +6687,11 @@ export default function App() {
                          <div className="space-y-6">
                             {/* Today's Doctors Highlight Banner (Only inside Doctors section) */}
                             <TodaysDoctorsBanner doctors={doctors} />
+                            {/* Promotional Demo Doctor Profile Banner & Ad Placement Notice */}
+                            <DoctorProfileAdBannerCard 
+                              hotline={HOTLINE_CONTACT}
+                              whatsappNumber={WHATSAPP_NUMBER}
+                            />
                             {/* Location Filter Bar (Right above Saturday/Sunday Day selector) */}
                             <div className="space-y-1.5">
                                <div className="flex items-center justify-between text-[10px] font-black uppercase text-slate-500 tracking-wider px-1">
@@ -7316,6 +7347,11 @@ export default function App() {
 
                        {homeSubCategory === 'hospitals' && (
                          <div className="space-y-4">
+                            {/* Promotional Demo Doctor Profile Banner & Ad Placement Notice */}
+                            <DoctorProfileAdBannerCard 
+                              hotline={HOTLINE_CONTACT}
+                              whatsappNumber={WHATSAPP_NUMBER}
+                            />
                             {/* Location Filter Bar for Hospitals */}
                             <div className="space-y-1.5">
                                <div className="flex items-center justify-between text-[10px] font-black uppercase text-slate-500 tracking-wider px-1">

@@ -363,9 +363,31 @@
         "admin_notes": { "type": "string" }
       },
       "required": ["id", "user_id", "user_name", "user_phone", "plan_type", "duration_years", "fee", "payment_method", "payment_sender_phone", "trx_id", "status", "created_at"]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "Discount coupon codes for lab tests and services",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "discount_percent": { "type": "number" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "applicable_to": { "type": "string", "enum": ["all", "tests", "services"] },
+        "min_order_amount": { "type": "number" },
+        "is_active": { "type": "boolean" },
+        "usage_count": { "type": "number" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "code", "discount_percent", "is_active"]
     }
   },
   "firestore": {
+    "/coupons/{couponId}": {
+      "schema": "Coupon",
+      "description": "Discount coupon codes managed by admin"
+    },
     "/profiles/{profileId}": {
       "schema": "Profile",
       "description": "User profiles"

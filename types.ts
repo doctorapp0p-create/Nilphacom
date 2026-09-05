@@ -108,6 +108,22 @@ export interface Order {
   delivery_address?: string;
   referred_by_code?: string;
   subscription_plan_name?: string;
+  coupon_code?: string;
+  coupon_discount_percent?: number;
+  coupon_discount_amount?: number;
+}
+
+export interface Coupon {
+  id: string;
+  code: string;
+  discount_percent: number;
+  title: string;
+  description?: string;
+  applicable_to?: 'all' | 'tests' | 'services';
+  min_order_amount?: number;
+  is_active: boolean;
+  usage_count?: number;
+  created_at?: string;
 }
 
 export interface SponsorHospital {

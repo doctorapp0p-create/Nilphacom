@@ -51,6 +51,12 @@ service cloud.firestore {
       allow read, write: if true; 
     }
 
+    // --- কুপন কোড ও ডিসকাউন্ট রুলস ---
+    match /coupons/{couponId} {
+      allow read, list: if true;
+      allow create, update, delete: if true;
+    }
+
     // --- ফ্রি ডাক্তার ক্লেইম রুলস ---
     match /free_claims/{claimId} {
       allow read, list: if true;
