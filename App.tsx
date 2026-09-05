@@ -4131,7 +4131,7 @@ export default function App() {
             val = val.replace(/01846800973/g, '01352669100').replace(/০১৮৪৬৮০০৯৭৩/g, '০১৩৫২৬৬৯১০০');
           }
           if (val !== originalVal && val.length > 0) {
-            setDoc(settingsRef, { key: 'ticker_message', value: val }).catch(e => console.error("Auto updating ticker DB failed: ", e));
+            setDoc(settingsRef, { key: 'ticker_message', value: val }).catch(e => console.warn("Auto updating ticker DB skipped: ", e?.message || e));
           }
           setTickerMessage(val || 'Nilpha-তে আপনাকে স্বাগত! ডাক্তার চেম্বারে বসার সময় এবং ডাক্তার ফি চূড়ান্ত জানার জন্য আমাদের হট লাইন নাম্বারে যোগাযোগ করুন। যেকোনো প্রয়োজনে কল করুন: ০১৩৫২৬৬৯১০০');
         }
@@ -4141,8 +4141,8 @@ export default function App() {
         if (labStatusSnap.exists()) {
           setIsLabTestsServiceEnabled(labStatusSnap.data().enabled ?? true);
         }
-      } catch (error) {
-        console.error("Failed to load settings:", error);
+      } catch (error: any) {
+        console.warn("Notice: Initializing with local settings (Firestore notice):", error?.message || error);
       }
       
       // Fetch initial data
@@ -4280,9 +4280,9 @@ export default function App() {
       setDoctors(sortedMergedDoctors);
       setHospitals(finalHospitals);
       setLabTests(finalTests);
-    } catch (error) {
-       console.error("Error fetching data:", error);
-       // Fallback to constants on error
+    } catch (error: any) {
+       console.warn("Notice: Using local bundled healthcare repository (Firestore notice):", error?.message || error);
+       // Seamless fallback to constants on error
        const sortedDoctors = [...DOCTORS].sort((a, b) => {
          const isAHabib = a.id === 'dr-habibur-rahman-dental' || (a.name && (a.name.includes('হাবিবুর') || a.name.toLowerCase().includes('habibur')));
          const isBHabib = b.id === 'dr-habibur-rahman-dental' || (b.name && (b.name.includes('হাবিবুর') || b.name.toLowerCase().includes('habibur')));

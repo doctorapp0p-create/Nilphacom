@@ -1,12 +1,11 @@
 {
-  "projectId": "augmented-team-h2sm5",
-  "appId": "1:760229522390:web:1a2232bec34a364713d277",
-  "apiKey": "AIzaSyA4mQN8Y5icxImQAMPmtsz8xATua1GdhoI",
-  "authDomain": "augmented-team-h2sm5.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-remixjbhealthcar-f7c2bc51-d347-4112-bd65-93b96f7fc50e",
-  "storageBucket": "augmented-team-h2sm5.firebasestorage.app",
-  "messagingSenderId": "760229522390",
-  "measurementId": "",
-  "oAuthClientId": "760229522390-asdo1h3b5v8gvj9houvr47gh4lrilvac.apps.googleusercontent.com",
-  "recaptchaSiteKey": ""
+  "projectId": "doctor-b3928",
+  "appId": "1:972360675929:web:2b9ec7d2c7663c47f57748",
+  "apiKey": "AIzaSyB-ojJWvwJ6jsAuGmyIFwyhma_nLdTejf0",
+  "authDomain": "doctor-b3928.firebaseapp.com",
+  "databaseURL": "https://doctor-b3928-default-rtdb.firebaseio.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "doctor-b3928.firebasestorage.app",
+  "messagingSenderId": "972360675929",
+  "measurementId": "G-XJWMQLHW6M"
 }
