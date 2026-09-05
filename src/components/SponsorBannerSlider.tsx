@@ -220,35 +220,41 @@ export const SponsorBannerSlider: React.FC<SponsorBannerSliderProps> = ({
   }, []);
 
   const fetchSlidesData = async () => {
+    // 1. Immediately hydrate from localStorage for instant offline rendering
+    try {
+      const localSaved = localStorage.getItem('nilpha_sponsor_slides');
+      if (localSaved) {
+        const parsed = JSON.parse(localSaved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setSlides(parsed);
+        }
+      }
+      const localSettings = localStorage.getItem('nilpha_sponsor_slider_settings');
+      if (localSettings) {
+        setSliderSettings(JSON.parse(localSettings));
+      }
+    } catch {
+      // ignore
+    }
+
     setLoading(true);
     try {
-      // 1. Try fetching from Firestore settings doc
+      // 2. Fetch fresh version from Firestore settings doc
       const docRef = doc(db, 'settings', 'sponsor_banner_slider');
       const snap = await getDoc(docRef);
       if (snap.exists()) {
         const data = snap.data();
         if (data.slides && Array.isArray(data.slides) && data.slides.length > 0) {
           setSlides(data.slides);
+          localStorage.setItem('nilpha_sponsor_slides', JSON.stringify(data.slides));
         }
         if (data.settings) {
           setSliderSettings(data.settings);
-        }
-      } else {
-        // Fallback: Check localStorage
-        const localSaved = localStorage.getItem('nilpha_sponsor_slides');
-        if (localSaved) {
-          try {
-            const parsed = JSON.parse(localSaved);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              setSlides(parsed);
-            }
-          } catch (e) {
-            console.error('Error parsing local slides:', e);
-          }
+          localStorage.setItem('nilpha_sponsor_slider_settings', JSON.stringify(data.settings));
         }
       }
-    } catch (err) {
-      console.error('Error loading sponsor slides from Firebase:', err);
+    } catch (err: any) {
+      console.warn('Sponsor slides offline/fallback notice:', err?.message || err);
     } finally {
       setLoading(false);
     }

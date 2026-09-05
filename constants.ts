@@ -119,6 +119,12 @@ export const SPECIALTIES = [
     "name": "Dentistry",
     "bnName": "মুখ ও দন্তরোগ",
     "icon": "🦷"
+  },
+  {
+    "id": "physical_medicine",
+    "name": "Physical Medicine",
+    "bnName": "বাত-ব্যথা ও ফিজিক্যাল মেডিসিন",
+    "icon": "Activity"
   }
 ];
 
@@ -186,7 +192,18 @@ export const CLINICS: Clinic[] = [
       "dr-ar-ruhul-amin",
       "dr-ar-rezaul-alam",
       "dr-ar-deb-dulal-ray",
-      "dr-ar-abdul-matin"
+      "dr-ar-abdul-matin",
+      "dr-ar-hasina-banu",
+      "dr-ar-shamsur",
+      "dr-ar-mahbubul",
+      "dr-ar-monir",
+      "dr-ar-moinul",
+      "dr-ar-minhaj",
+      "dr-ar-muhid",
+      "dr-ar-rezaul-karim",
+      "dr-ar-nihar-ray",
+      "dr-ar-ashequr",
+      "dr-ar-samiur"
     ],
     "image": "/ar_general_hospital.png"
   },
@@ -540,8 +557,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-hasina-banu",
-    "name": "Dr. Mst. Hasina Banu",
-    "degree": "MBBS, BCS (Health), DGO, MCPS (Gynae & Obs) | Consultant (Gynae), 250 Bed General Hospital, Nilphamari.",
+    "name": "ডা. মোছা. হাসিনা বানু (Dr. Mst. Hasina Banu)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমসিপিএস (গাইনী এন্ড অবস), এফসিপিএস (গাইনী এন্ড অবস) | সহকারী অধ্যাপক (গাইনী এন্ড অবস্), ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | স্ত্রীরোগ ও প্রসূতি বিদ্যা বিশেষজ্ঞ ও সার্জন",
     "specialty": "Gynecology",
     "districts": [
       "Nilphamari"
@@ -549,11 +566,11 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতিদিন বিকাল ৪ টা - রাত ১০ টা পর্যন্ত।",
+    "schedule": "প্রতিদিন বিকাল ৪টা থেকে রাত ১০টা পর্যন্ত, প্রতি শুক্রবার দুপুর ১ টা - রাত ১০ টা পর্যন্ত।",
     "availableToday": true,
-    "rating": 4.8,
+    "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 500
+    "consultationFee": 600
   },
   {
     "id": "dr-ar-moinul",
@@ -693,35 +710,35 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-shamsur",
-    "name": "Dr. Md. Shamsur Rahman",
-    "degree": "MBBS, BCS (Health), FCPS (Medicine) | Consultant - Medicine, 250 Bed General Hospital, Nilphamari.",
-    "specialty": "Medicine",
+    "name": "ডা. মো. শামসুর রহমান (Dr. Md. Shamsur Rahman)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (ফিজিক্যাল মেডিসিন এন্ড রিহ্যাবিলিটেশন) | কনসালটেন্ট, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | বাত-ব্যথা, প্যারালাইসিস, স্পোর্টস, মেডিসিন এন্ড রিহ্যাবিলিটেশন বিশেষজ্ঞ",
+    "specialty": "Physical Medicine",
     "districts": [
       "Nilphamari"
     ],
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি বৃহস্পতিবার বিকাল ৪টা থেকে রাত ৮টা পর্যন্ত",
+    "schedule": "প্রতি রবি, সোম ও বুধবার বিকাল ৪টা - রাত ৯টা পর্যন্ত।",
     "availableToday": true,
-    "rating": 4.7,
+    "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 500
+    "consultationFee": 600
   },
   {
     "id": "dr-ar-mahbubul",
-    "name": "Dr. Mahbubul Alam Chowdhury",
-    "degree": "MBBS, BCS (Health), MD (Neurology) | মেডিসিন ও নিউরোমেডিসিন বিশেষজ্ঞ | নিউরোমেডিসিন বিশেষজ্ঞ, রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর",
-    "specialty": "Neuromedicine",
+    "name": "ডা. মো: মাহবুবুল আলম চৌধুরী (Dr. Md. Mahbubul Alam Chowdhury)",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এমসিপিএস, ডিএলও (ইএনটি) | সহযোগী অধ্যাপক- ইএনটি, নীলফামারী মেডিকেল কলেজ, নীলফামারী | নাক, কান, গলা রোগ বিশেষজ্ঞ ও হেড নেক সার্জন",
+    "specialty": "ENT",
     "districts": [
       "Nilphamari"
     ],
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি শুক্রবার সকাল ১০টা – রাত ৮টা পর্যন্ত",
+    "schedule": "প্রতি মঙ্গলবার ও শুক্রবার বিকাল ০৪টা থেকে রাত ০৯ টা পর্যন্ত।",
     "availableToday": false,
-    "rating": 4.8,
+    "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 700
   },

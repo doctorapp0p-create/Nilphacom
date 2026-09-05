@@ -134,8 +134,8 @@ export const FreeDoctorClaimSection: React.FC<FreeDoctorClaimSectionProps> = ({
       } as FreeDoctorClaim));
       list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setClaims(list);
-    } catch (err) {
-      console.error('Error loading free doctor claim data:', err);
+    } catch (err: any) {
+      console.warn('Notice: Free doctor claims offline fallback:', err?.message || err);
     } finally {
       setLoading(false);
     }

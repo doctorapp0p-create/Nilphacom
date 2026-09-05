@@ -1,35 +1,55 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import {
+  initializeFirestore,
+  getFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  memoryLocalCache,
+  setLogLevel
+} from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
+
+// Silence verbose internal connection warnings
+setLogLevel('error');
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-export const db = firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId !== '(default)'
-  ? getFirestore(app, firebaseConfig.firestoreDatabaseId)
-  : getFirestore(app);
-export const auth = getAuth(app);
+function initDb() {
+  const dbId = firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId !== '(default)'
+    ? firebaseConfig.firestoreDatabaseId
+    : undefined;
 
-// Graceful connectivity verification
-async function testConnection() {
+  // 1. Try with persistent multi-tab cache and auto-detect long polling
   try {
-    // Attempt local/server read without hard throwing on initial boot
-    await getDoc(doc(db, '_connection_test_', 'check'));
-  } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : String(error);
-    // Ignore transient offline/unavailable messages during boot
-    if (
-      errorMsg.includes('permission-denied') || 
-      errorMsg.includes('insufficient permissions') ||
-      errorMsg.includes('unavailable') ||
-      errorMsg.includes('Could not reach Cloud Firestore') ||
-      errorMsg.includes('client is offline')
-    ) {
-      return;
+    return initializeFirestore(app, {
+      experimentalAutoDetectLongPolling: true,
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+      })
+    }, dbId);
+  } catch (e1) {
+    // 2. Try with memory cache if IndexedDB / multi-tab is restricted in iframe/private mode
+    try {
+      return initializeFirestore(app, {
+        experimentalAutoDetectLongPolling: true,
+        localCache: memoryLocalCache()
+      }, dbId);
+    } catch (e2) {
+      // 3. Try with basic auto-detect long polling
+      try {
+        return initializeFirestore(app, {
+          experimentalAutoDetectLongPolling: true,
+        }, dbId);
+      } catch (e3) {
+        // 4. Default getFirestore fallback
+        return dbId ? getFirestore(app, dbId) : getFirestore(app);
+      }
     }
-    console.warn("Firebase status notice:", error);
   }
 }
 
-testConnection();
+export const db = initDb();
+export const auth = getAuth(app);
+
 

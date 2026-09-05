@@ -4232,6 +4232,42 @@ export default function App() {
             districts: ['Nilphamari']
           };
         }
+        if (d.id === 'dr-ar-hasina-banu') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডা. মোছা. হাসিনা বানু (Dr. Mst. Hasina Banu)',
+            degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), এমসিপিএস (গাইনী এন্ড অবস), এফসিপিএস (গাইনী এন্ড অবস) | সহকারী অধ্যাপক (গাইনী এন্ড অবস্), ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | স্ত্রীরোগ ও প্রসূতি বিদ্যা বিশেষজ্ঞ ও সার্জন',
+            specialty: 'Gynecology',
+            schedule: 'প্রতিদিন বিকাল ৪টা থেকে রাত ১০টা পর্যন্ত, প্রতি শুক্রবার দুপুর ১ টা - রাত ১০ টা পর্যন্ত।',
+            clinics: ['c-ar'],
+            districts: ['Nilphamari']
+          };
+        }
+        if (d.id === 'dr-ar-shamsur') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডা. মো. শামসুর রহমান (Dr. Md. Shamsur Rahman)',
+            degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (ফিজিক্যাল মেডিসিন এন্ড রিহ্যাবিলিটেশন) | কনসালটেন্ট, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | বাত-ব্যথা, প্যারালাইসিস, স্পোর্টস, মেডিসিন এন্ড রিহ্যাবিলিটেশন বিশেষজ্ঞ',
+            specialty: 'Physical Medicine',
+            schedule: 'প্রতি রবি, সোম ও বুধবার বিকাল ৪টা - রাত ৯টা পর্যন্ত।',
+            clinics: ['c-ar'],
+            districts: ['Nilphamari']
+          };
+        }
+        if (d.id === 'dr-ar-mahbubul') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডা. মো: মাহবুবুল আলম চৌধুরী (Dr. Md. Mahbubul Alam Chowdhury)',
+            degree: 'এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এমসিপিএস, ডিএলও (ইএনটি) | সহযোগী অধ্যাপক- ইএনটি, নীলফামারী মেডিকেল কলেজ, নীলফামারী | নাক, কান, গলা রোগ বিশেষজ্ঞ ও হেড নেক সার্জন',
+            specialty: 'ENT',
+            schedule: 'প্রতি মঙ্গলবার ও শুক্রবার বিকাল ০৪টা থেকে রাত ০৯ টা পর্যন্ত।',
+            clinics: ['c-ar'],
+            districts: ['Nilphamari']
+          };
+        }
         return { id: d.id, ...data } as Doctor;
       }).filter(d => d.id !== 'moun-biplab');
 
@@ -4240,6 +4276,16 @@ export default function App() {
       if (hasBiplabInDb && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
         import('firebase/firestore').then(({ doc, deleteDoc }) => {
           deleteDoc(doc(db, 'doctors', 'moun-biplab')).catch(e => console.error("Auto-deleting Dr. Biplab failed: ", e));
+        });
+      }
+
+      // Auto-sync updated c-ar doctors in DB if user is admin/moderator
+      if (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
+        import('firebase/firestore').then(({ doc, setDoc }) => {
+          const arTargetDocs = DOCTORS.filter(d => ['dr-ar-hasina-banu', 'dr-ar-shamsur', 'dr-ar-mahbubul'].includes(d.id));
+          arTargetDocs.forEach(arDoc => {
+            setDoc(doc(db, 'doctors', arDoc.id), arDoc, { merge: true }).catch(e => console.warn(`Auto-syncing ${arDoc.id} in DB:`, e));
+          });
         });
       }
 
@@ -5931,12 +5977,12 @@ export default function App() {
           medicine: ['medicine', 'মেডিসিন', 'মেডিসন', 'মেডেসিন', 'এমেডিসিন'],
           cardiology: ['cardio', 'কার্ডিওলজি', 'কার্ডিও', 'হৃদরোগ', 'হার্ট', 'heart'],
           neuromedicine: ['neuro', 'নিউরো', 'নিউরোলজি', 'মস্তিষ্ক', 'স্ট্রোক', 'brain'],
-          gynecology: ['gyn', 'গাইনী', 'গাইনি', 'গাইনোকোলজি', 'গর্ভবতী', 'গর্ভ', 'প্রসূতি', 'obstetrics', 'obs'],
+          gynecology: ['gyn', 'গাইনী', 'গাইনি', 'গাইনোকোলজি', 'গর্ভবতী', 'গর্ভ', 'প্রসূতি', 'obstetrics', 'obs', 'স্ত্রী রোগ', 'স্ত্রীরোগ'],
           pediatrics: ['pediatr', 'শিশু', 'নবজাতক', 'কিশোর', 'child', 'baby'],
           surgery: ['surgeon', 'সার্জারি', 'সার্জারী', 'অপারেশন', 'surgery'],
           urology: ['uro', 'ইউরোলজি', 'ইউরোলজিস্ট', 'মূত্র', 'bladder'],
           endocrinology: ['endocrine', 'ডায়াবেটিস', 'হরমোন', 'diabetes', 'hormone'],
-          ent: ['ent', 'নাক', 'কান', 'গলা', 'nose', 'ear', 'throat'],
+          ent: ['ent', 'নাক', 'কান', 'গলা', 'nose', 'ear', 'throat', 'হেড নেক', 'head neck'],
           dermatology: ['derm', 'চর্ম', 'যৌন', 'স্কিন', 'skin', 'এলার্জি'],
           ophthalmology: ['eye', 'চোখ', 'চক্ষু', 'দৃষ্টি', 'ophthal'],
           psychiatry: ['psych', 'মানসিক', 'মন', 'পাগল', 'বিষন্নতা'],
@@ -5945,7 +5991,9 @@ export default function App() {
           nephrology: ['nephro', 'কিডনি', 'নেফ্রোলজি', 'renal', 'kidney'],
           oncology: ['onco', 'ক্যান্সার', 'টিউমার', 'cancer', 'tumor'],
           hematology: ['hemato', 'রক্তরোগ', 'রক্ত', 'blood'],
-          'physical-medicine': ['physical', 'ফিজিকেল', 'ব্যায়াম', 'থেরাপি', 'ফিজিওথেরাপি', 'physio']
+          'physical-medicine': ['physical', 'ফিজিকেল', 'ব্যায়াম', 'থেরাপি', 'ফিজিওথেরাপি', 'physio', 'বাত', 'বাত-ব্যথা', 'প্যারালাইসিস', 'স্পোর্টস', 'রিহ্যাবিলিটেশন'],
+          'physical medicine': ['physical', 'ফিজিকেল', 'ব্যায়াম', 'থেরাপি', 'ফিজিওথেরাপি', 'physio', 'বাত', 'বাত-ব্যথা', 'প্যারালাইসিস', 'স্পোর্টস', 'রিহ্যাবিলিটেশন'],
+          physical_medicine: ['physical', 'ফিজিকেল', 'ব্যায়াম', 'থেরাপি', 'ফিজিওথেরাপি', 'physio', 'বাত', 'বাত-ব্যথা', 'প্যারালাইসিস', 'স্পোর্টস', 'রিহ্যাবিলিটেশন']
         };
 
         const listKeywords = specialtyKeywordsMap[docSpecialty] || [];

@@ -478,8 +478,8 @@ export const DonationPortalSection: React.FC<DonationPortalSectionProps> = ({
       });
       setFreeDoctorClaims(freeList);
 
-    } catch (err) {
-      console.error('Error fetching donation data:', err);
+    } catch (err: any) {
+      console.warn('Notice: Donation portal offline fallback:', err?.message || err);
     } finally {
       setLoading(false);
     }

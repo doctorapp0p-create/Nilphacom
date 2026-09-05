@@ -172,8 +172,8 @@ export const MaternityDonationSection: React.FC<MaternityDonationSectionProps> =
       } as MaternityDonationApplication));
       list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setApplications(list);
-    } catch (err) {
-      console.error('Error fetching maternity donation data:', err);
+    } catch (err: any) {
+      console.warn('Notice: Maternity donation offline fallback:', err?.message || err);
     } finally {
       setLoading(false);
     }
