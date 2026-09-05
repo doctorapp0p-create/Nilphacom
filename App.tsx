@@ -797,6 +797,12 @@ const AdminDashboard: React.FC<{
   const [adminDoctorSearch, setAdminDoctorSearch] = useState('');
   const [adminDoctorSpecialtyFilter, setAdminDoctorSpecialtyFilter] = useState('all');
 
+  useEffect(() => {
+    if (onRefreshAdminData) {
+      onRefreshAdminData();
+    }
+  }, [onRefreshAdminData]);
+
   const filteredAdminDoctors = useMemo(() => {
     return doctors.filter(d => {
       // Specialty Filter
@@ -909,7 +915,7 @@ const AdminDashboard: React.FC<{
   }, [profiles, rdSearchQuery]);
 
   const filteredPatients = useMemo(() => {
-    const pts = profiles.filter(p => p.role === UserRole.PATIENT || (!p.role && p.phone && p.full_name));
+    const pts = profiles.filter(p => p.role === UserRole.PATIENT || !p.role || (p.role !== UserRole.ADMIN && p.role !== UserRole.DOCTOR && p.role !== UserRole.RURAL_DOCTOR));
     if (!patientSearchQuery.trim()) return pts;
     const query = patientSearchQuery.toLowerCase().trim();
     return pts.filter(p => 
@@ -957,7 +963,7 @@ const AdminDashboard: React.FC<{
   };
 
   const handleFixAllPasswords = async () => {
-    const missingProfiles = profiles.filter(p => (p.role === UserRole.PATIENT || !p.role) && !p.created_password && !(p as any).password);
+    const missingProfiles = profiles.filter(p => (p.role === UserRole.PATIENT || !p.role || (p.role !== UserRole.ADMIN && p.role !== UserRole.DOCTOR && p.role !== UserRole.RURAL_DOCTOR)) && !p.created_password && !(p as any).password);
     if (missingProfiles.length === 0) {
       alert('সকল রোগীর প্রোফাইলে ইতিমধ্যে পাসওয়ার্ড সেট করা রয়েছে!');
       return;
@@ -2148,7 +2154,7 @@ const AdminDashboard: React.FC<{
               </div>
               <div className="bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">মোট নিবন্ধিত রোগী</p>
-                <p className="text-2xl font-black text-slate-800">{profiles.filter(p => p.role === UserRole.PATIENT).length} জন</p>
+                <p className="text-2xl font-black text-slate-800">{profiles.filter(p => p.role === UserRole.PATIENT || !p.role || (p.role !== UserRole.ADMIN && p.role !== UserRole.DOCTOR && p.role !== UserRole.RURAL_DOCTOR)).length} জন</p>
               </div>
               <div className="bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">রেফার করা সিরিয়াল</p>
@@ -2495,7 +2501,7 @@ const AdminDashboard: React.FC<{
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <div className="bg-blue-50 text-blue-700 px-3.5 py-2 rounded-2xl border border-blue-100 text-xs font-black">
-                  মোট নিবন্ধিত রোগী: {profiles.filter(p => p.role === UserRole.PATIENT || !p.role).length} জন
+                  মোট নিবন্ধিত রোগী: {profiles.filter(p => p.role === UserRole.PATIENT || !p.role || (p.role !== UserRole.ADMIN && p.role !== UserRole.DOCTOR && p.role !== UserRole.RURAL_DOCTOR)).length} জন
                 </div>
                 <button
                   type="button"
@@ -3684,7 +3690,12 @@ export default function App() {
   const [liveDoctorSelectedDoc, setLiveDoctorSelectedDoc] = useState<Doctor | null>(null);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const isAdmin = useMemo(() => profile?.role === UserRole.ADMIN || profile?.role === UserRole.MODERATOR, [profile]);
+  const isAdmin = useMemo(() => {
+    if (!user) return false;
+    if (profile?.role === UserRole.ADMIN || profile?.role === UserRole.MODERATOR) return true;
+    const email = (user.email || '').toLowerCase().trim();
+    return email === 'doctorapp0p@gmail.com' || email === 'jagadbandhutum@gmail.com' || email === 'jagadbandhu';
+  }, [profile, user]);
   const [isLoading, setIsLoading] = useState(true);
   const [contactPhone, setContactPhone] = useState('');
   const [patientName, setPatientName] = useState('');
@@ -4368,15 +4379,16 @@ export default function App() {
 
   useEffect(() => {
     if (user) {
-      if (profile?.role === UserRole.ADMIN) {
+      if (isAdmin) {
         fetchAdminData();
       } else {
         fetchUserData();
       }
     }
-  }, [user, profile, activeTab]);
+  }, [user, isAdmin, activeTab]);
 
   const fetchAdminData = async () => {
+    let rawProfiles: Profile[] = [];
     // 1. Fetch profiles safely
     try {
       let profSnap;
@@ -4385,9 +4397,7 @@ export default function App() {
       } catch (e) {
         profSnap = await getDocs(collection(db, 'profiles'));
       }
-      const pList = profSnap.docs.map(d => ({ id: d.id, ...d.data() } as Profile));
-      pList.sort((a, b) => (a.full_name || '').localeCompare(b.full_name || ''));
-      setAllProfiles(pList);
+      rawProfiles = profSnap.docs.map(d => ({ id: d.id, ...d.data() } as Profile));
     } catch (e) {
       console.warn("Admin fetch profiles error:", e);
     }
@@ -4408,6 +4418,7 @@ export default function App() {
     }
 
     // 3. Fetch orders safely
+    let oList: Order[] = [];
     try {
       let ordSnap;
       try {
@@ -4415,7 +4426,7 @@ export default function App() {
       } catch (e) {
         ordSnap = await getDocs(collection(db, 'orders'));
       }
-      const oList = ordSnap.docs.map(d => ({ id: d.id, ...d.data() } as Order));
+      oList = ordSnap.docs.map(d => ({ id: d.id, ...d.data() } as Order));
       oList.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
       setAllOrders(oList);
     } catch (e) {
@@ -4423,6 +4434,7 @@ export default function App() {
     }
 
     // 4. Fetch appointments safely
+    let aList: any[] = [];
     try {
       let appSnap;
       try {
@@ -4430,12 +4442,58 @@ export default function App() {
       } catch (e) {
         appSnap = await getDocs(collection(db, 'appointments'));
       }
-      const aList = appSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      aList = appSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       aList.sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''));
       setAllAppointments(aList);
     } catch (e) {
       console.warn("Admin fetch appointments error:", e);
     }
+
+    // Combine profiles with unique patients from appointments and orders
+    const pList = [...rawProfiles];
+    const existingPhones = new Set(pList.map(p => (p.phone || '').trim()).filter(Boolean));
+    const existingIds = new Set(pList.map(p => p.id));
+
+    aList.forEach((app: any) => {
+      const phone = (app.patient_phone || app.phone || '').trim();
+      const name = (app.patient_name || '').trim();
+      const id = app.patient_id || (phone ? `phone_${phone}` : null);
+      if (id && !existingIds.has(id) && (!phone || !existingPhones.has(phone))) {
+        if (name || phone) {
+          existingIds.add(id);
+          if (phone) existingPhones.add(phone);
+          pList.push({
+            id: id,
+            full_name: name || phone || 'Registered Patient',
+            phone: phone,
+            role: UserRole.PATIENT,
+            status: 'active'
+          });
+        }
+      }
+    });
+
+    oList.forEach((ord: any) => {
+      const phone = (ord.sender_contact || '').trim();
+      const name = (ord.sender_name || '').trim();
+      const id = ord.user_id || (phone ? `phone_${phone}` : null);
+      if (id && !existingIds.has(id) && (!phone || !existingPhones.has(phone))) {
+        if (name || phone) {
+          existingIds.add(id);
+          if (phone) existingPhones.add(phone);
+          pList.push({
+            id: id,
+            full_name: name || phone || 'Customer',
+            phone: phone,
+            role: UserRole.PATIENT,
+            status: 'active'
+          });
+        }
+      }
+    });
+
+    pList.sort((a, b) => (a.full_name || '').localeCompare(b.full_name || ''));
+    setAllProfiles(pList);
 
     // Fetch all quizzes
     try {
