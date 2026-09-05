@@ -4220,6 +4220,18 @@ export default function App() {
             districts: data.districts?.length ? Array.from(new Set([...data.districts, 'Nilphamari'])) : ['Nilphamari']
           };
         }
+        if (d.id === 'dr-ar-rezaul-alam') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'অধ্যাপক ডা. মো. রেজাউল আলম',
+            degree: 'এমবিবিএস, ডিভি (থাইল্যান্ড), এমপিএইচ (ঢাকা), সিসিএস (ইন্ডিয়া), সিসিডি (বারডেম) | অধ্যাপক ও বিভাগীয় প্রধান, চর্ম ও যৌন রোগ বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল, রংপুর | চর্ম-যৌন, এলার্জি ও কুষ্ট রোগ বিশেষজ্ঞ',
+            specialty: 'Dermatology',
+            schedule: 'প্রতি সোমবার ও বৃহস্পতিবার বিকাল ৫টা থেকে রাত ৯টা পর্যন্ত',
+            clinics: ['c-ar'],
+            districts: ['Nilphamari']
+          };
+        }
         return { id: d.id, ...data } as Doctor;
       }).filter(d => d.id !== 'moun-biplab');
 
@@ -4252,7 +4264,9 @@ export default function App() {
         ? dbHospitals.map(dbH => {
             const localC = CLINICS.find(c => c.id === dbH.id);
             if (localC) {
-              const combinedDoctors = Array.from(new Set([...(dbH.doctors || []), ...(localC.doctors || [])])).filter(id => id !== 'moun-biplab');
+              const combinedDoctors = dbH.id === 'c-ar'
+                ? (localC.doctors || [])
+                : Array.from(new Set([...(dbH.doctors || []), ...(localC.doctors || [])])).filter(id => id !== 'moun-biplab');
               
               // If c-moun hospital has moun-biplab in its DB doctors array, and active user is admin, auto-correct the database
               if (dbH.id === 'c-moun' && dbH.doctors?.includes('moun-biplab') && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
@@ -4260,6 +4274,16 @@ export default function App() {
                   updateDoc(doc(db, 'hospitals', 'c-moun'), {
                     doctors: combinedDoctors
                   }).catch(e => console.error("Auto-correcting C-Moun hospital doctors failed: ", e));
+                });
+              }
+
+              // Auto-sync c-ar hospital details in DB if user is admin/moderator
+              if (dbH.id === 'c-ar' && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
+                import('firebase/firestore').then(({ doc, updateDoc }) => {
+                  updateDoc(doc(db, 'hospitals', 'c-ar'), {
+                    address: localC.address,
+                    doctors: localC.doctors
+                  }).catch(e => console.warn("Auto-syncing c-ar in DB: ", e));
                 });
               }
 
@@ -4307,48 +4331,94 @@ export default function App() {
   }, [user, profile, activeTab]);
 
   const fetchAdminData = async () => {
+    // 1. Fetch profiles safely
     try {
-      const profRes = await getDocs(query(collection(db, 'profiles'), orderBy('full_name', 'asc'))); // Sorting by full_name instead of missing 'id' field
-      const presRes = await getDocs(query(collection(db, 'prescriptions'), orderBy('created_at', 'desc')));
-      const ordRes = await getDocs(query(collection(db, 'orders'), orderBy('created_at', 'desc')));
-      const appRes = await getDocs(query(collection(db, 'appointments'), orderBy('created_at', 'desc')));
-      
-      setAllProfiles(profRes.docs.map(d => ({ ...d.data() } as Profile)));
-      setAllPrescriptions(presRes.docs.map(d => ({ id: d.id, ...d.data() } as Prescription)));
-      setAllOrders(ordRes.docs.map(d => ({ id: d.id, ...d.data() } as Order)));
-      setAllAppointments(appRes.docs.map(d => ({ id: d.id, ...d.data() })));
-
-      // Fetch all quizzes
+      let profSnap;
       try {
-        const quizSnap = await getDocs(collection(db, 'quizzes'));
-        const qList = quizSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-        qList.sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''));
-        setAllQuizzes(qList);
+        profSnap = await getDocs(query(collection(db, 'profiles'), orderBy('full_name', 'asc')));
       } catch (e) {
-        console.error("Admin fetch quizzes error:", e);
+        profSnap = await getDocs(collection(db, 'profiles'));
       }
+      const pList = profSnap.docs.map(d => ({ id: d.id, ...d.data() } as Profile));
+      pList.sort((a, b) => (a.full_name || '').localeCompare(b.full_name || ''));
+      setAllProfiles(pList);
+    } catch (e) {
+      console.warn("Admin fetch profiles error:", e);
+    }
 
-      // Fetch all submissions
+    // 2. Fetch prescriptions safely
+    try {
+      let presSnap;
       try {
-        const subSnap = await getDocs(collection(db, 'quiz_submissions'));
-        const sList = subSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-        sList.sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''));
-        setAllSubmissions(sList);
+        presSnap = await getDocs(query(collection(db, 'prescriptions'), orderBy('created_at', 'desc')));
       } catch (e) {
-        console.error("Admin fetch submissions error:", e);
+        presSnap = await getDocs(collection(db, 'prescriptions'));
       }
+      const pList = presSnap.docs.map(d => ({ id: d.id, ...d.data() } as Prescription));
+      pList.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+      setAllPrescriptions(pList);
+    } catch (e) {
+      console.warn("Admin fetch prescriptions error:", e);
+    }
 
-      // Fetch all withdrawals
+    // 3. Fetch orders safely
+    try {
+      let ordSnap;
       try {
-        const wdSnap = await getDocs(collection(db, 'withdrawals'));
-        const wList = wdSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-        wList.sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''));
-        setAllWithdrawals(wList);
+        ordSnap = await getDocs(query(collection(db, 'orders'), orderBy('created_at', 'desc')));
       } catch (e) {
-        console.error("Admin fetch withdrawals error:", e);
+        ordSnap = await getDocs(collection(db, 'orders'));
       }
-    } catch (error) {
-      console.error("Admin fetch error:", error);
+      const oList = ordSnap.docs.map(d => ({ id: d.id, ...d.data() } as Order));
+      oList.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+      setAllOrders(oList);
+    } catch (e) {
+      console.warn("Admin fetch orders error:", e);
+    }
+
+    // 4. Fetch appointments safely
+    try {
+      let appSnap;
+      try {
+        appSnap = await getDocs(query(collection(db, 'appointments'), orderBy('created_at', 'desc')));
+      } catch (e) {
+        appSnap = await getDocs(collection(db, 'appointments'));
+      }
+      const aList = appSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      aList.sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''));
+      setAllAppointments(aList);
+    } catch (e) {
+      console.warn("Admin fetch appointments error:", e);
+    }
+
+    // Fetch all quizzes
+    try {
+      const quizSnap = await getDocs(collection(db, 'quizzes'));
+      const qList = quizSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      qList.sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''));
+      setAllQuizzes(qList);
+    } catch (e) {
+      console.warn("Admin fetch quizzes error:", e);
+    }
+
+    // Fetch all submissions
+    try {
+      const subSnap = await getDocs(collection(db, 'quiz_submissions'));
+      const sList = subSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      sList.sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''));
+      setAllSubmissions(sList);
+    } catch (e) {
+      console.warn("Admin fetch submissions error:", e);
+    }
+
+    // Fetch all withdrawals
+    try {
+      const wdSnap = await getDocs(collection(db, 'withdrawals'));
+      const wList = wdSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      wList.sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''));
+      setAllWithdrawals(wList);
+    } catch (e) {
+      console.warn("Admin fetch withdrawals error:", e);
     }
   };
 

@@ -177,20 +177,16 @@ export const CLINICS: Clinic[] = [
     "id": "c-ar",
     "name": "এ.আর জেনারেল হসপিটাল",
     "district": "Nilphamari",
-    "address": "সদর হাসপাতাল সড়ক (আধুনিক সদর হাসপাতালের বিপরীতে), নীলফামারী।",
+    "address": "সদর হাসপাতাল সড়ক (আধুনিক সদর হাসপাতালের বিপরীতে), নীলফামারী",
     "doctors": [
-      "dr-ar-monir",
-      "dr-ar-hasina-banu",
-      "dr-ar-moinul",
-      "dr-ar-minhaj",
-      "dr-ar-muhid",
-      "dr-ar-rezaul-karim",
-      "dr-ar-nihar-ray",
+      "dr-ar-rupayan-das",
+      "dr-ar-raisul-alam",
+      "dr-ar-towhid-hasan",
+      "dr-ar-abdul-awal",
+      "dr-ar-ruhul-amin",
       "dr-ar-rezaul-alam",
-      "dr-ar-ashequr",
-      "dr-ar-samiur",
-      "dr-ar-shamsur",
-      "dr-ar-mahbubul"
+      "dr-ar-deb-dulal-ray",
+      "dr-ar-abdul-matin"
     ],
     "image": "/ar_general_hospital.png"
   },
@@ -406,6 +402,125 @@ export const CLINICS: Clinic[] = [
 
 export const DOCTORS: Doctor[] = [
   {
+    "id": "dr-ar-rupayan-das",
+    "name": "ডাঃ রুপায়ন দাশ",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডি-অর্থো (অর্থোপেডিক্স) | কনসালটেন্ট - অর্থো সার্জারী, উপজেলা স্বাস্থ্য কমপ্লেক্স, কিশোরগঞ্জ, নীলফামারী | হাড়-জোড়া, বাত-ব্যথা, ট্রমা বিশেষজ্ঞ ও সার্জন",
+    "specialty": "Orthopedics",
+    "districts": [
+      "Nilphamari"
+    ],
+    "clinics": [
+      "c-ar"
+    ],
+    "schedule": "প্রতি শুক্রবার দুপুর ০২টা থেকে রাত ০৮টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-ar-raisul-alam",
+    "name": "ডাঃ রাইসুল আলম শুভ",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এমডি (হেপাটলজি, বিএসএমএমইউ) | ইন্টারভেনশন হেপাটলজিস্ট ও গ্যাস্ট্রোএন্টেরোলজিস্ট, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | লিভার ও পরিপাকতন্ত্র বিশেষজ্ঞ",
+    "specialty": "Gastroenterology",
+    "districts": [
+      "Nilphamari"
+    ],
+    "clinics": [
+      "c-ar"
+    ],
+    "schedule": "প্রতি শুক্রবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
+    "consultationFee": 800
+  },
+  {
+    "id": "dr-ar-towhid-hasan",
+    "name": "ডাঃ এস.এম. তৌহিদ হাসান",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডিইএম (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম, বিএসএমএমইউ), এফসিপিএস (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম-এফপি), এডভান্সড কোর্স ইন এন্ডোক্রাইনোলজী (মায়ো ক্লিনিক-আমেরিকা) | ডায়াবেটিস, থাইরয়েড, হরমোন ও মেডিসিন রোগ বিশেষজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari"
+    ],
+    "clinics": [
+      "c-ar"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ০৯টা থেকে দুপুর ০২টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
+    "consultationFee": 800
+  },
+  {
+    "id": "dr-ar-abdul-awal",
+    "name": "ডা. মো. আব্দুল আউয়াল",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), সিসিডি (বারডেম), ডিসিএইচ (শিশু) বিএমইউ, আইসিপিপিএন (ইউএসএ) | কনসালটেন্ট (শিশু বিভাগ), ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | নবজাতক ও শিশু-কিশোর রোগ বিশেষজ্ঞ",
+    "specialty": "Pediatrics",
+    "districts": [
+      "Nilphamari"
+    ],
+    "clinics": [
+      "c-ar"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত, শুক্রবার দুপুর ২টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=200",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-ar-ruhul-amin",
+    "name": "ডাঃ মোঃ রুহুল আমিন",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (নিউরোলজী) | সহযোগী অধ্যাপক - নিউরোলজী, রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | নিউরোলজি মেডিসিন বিশেষজ্ঞ",
+    "specialty": "Neuromedicine",
+    "districts": [
+      "Nilphamari"
+    ],
+    "clinics": [
+      "c-ar"
+    ],
+    "schedule": "প্রতি মঙ্গলবার বিকাল ০৪টা থেকে রাত ০১টা এবং শুক্রবার সকাল ১০:০০টা থেকে রাত ১১টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
+    "consultationFee": 800
+  },
+  {
+    "id": "dr-ar-deb-dulal-ray",
+    "name": "ডাঃ দেব দুলাল রায়",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), সিসিডি (বারডেম), এমডি (সাইকিয়াট্রি) বাংলাদেশ মেডিকেল বিশ্ববিদ্যালয় (সাবেক পিজি হাসপাতাল, ঢাকা) এবং রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | মানসিক রোগ, মাথা ব্যথা, মাদকাসক্তি, যৌন স্বাস্থ্য বিশেষজ্ঞ",
+    "specialty": "Psychiatry",
+    "districts": [
+      "Nilphamari"
+    ],
+    "clinics": [
+      "c-ar"
+    ],
+    "schedule": "প্রতি বৃহস্পতিবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-ar-abdul-matin",
+    "name": "ডাঃ মোঃ আব্দুল মতিন",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য) | সহকারী অধ্যাপক - মেডিসিন বিভাগ, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | মেডিসিন বিশেষজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari"
+    ],
+    "clinics": [
+      "c-ar"
+    ],
+    "schedule": "প্রতি শনি থেকে বৃহস্পতিবার বিকাল ০৪টা থেকে রাত ০৯টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
+    "consultationFee": 600
+  },
+  {
     "id": "dr-ar-monir",
     "name": "Dr. Md. Moniruzzaman Moni",
     "degree": "MBBS, BCS (Health), CCD (BIRDEM), MS (Gynae & Obs) | Consultant Gynecologist & Surgeon, 250 Bed General Hospital, Nilphamari.",
@@ -527,8 +642,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-rezaul-alam",
-    "name": "Dr. Md. Resaul Alam",
-    "degree": "MBBS, DD (থাইল্যান্ড), MPH (ঢাকা), CCL (ইন্ডিয়া), CCD (বারডেম) | অধ্যাপক ও বিভাগীয় প্রধান, চর্ম ও যৌন রোগ বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল, রংপুর | চর্ম-যৌন, এলার্জি ও কুষ্ঠ রোগ বিশেষজ্ঞ",
+    "name": "অধ্যাপক ডা. মো. রেজাউল আলম",
+    "degree": "এমবিবিএস, ডিভি (থাইল্যান্ড), এমপিএইচ (ঢাকা), সিসিএস (ইন্ডিয়া), সিসিডি (বারডেম) | অধ্যাপক ও বিভাগীয় প্রধান, চর্ম ও যৌন রোগ বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল, রংপুর | চর্ম-যৌন, এলার্জি ও কুষ্ট রোগ বিশেষজ্ঞ",
     "specialty": "Dermatology",
     "districts": [
       "Nilphamari"
@@ -536,8 +651,8 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি সোমবার - বৃহস্পতিবার বিকাল ৫ টা - রাত ৯ টা পর্যন্ত।",
-    "availableToday": true,
+    "schedule": "প্রতি সোমবার ও বৃহস্পতিবার বিকাল ৫টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 700
