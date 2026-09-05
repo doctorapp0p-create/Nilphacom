@@ -6295,9 +6295,79 @@ export default function App() {
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans select-none overflow-x-hidden">
       <SecurityGuard />
       <SEO 
-        title="Nilpha | নীলফামারীর সেরা ডাক্তারদের তালিকা ও অ্যাপয়েন্টমেন্ট - Nilphamari's #1 Medical Directory"
-        description="নীলফামারী জেলার বিশেষজ্ঞ ডাক্তারদের তালিকা, চেম্বারের ঠিকানা ও সিরিয়াল নিশ্চিত করতে Nilpha.com-এ ভিজিট করুন। ডক্টর কুটুম নীলফামারী সহ সকল হাসপাতালের ডাক্তারদের তথ্য এখানে পাবেন।"
-        keywords={['Nilpha', 'Nilphamari Doctor', 'Doctor Appointment', 'নীলফামারী ডাক্তার', 'ডক্টর কুটুম', 'ডাক্তার অ্যাপয়েন্টমেন্ট', 'Nilphamari Medical Directory', 'Nilpha.com']}
+        title="Nilpha | নীলফামারীর সেরা ডাক্তারদের তালিকা ও সিরিয়াল বুকিং - Nilphamari Medical Directory"
+        description="নীলফামারী জেলার সকল বিশেষজ্ঞ ডাক্তারদের তালিকা, চেম্বারের ঠিকানা, ভিজিটিং সময়সূচী ও সরাসরি সিরিয়াল বুকিং সেবা। ডক্টর কুটুম নীলফামারী সহ সকল ক্লিনিক ও হাসপাতালের ডাক্তারদের তথ্য Nilpha.com-এ।"
+        keywords={[
+          'Nilpha',
+          'Nilpha.com',
+          'Nilphamari Doctor',
+          'নীলফামারী ডাক্তার',
+          'নীলফামারীর ডাক্তারদের তালিকা',
+          'নীলফামারীর সেরা ডাক্তার',
+          'ডক্টর কুটুম নীলফামারী',
+          'Doctor Kutum Nilphamari',
+          'ডাক্তার সিরিয়াল নীলফামারী',
+          'Doctor Appointment Nilphamari',
+          'Nilphamari Medical Directory',
+          'Nilphamari Hospital Doctor List',
+          'জনতা ক্লিনিক নীলফামারী',
+          'এ আর জেনারেল হাসপাতাল নীলফামারী',
+          'নীলফামারী ডায়াবেটিস হাসপাতাল',
+          'গাইনী ডাক্তার নীলফামারী',
+          'শিশু বিশেষজ্ঞ নীলফামারী',
+          'মেডিসিন বিশেষজ্ঞ নীলফামারী',
+          'সার্জারি বিশেষজ্ঞ নীলফামারী',
+          'হৃদরোগ বিশেষজ্ঞ নীলফামারী',
+          'চক্ষু বিশেষজ্ঞ নীলফামারী',
+          'অর্থোপেডিক বিশেষজ্ঞ নীলফামারী',
+          'নাক কান গলা বিশেষজ্ঞ নীলফামারী',
+          'চর্ম ও যৌন বিশেষজ্ঞ নীলফামারী'
+        ]}
+        canonical="/"
+        ogUrl="/"
+        schemas={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Nilpha Healthcare Network",
+            "alternateName": ["Nilpha", "ডক্টর কুটুম নীলফামারী", "Nilphamari Doctor Portal"],
+            "url": "https://nilpha.com",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://nilpha.com/?search={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "MedicalOrganization",
+            "name": "Nilpha Healthcare Network",
+            "alternateName": "Nilpha.com",
+            "url": "https://nilpha.com",
+            "logo": "https://nilpha.com/logo.png",
+            "telephone": `+88${HOTLINE_CONTACT}`,
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Nilphamari Sadar",
+              "addressLocality": "Nilphamari",
+              "addressRegion": "Rangpur",
+              "postalCode": "5300",
+              "addressCountry": "BD"
+            }
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": "Nilphamari Specialist Doctors Directory",
+            "description": "Directory of certified doctors and specialists in Nilphamari district",
+            "itemListElement": DOCTORS.slice(0, 30).map((d, idx) => ({
+              "@type": "ListItem",
+              "position": idx + 1,
+              "name": d.name,
+              "url": `https://nilpha.com/doctors/${slugify(d.name)}`
+            }))
+          }
+        ]}
       />
 
       <BookingModal 

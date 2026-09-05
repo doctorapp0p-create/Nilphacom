@@ -1,6 +1,6 @@
 {
   "name": "Remix JB Healthcare - Your Digital Doctor",
-  "description": "A comprehensive healthcare platform offering video consultations, medicine delivery, home lab tests, and hospital directory.",
+  "description": "নীলফামারী জেলার সকল বিশেষজ্ঞ ডাক্তারদের তালিকা (Nilphamari Doctor List), চেম্বারের ঠিকানা, ডক্টর কুটুম নীলফামারী এবং সেরা চিকিৎসকদের সিরিয়াল নিশ্চিত করার ডিজিটাল প্ল্যাটফর্ম।",
   "requestFramePermissions": [
     "camera",
     "microphone"

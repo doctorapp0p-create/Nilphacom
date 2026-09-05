@@ -139,7 +139,16 @@ const checkDay = (docSchedule: string, day: string) => {
 export const DoctorProfilePage: React.FC = () => {
   const { slug } = useParams();
   const [showBookingModal, setShowBookingModal] = React.useState(false);
-  const doctor = DOCTORS.find(d => slugify(d.name) === slug || d.id === slug);
+  const decodedSlug = slug ? decodeURIComponent(slug).trim() : '';
+  const doctor = DOCTORS.find(d => 
+    slugify(d.name) === slug || 
+    slugify(d.name) === decodedSlug || 
+    d.id === slug || 
+    d.id === decodedSlug ||
+    slugify(d.id) === slug ||
+    slugify(d.id) === decodedSlug ||
+    d.name.toLowerCase() === decodedSlug.toLowerCase()
+  );
 
   if (!doctor) return <div className="p-20 text-center font-black uppercase text-slate-400">Doctor Not Found</div>;
 
@@ -147,52 +156,121 @@ export const DoctorProfilePage: React.FC = () => {
   const specialty = SPECIALTIES.find(s => s.id === doctor.specialty.toLowerCase());
   const doctorSlug = slugify(doctor.name);
 
-  // Physician Schema
+  // Clean doctor name without title for keyword variations
+  const cleanDoctorName = doctor.name
+    .replace(/^(ডাঃ|ডা\.|ডাক্তার|Dr\.|Doctor|অধ্যাপক ডা\.|Prof\.\s*Dr\.)\s*/i, '')
+    .replace(/\(.*\)/g, '')
+    .trim();
+
+  // Pro-level doctor search keywords in Bangla, English & Banglish
+  const doctorKeywords = [
+    doctor.name,
+    cleanDoctorName,
+    `${doctor.name} Nilphamari`,
+    `${doctor.name} নীলফামারী`,
+    `${doctor.name} চেম্বার`,
+    `${doctor.name} chamber`,
+    `${doctor.name} সিরিয়াল`,
+    `${doctor.name} serial`,
+    `${doctor.name} সিরিয়াল বুকিং`,
+    `${doctor.name} appointment`,
+    `${doctor.name} মোবাইল নম্বর`,
+    `${doctor.name} phone number`,
+    `${doctor.name} রোগী দেখার সময়`,
+    `${doctor.name} visiting hours`,
+    `${doctor.name} ভিজিট ফি`,
+    `${doctor.name} fees`,
+    doctor.specialty,
+    specialty?.bnName || '',
+    `${doctor.name} ${doctor.specialty}`,
+    `${specialty?.bnName || doctor.specialty} বিশেষজ্ঞ নীলফামারী`,
+    `${doctor.specialty} specialist in Nilphamari`,
+    `Best ${doctor.specialty} in Nilphamari`,
+    `নীলফামারীর সেরা ${specialty?.bnName || doctor.specialty} ডাক্তার`,
+    clinic?.name || '',
+    `${clinic?.name || ''} নীলফামারী`,
+    `${doctor.name} ${clinic?.name || ''}`,
+    'Nilphamari Doctor',
+    'নীলফামারীর ডাক্তার',
+    'Best Doctor in Nilphamari',
+    'নীলফামারী ডাক্তার লিস্ট',
+    'ডক্টর কুটুম নীলফামারী',
+    'Doctor Kutum Nilphamari',
+    'Nilphamari Medical Directory',
+    'Nilpha',
+    'Nilpha.com'
+  ].filter(Boolean);
+
+  // Physician Schema with comprehensive medical structured data
   const physSchema = {
     "@context": "https://schema.org",
     "@type": "Physician",
+    "@id": `https://nilpha.com/doctors/${doctorSlug}#physician`,
     "name": doctor.name,
+    "alternateName": [
+      doctor.name,
+      cleanDoctorName,
+      `${doctor.name} Nilphamari`,
+      `${doctor.name} ${doctor.specialty}`
+    ],
     "medicalSpecialty": doctor.specialty,
-    "description": doctor.degree,
+    "description": `${doctor.name} - ${doctor.specialty} (${specialty?.bnName || ''}) Specialist in Nilphamari. ${doctor.degree}. Chamber: ${clinic?.name || 'Nilphamari'}. Schedule: ${doctor.schedule}.`,
     "url": `https://nilpha.com/doctors/${doctorSlug}`,
     "telephone": `+88${HOTLINE}`,
     "image": doctor.image,
+    "priceRange": `৳${doctor.consultationFee}`,
+    "currenciesAccepted": "BDT",
+    "isAcceptingNewPatients": true,
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": clinic?.address || doctor.districts[0],
-      "addressLocality": doctor.districts[0],
+      "streetAddress": clinic?.address || doctor.districts[0] || "Nilphamari Sadar",
+      "addressLocality": doctor.districts[0] || "Nilphamari",
+      "addressRegion": "Rangpur",
+      "postalCode": "5300",
       "addressCountry": "BD"
     },
     "worksFor": {
-      "@type": "Hospital",
-      "name": clinic?.name || "Nilpha Network"
-    }
+      "@type": "MedicalClinic",
+      "name": clinic?.name || "Nilpha Healthcare Network Nilphamari",
+      "address": clinic?.address || "Nilphamari, Bangladesh",
+      "telephone": `+88${HOTLINE}`
+    },
+    "availableService": [
+      {
+        "@type": "MedicalTherapy",
+        "name": `${doctor.specialty} Specialist Consultation & Treatment`
+      },
+      {
+        "@type": "MedicalTherapy",
+        "name": "Doctor Serial and Chamber Appointment Booking"
+      }
+    ]
   };
 
-  // FAQ Schema
+  // FAQ Schema for Rich Google Snippets
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
       {
         "@type": "Question",
-        "name": `How do I book an appointment with ${doctor.name}?`,
+        "name": `How do I book an appointment or serial for ${doctor.name} in Nilphamari? (${doctor.name}-এর সিরিয়াল কীভাবে নেব?)`,
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `You can book an appointment with ${doctor.name} by calling our hotline ${HOTLINE} or using the Nilpha.com booking system. সিরিয়ালের জন্য সরাসরি কল করুন ${HOTLINE} নম্বরে।`
+          "text": `You can book an appointment for ${doctor.name} online at Nilpha.com or by calling our direct hotline ${HOTLINE}. নীলফা ডট কমের মাধ্যমে অথবা সরাসরি হটলাইন ${HOTLINE} নম্বরে কল করে খুব সহজেই ${doctor.name}-এর সিরিয়াল নিশ্চিত করতে পারেন।`
         }
       },
       {
         "@type": "Question",
-        "name": `Where does ${doctor.name} see patients?`,
+        "name": `Where is the chamber of ${doctor.name} located? (${doctor.name}-এর চেম্বারের ঠিকানা কোথায়?)`,
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `${doctor.name} sees patients at ${clinic?.name || "various clinics"} in ${doctor.districts.join(', ')}. ${doctor.name} বর্তমানে ${clinic?.name || 'চেম্বারে'} নিয়মিত রোগী দেখছেন।`
+          "text": `${doctor.name} sees patients at ${clinic?.name || "Nilphamari medical clinic"}, located at ${clinic?.address || doctor.districts.join(', ')}. ${doctor.name} বর্তমানে ${clinic?.name || 'চেম্বারে'} নিয়মিত রোগী দেখছেন।`
         }
       },
       {
         "@type": "Question",
-        "name": `What is the consultation fee of ${doctor.name}?`,
+        "name": `What is the consultation fee of ${doctor.name}? (${doctor.name}-এর ভিজিট ফি কত?)`,
         "acceptedAnswer": {
           "@type": "Answer",
           "text": `The consultation fee for ${doctor.name} is BDT ${doctor.consultationFee}. ${doctor.name}-এর কনসালটেশন ফি ${doctor.consultationFee} টাকা।`
@@ -200,18 +278,18 @@ export const DoctorProfilePage: React.FC = () => {
       },
       {
         "@type": "Question",
-        "name": `Is online booking available for ${doctor.name}?`,
+        "name": `What are the visiting hours of ${doctor.name}? (${doctor.name}-এর রোগী দেখার সময়সূচী?)`,
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `Yes, you can book ${doctor.name} serial online through Nilpha.com platform. হ্যাঁ, আপনি ঘরে বসেই নীলফা ডট কমের মাধ্যমে সিরিয়াল দিতে পারেন।`
+          "text": `Visiting schedule: ${doctor.schedule}. পরিদর্শনের সময়সূচী: ${doctor.schedule}।`
         }
       },
       {
         "@type": "Question",
-        "name": `What is the specialty of ${doctor.name}?`,
+        "name": `What is the medical qualification of ${doctor.name}? (${doctor.name}-এর শিক্ষাগত যোগ্যতা কী?)`,
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `${doctor.name} is a specialist in ${doctor.specialty}. ${doctor.name} একজন দক্ষ ${specialty?.bnName || doctor.specialty} বিশেষজ্ঞ।`
+          "text": `${doctor.name} is a qualified specialist in ${doctor.specialty}. Degrees: ${doctor.degree}. ${doctor.name} একজন অভিজ্ঞ ${specialty?.bnName || doctor.specialty} বিশেষজ্ঞ।`
         }
       }
     ]
@@ -224,7 +302,7 @@ export const DoctorProfilePage: React.FC = () => {
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nilpha.com" },
       { "@type": "ListItem", "position": 2, "name": "Doctors", "item": "https://nilpha.com/doctors" },
-      { "@type": "ListItem", "position": 3, "name": doctor.specialty, "item": `https://nilpha.com/specialists/${doctor.specialty.toLowerCase()}` },
+      { "@type": "ListItem", "position": 3, "name": specialty?.bnName || doctor.specialty, "item": `https://nilpha.com/specialists/${slugify(doctor.specialty)}` },
       { "@type": "ListItem", "position": 4, "name": doctor.name, "item": `https://nilpha.com/doctors/${doctorSlug}` }
     ]
   };
@@ -232,23 +310,9 @@ export const DoctorProfilePage: React.FC = () => {
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
       <SEO 
-        title={`${doctor.name} | ${doctor.specialty} in ${doctor.districts[0]} | Nilpha`}
-        description={`Book an appointment with ${doctor.name}, a leading ${doctor.specialty} in ${clinic?.name || 'Nilphamari'}, ${doctor.districts[0]}. Find doctor profile, chamber address, visiting hours, and consultation fee. | নীলফামারীতে ${specialty?.bnName || doctor.specialty} বিশেষজ্ঞ ${doctor.name}-এর চেম্বারের ঠিকানা, সিরিয়াল ও অ্যাপয়েন্টমেন্ট তথ্য। বিস্তারিত জানুন Nilpha.com-এ।`}
-        keywords={[
-          doctor.name, 
-          doctor.specialty, 
-          clinic?.name || '', 
-          'Nilphamari Doctor', 
-          'নীলফামারীর ডাক্তার', 
-          'Best Doctor in Nilphamari', 
-          specialty?.bnName || '',
-          'নীলফামারী ডাক্তার লিস্ট',
-          'ডক্টর কুটুম নীলফামারী',
-          'Doctor Kutum',
-          'Nilphamari Medical Directory',
-          'সিরিয়াল কন্টাক্ট',
-          'Doctor Appoinment Nilphamari'
-        ]}
+        title={`${doctor.name} | ${specialty?.bnName || doctor.specialty} Specialist in Nilphamari | চেম্বার ও সিরিয়াল - Nilpha`}
+        description={`${doctor.name} - ${doctor.specialty} (${specialty?.bnName || ''}) Specialist in ${clinic?.name || 'Nilphamari'}. ${doctor.degree}. চেম্বার: ${clinic?.name || 'নীলফামারী'}, রোগী দেখার সময়: ${doctor.schedule}, ফি: ৳${doctor.consultationFee}। সিরিয়াল বুকিং করুন Nilpha.com-এ। হটলাইন: ${HOTLINE}`}
+        keywords={doctorKeywords}
         ogImage={doctor.image}
         ogUrl={`/doctors/${doctorSlug}`}
         ogType="profile"
@@ -471,44 +535,73 @@ export const ClinicLandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [showBookingModal, setShowBookingModal] = React.useState(false);
   const [selectedDoctor, setSelectedDoctor] = React.useState<any>(null);
-  const clinic = CLINICS.find(c => slugify(c.name) === slug || c.id === slug);
+  const decodedSlug = slug ? decodeURIComponent(slug).trim() : '';
+  const clinic = CLINICS.find(c => 
+    slugify(c.name) === slug || 
+    slugify(c.name) === decodedSlug || 
+    c.id === slug || 
+    c.id === decodedSlug
+  );
 
   if (!clinic) return <div className="p-20 text-center font-black uppercase text-slate-400">Clinic Not Found</div>;
 
   const hospitalDocs = DOCTORS.filter(d => d.clinics.includes(clinic.id));
   const clinicSlug = slugify(clinic.name);
 
-  // Clinic Schema
+  // Clinic Schema with department doctors
   const clinicSchema = {
     "@context": "https://schema.org",
     "@type": "MedicalClinic",
+    "@id": `https://nilpha.com/hospitals/${clinicSlug}#clinic`,
     "name": clinic.name,
+    "alternateName": [
+      clinic.name,
+      `${clinic.name} Nilphamari`,
+      `${clinic.name} নীলফামারী`
+    ],
     "address": {
        "@type": "PostalAddress",
        "streetAddress": clinic.address,
        "addressLocality": clinic.district,
+       "addressRegion": "Rangpur",
+       "postalCode": "5300",
        "addressCountry": "BD"
     },
     "image": clinic.image,
     "url": `https://nilpha.com/hospitals/${clinicSlug}`,
-    "telephone": `+88${HOTLINE}`
+    "telephone": `+88${HOTLINE}`,
+    "department": hospitalDocs.map(d => ({
+      "@type": "Physician",
+      "name": d.name,
+      "medicalSpecialty": d.specialty,
+      "url": `https://nilpha.com/doctors/${slugify(d.name)}`
+    }))
   };
+
+  const clinicKeywords = [
+    clinic.name,
+    `${clinic.name} Nilphamari`,
+    `${clinic.name} নীলফামারী`,
+    `${clinic.name} doctor list`,
+    `${clinic.name} ডাক্তার তালিকা`,
+    `${clinic.name} সিরিয়াল নম্বর`,
+    `${clinic.name} phone number`,
+    'নীলফামারী ক্লিনিক',
+    'নীলফামারী হাসপাতাল',
+    'ডক্টর কুটুম নীলফামারী',
+    'Doctor Kutum Nilphamari',
+    'Nilpha Hospitals',
+    'Nilphamari Clinic List',
+    'নীলফামারী হাসপাতালের তালিকা',
+    'Nilpha.com'
+  ];
 
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
       <SEO 
-        title={`${clinic.name} | Doctors List & Location, ${clinic.district} | Nilpha`}
-        description={`Find doctors in ${clinic.name}, ${clinic.address}. View visiting hours, departments, and book appointments online on Nilpha.com. ${clinic.name}-এর ডাক্তারদের তালিকা ও সিরিয়াল নম্বর দেখুন। নীলফামারীর উন্নত চিকিৎসাসেবা ও বিশেষজ্ঞ ডাক্তারদের তথ্য।`}
-        keywords={[
-          clinic.name, 
-          clinic.district + ' Hospital', 
-          'Doctors in ' + clinic.name, 
-          'নীলফামারী ক্লিনিক',
-          'ডক্টর কুটুম',
-          'Nilpha Hospitals',
-          'Nilphamari Clinic List',
-          'নীলফামারী হাসপাতালের তালিকা'
-        ]}
+        title={`${clinic.name} Nilphamari | ডাক্তার তালিকা, চেম্বার ও সিরিয়াল | Nilpha`}
+        description={`${clinic.name} (${clinic.address}, নীলফামারী)। সকল বিশেষজ্ঞ ডাক্তারদের তালিকা, ভিজিটিং সময়সূচী ও সিরিয়াল বুকিং করুন Nilpha.com-এ। হটলাইন: ${HOTLINE}`}
+        keywords={clinicKeywords}
         ogImage={clinic.image}
         ogUrl={`/hospitals/${clinicSlug}`}
         canonical={`/hospitals/${clinicSlug}`}
@@ -603,25 +696,55 @@ export const SpecialistLandingPage: React.FC = () => {
     const navigate = useNavigate();
     const [showBookingModal, setShowBookingModal] = React.useState(false);
     const [selectedDoctor, setSelectedDoctor] = React.useState<any>(null);
-    const specialtyData = SPECIALTIES.find(s => slugify(s.name) === slug || s.id === slug);
+    const decodedSlug = slug ? decodeURIComponent(slug).trim() : '';
+    const specialtyData = SPECIALTIES.find(s => 
+      slugify(s.name) === slug || 
+      slugify(s.name) === decodedSlug || 
+      s.id === slug || 
+      s.id === decodedSlug ||
+      s.name.toLowerCase() === decodedSlug.toLowerCase() ||
+      (s.bnName && slugify(s.bnName) === decodedSlug)
+    );
     const specialtyName = specialtyData ? specialtyData.name : slug;
-    const specialtyDocs = DOCTORS.filter(d => d.specialty.toLowerCase() === specialtyName?.toLowerCase());
+    const specialtyDocs = DOCTORS.filter(d => 
+      d.specialty.toLowerCase() === specialtyName?.toLowerCase() ||
+      (specialtyData && d.specialty.toLowerCase() === specialtyData.name.toLowerCase())
+    );
+
+    const specialtyKeywords = [
+       `${specialtyName} in Nilphamari`, 
+       `${specialtyName} doctor list`, 
+       `নীলফামারী ${specialtyData?.bnName || specialtyName} বিশেষজ্ঞ`,
+       `${specialtyData?.bnName || specialtyName} ডাক্তার নীলফামারী`,
+       `Nilphamari Specialist Doctors`,
+       `ডক্টর কুটুম নীলফামারী`,
+       `Doctor Kutum Nilphamari`,
+       `নীলফামারী ডাক্তার লিস্ট`,
+       `Nilpha.com`
+    ];
+
+    const specialtySchema = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": `${specialtyName} Specialists in Nilphamari`,
+      "description": `List of top ${specialtyName} (${specialtyData?.bnName || ''}) doctors practicing in Nilphamari`,
+      "itemListElement": specialtyDocs.map((doc, idx) => ({
+        "@type": "ListItem",
+        "position": idx + 1,
+        "name": doc.name,
+        "url": `https://nilpha.com/doctors/${slugify(doc.name)}`
+      }))
+    };
 
     return (
         <div className="bg-slate-50 min-h-screen pb-20">
             <SEO 
-                title={`Best ${specialtyName} Doctors in Nilphamari | Specialist List | Nilpha`}
-                description={`Find the best ${specialtyName} doctors in Nilphamari. View doctor profile, degrees, chamber address and book appointments online on Nilpha.com. নীলফামারী জেলার সেরা ${specialtyData?.bnName || specialtyName} বিশেষজ্ঞদের তালিকা এখানে পাবেন।`}
-                keywords={[
-                   specialtyName + ' in Nilphamari', 
-                   specialtyName + ' doctor list', 
-                   'নীলফামারী ' + (specialtyData?.bnName || '') + ' বিশেষজ্ঞ',
-                   'Nilphamari Specialist Doctors',
-                   'ডক্টর কুটুম নীলফামারী',
-                   'নীলফামারী ডাক্তার লিস্ট'
-                ]}
+                title={`Best ${specialtyName} (${specialtyData?.bnName || specialtyName}) Doctors in Nilphamari | নীলফামারী ডাক্তারদের তালিকা - Nilpha`}
+                description={`নীলফামারী জেলার সেরা ${specialtyData?.bnName || specialtyName} বিশেষজ্ঞদের তালিকা, ডিগ্রী, চেম্বারের ঠিকানা ও সিরিয়াল বুকিং করুন Nilpha.com-এ। Find top ${specialtyName} specialists in Nilphamari with visiting hours and fees.`}
+                keywords={specialtyKeywords}
                 ogUrl={`/specialists/${slug}`}
                 canonical={`/specialists/${slug}`}
+                schemas={[specialtySchema]}
             />
 
             <Breadcrumbs items={[
@@ -699,14 +822,44 @@ export const DistrictLandingPage: React.FC = () => {
     const navigate = useNavigate();
     const [showBookingModal, setShowBookingModal] = React.useState(false);
     const [selectedDoctor, setSelectedDoctor] = React.useState<any>(null);
-    const districtDocs = DOCTORS.filter(d => d.districts.some(dist => slugify(dist) === slug || dist.toLowerCase() === slug?.toLowerCase()));
+    const decodedSlug = slug ? decodeURIComponent(slug).trim() : '';
+    const districtDocs = DOCTORS.filter(d => 
+      d.districts.some(dist => 
+        slugify(dist) === slug || 
+        slugify(dist) === decodedSlug || 
+        dist.toLowerCase() === slug?.toLowerCase() ||
+        dist.toLowerCase() === decodedSlug.toLowerCase()
+      )
+    );
+
+    const districtSchema = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": `Specialist Doctors in ${decodedSlug || slug}`,
+      "description": `Comprehensive directory of specialist doctors in ${decodedSlug || slug}`,
+      "itemListElement": districtDocs.map((doc, idx) => ({
+        "@type": "ListItem",
+        "position": idx + 1,
+        "name": doc.name,
+        "url": `https://nilpha.com/doctors/${slugify(doc.name)}`
+      }))
+    };
 
     return (
         <div className="bg-slate-50 min-h-screen pb-20">
             <SEO 
-                title={`All Doctors in ${slug} | Best Medical Specialists | Nilpha`}
-                description={`Comprehensive list of doctors and medical specialists in ${slug}. Find clinics, diagnostic centers and hospital information on Nilpha.com. ${slug} জেলার সকল ডাক্তার এবং হাসপাতালের তথ্য এখানে পাবেন।`}
+                title={`All Doctors in ${decodedSlug || slug} | নীলফামারীর ডাক্তারদের তালিকা - Nilpha`}
+                description={`Comprehensive list of doctors and medical specialists in ${decodedSlug || slug}. Find clinics, diagnostic centers and serial appointment booking on Nilpha.com. ${decodedSlug || slug} জেলার সকল ডাক্তার এবং হাসপাতালের তথ্য এখানে পাবেন।`}
+                keywords={[
+                  `${decodedSlug || slug} Doctor`,
+                  `${decodedSlug || slug} Doctor List`,
+                  `${decodedSlug || slug} Hospital`,
+                  `${decodedSlug || slug} ডাক্তার`,
+                  `ডক্টর কুটুম ${decodedSlug || slug}`,
+                  'Nilpha.com'
+                ]}
                 canonical={`/districts/${slug}`}
+                schemas={[districtSchema]}
             />
             <Breadcrumbs items={[{ label: slug || 'District' }]} />
             <div className="p-6 space-y-6 max-w-2xl mx-auto text-center">
