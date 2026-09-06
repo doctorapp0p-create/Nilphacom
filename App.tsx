@@ -781,11 +781,16 @@ const AdminDashboard: React.FC<{
   isLabTestsServiceEnabled?: boolean,
   onToggleGlobalLabTestsService?: (enabled: boolean) => Promise<void>,
   onToggleTestActive?: (test: LabTest) => Promise<void>,
+  onToggleAllTests?: (active: boolean) => Promise<void>,
   onCouponsUpdated?: () => void,
-}> = ({ profile, onLogout, ticker, setTicker, onUpdateTicker, doctors, hospitals, labTests, orders, profiles, appointments, onAdd, onEdit, onDelete, onRefreshAdminData, onUpdateAppointmentStatus, onUpdateOrderStatus, quizzes = [], submissions = [], withdrawals = [], onAddQuiz, onUpdateSubmissionStatus, onUpdateWithdrawalStatus, isLabTestsServiceEnabled = true, onToggleGlobalLabTestsService, onToggleTestActive, onCouponsUpdated }) => {
+}> = ({ profile, onLogout, ticker, setTicker, onUpdateTicker, doctors, hospitals, labTests, orders, profiles, appointments, onAdd, onEdit, onDelete, onRefreshAdminData, onUpdateAppointmentStatus, onUpdateOrderStatus, quizzes = [], submissions = [], withdrawals = [], onAddQuiz, onUpdateSubmissionStatus, onUpdateWithdrawalStatus, isLabTestsServiceEnabled = true, onToggleGlobalLabTestsService, onToggleTestActive, onToggleAllTests, onCouponsUpdated }) => {
   const [activeSubTab, setActiveSubTab] = useState<'today_apps' | 'overview' | 'doctors' | 'orders' | 'hospitals' | 'labtests' | 'coupons' | 'billing' | 'referrals' | 'patients' | 'quizzes' | 'withdrawals' | 'free_doctors' | 'maternity_donation' | 'subscriptions' | 'doctor_portal'>('today_apps');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedDocId, setExpandedDocId] = useState<string | null>(null);
+
+  // Search & Filter states for Admin Lab Tests
+  const [adminTestSearch, setAdminTestSearch] = useState('');
+  const [adminTestStatusFilter, setAdminTestStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   // States for Today's Doctor Appointments List
   const [todayAppsFilter, setTodayAppsFilter] = useState<'today' | 'all'>('today');
@@ -942,6 +947,24 @@ const AdminDashboard: React.FC<{
     });
     return `RD${maxNum + 1}`;
   }, [profiles]);
+
+  const adminFilteredLabTests = useMemo(() => {
+    return labTests.filter(t => {
+      const q = adminTestSearch.toLowerCase().trim();
+      const matchesSearch = !q ||
+        t.name.toLowerCase().includes(q) ||
+        (t.category || '').toLowerCase().includes(q) ||
+        (t.hospital_name || '').toLowerCase().includes(q) ||
+        (t.description || '').toLowerCase().includes(q);
+      const isItemActive = t.isActive !== false;
+      const matchesStatus = adminTestStatusFilter === 'all'
+        ? true
+        : adminTestStatusFilter === 'active'
+          ? isItemActive
+          : !isItemActive;
+      return matchesSearch && matchesStatus;
+    });
+  }, [labTests, adminTestSearch, adminTestStatusFilter]);
 
   useEffect(() => {
     if (!rdCode || rdCode.startsWith('RD')) {
@@ -1937,57 +1960,188 @@ const AdminDashboard: React.FC<{
               </button>
             </div>
 
-            {/* Header & Add Button */}
-            <div className="flex flex-wrap justify-between items-center gap-3 bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm">
-               <div>
-                 <h2 className="text-lg font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
-                   🧪 ল্যাব টেস্ট তালিকা ({labTests.length} টি)
-                 </h2>
-                 <p className="text-xs font-bold text-slate-500 mt-0.5">
-                   {isLabTestsServiceEnabled 
-                     ? 'মাস্টার সুইচ ON থাকায় সকল টেস্ট বর্তমানে পাবলিক রয়েছে' 
-                     : 'মাস্টার সুইচ OFF থাকায় সকল টেস্ট বর্তমানে বন্ধ রয়েছে'}
-                 </p>
-               </div>
-               <Button onClick={() => onAdd('lab_test')} variant="success" className="px-5 py-2.5 rounded-2xl text-xs font-black">
-                 + Add New Test
-               </Button>
+            {/* Header, Stats & Bulk Action Controls */}
+            <div className="bg-white p-5 sm:p-6 rounded-[28px] border border-slate-100 shadow-sm space-y-4">
+              <div className="flex flex-wrap justify-between items-center gap-4">
+                <div>
+                  <h2 className="text-lg font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
+                    🧪 ল্যাব টেস্ট তালিকা ও স্ট্যাটাস নিয়ন্ত্রণ ({labTests.length} টি)
+                  </h2>
+                  <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                    <span className="text-xs font-bold text-slate-500">মোট: {labTests.length} টি</span>
+                    <span className="text-slate-300">•</span>
+                    <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                      🟢 চালু / পাবলিক: {labTests.filter(t => t.isActive !== false).length} টি
+                    </span>
+                    <span className="text-slate-300">•</span>
+                    <span className="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                      🔴 বন্ধ (OFF): {labTests.filter(t => t.isActive === false).length} টি
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  {onToggleAllTests && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => onToggleAllTests(true)}
+                        className="px-3.5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+                        title="এক ক্লিকে সকল টেস্ট চালু ও পাবলিক করুন"
+                      >
+                        <span>🟢 সব টেস্ট ON করুন</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onToggleAllTests(false)}
+                        className="px-3.5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+                        title="এক ক্লিকে সকল টেস্ট সাময়িক বন্ধ (OFF) করুন"
+                      >
+                        <span>🔴 সব টেস্ট OFF করুন</span>
+                      </button>
+                    </>
+                  )}
+                  <Button onClick={() => onAdd('lab_test')} variant="success" className="px-5 py-2.5 rounded-2xl text-xs font-black shadow-md">
+                    + Add New Test
+                  </Button>
+                </div>
+              </div>
+
+              {/* Search & Filter Bar */}
+              <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+                <div className="relative flex-1 max-w-md">
+                  <input
+                    type="text"
+                    value={adminTestSearch}
+                    onChange={(e) => setAdminTestSearch(e.target.value)}
+                    placeholder="🔍 টেস্টের নাম, ক্যাটাগরি বা হাসপাতাল দিয়ে খুঁজুন..."
+                    className="w-full pl-3.5 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-blue-500 focus:bg-white transition-all"
+                  />
+                  {adminTestSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setAdminTestSearch('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                  {[
+                    { id: 'all', label: `সকল (${labTests.length})` },
+                    { id: 'active', label: `🟢 চালু (${labTests.filter(t => t.isActive !== false).length})` },
+                    { id: 'inactive', label: `🔴 বন্ধ (${labTests.filter(t => t.isActive === false).length})` },
+                  ].map(f => (
+                    <button
+                      key={f.id}
+                      type="button"
+                      onClick={() => setAdminTestStatusFilter(f.id as any)}
+                      className={`px-3 py-1.5 rounded-xl text-[11px] font-black shrink-0 transition-all ${
+                        adminTestStatusFilter === f.id
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Tests List */}
+            {/* Tests List with Individual ON/OFF Controls */}
             <div className="space-y-3">
-              {labTests.map(t => {
-                const finalPrice = t.discountPrice || t.price;
-                return (
-                  <div key={t.id} className="p-4 rounded-[28px] border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-sm transition-all bg-white border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-lg shrink-0 bg-blue-50 text-blue-600">
-                        <Microscope size={20} />
-                      </div>
-                      <div className="space-y-0.5">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="text-sm font-black text-slate-800 leading-tight">{t.name}</p>
-                          <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
-                            isLabTestsServiceEnabled 
-                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
-                              : 'bg-rose-100 text-rose-800 border border-rose-200'
-                          }`}>
-                            {isLabTestsServiceEnabled ? '🟢 পাবলিক (ON)' : '🔴 বন্ধ (OFF)'}
-                          </span>
+              {adminFilteredLabTests.length === 0 ? (
+                <div className="p-12 text-center bg-white rounded-[28px] border border-slate-100 shadow-sm space-y-2">
+                  <div className="text-3xl">🧪</div>
+                  <p className="text-sm font-black text-slate-500">কোনো ল্যাব টেস্ট খুঁজে পাওয়া যায়নি</p>
+                  <p className="text-xs text-slate-400">অনুসন্ধান ফিল্টার পরিবর্তন করুন অথবা নতুন টেস্ট যুক্ত করুন।</p>
+                </div>
+              ) : (
+                adminFilteredLabTests.map(t => {
+                  const finalPrice = t.discountPrice || t.price;
+                  const isItemActive = t.isActive !== false;
+                  return (
+                    <div
+                      key={t.id}
+                      className={`p-4 rounded-[28px] border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-sm transition-all ${
+                        isItemActive
+                          ? 'bg-white border-slate-100 hover:border-slate-200'
+                          : 'bg-rose-50/30 border-rose-200/70'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-11 h-11 rounded-2xl flex items-center justify-center text-lg shrink-0 ${
+                            isItemActive ? 'bg-blue-50 text-blue-600' : 'bg-rose-100 text-rose-500'
+                          }`}
+                        >
+                          <Microscope size={20} />
                         </div>
-                        <p className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">
-                          ৳{finalPrice} {t.discountPrice && <span className="line-through text-slate-400 font-normal">৳{t.price}</span>} ({t.category || 'Pathology'})
-                        </p>
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className={`text-sm font-black leading-tight ${isItemActive ? 'text-slate-800' : 'text-slate-600 line-through decoration-rose-300'}`}>
+                              {t.name}
+                            </p>
+                            <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${
+                              isItemActive 
+                                ? 'bg-emerald-100 text-emerald-800 border-emerald-200' 
+                                : 'bg-rose-100 text-rose-800 border-rose-200'
+                            }`}>
+                              {isItemActive ? '🟢 পাবলিক (ON)' : '🔴 বন্ধ (OFF)'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-[10px] flex-wrap">
+                            <span className="text-blue-600 font-bold uppercase tracking-wider">
+                              ৳{finalPrice} {t.discountPrice && <span className="line-through text-slate-400 font-normal">৳{t.price}</span>} ({t.category || 'Pathology'})
+                            </span>
+                            {t.hospital_name && (
+                              <>
+                                <span className="text-slate-300">•</span>
+                                <span className="text-slate-500 font-bold">🏥 {t.hospital_name}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 self-end sm:self-center">
+                        {/* Individual ON / OFF Button */}
+                        <button
+                          type="button"
+                          onClick={() => onToggleTestActive && onToggleTestActive(t)}
+                          className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm active:scale-95 border ${
+                            isItemActive
+                              ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-300'
+                              : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-300'
+                          }`}
+                          title={isItemActive ? "ক্লিক করে এই টেস্টটি বন্ধ (OFF) করুন" : "ক্লিক করে এই টেস্টটি পাবলিক (ON) করুন"}
+                        >
+                          <span className={`w-2.5 h-2.5 rounded-full ${isItemActive ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+                          <span>{isItemActive ? 'চালু (ON)' : 'বন্ধ (OFF)'}</span>
+                        </button>
+
+                        <button
+                          onClick={() => onEdit('lab_test', t)}
+                          className="p-2.5 bg-slate-100 rounded-xl text-slate-600 hover:bg-blue-100 hover:text-blue-600 transition-all"
+                          title="Edit Test"
+                        >
+                          <Zap size={14} />
+                        </button>
+                        <button
+                          onClick={() => onDelete('lab_test', t.id)}
+                          className="p-2.5 bg-slate-100 rounded-xl text-slate-600 hover:bg-red-100 hover:text-red-600 transition-all"
+                          title="Delete Test"
+                        >
+                          <X size={14} />
+                        </button>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-2 self-end sm:self-center">
-                      <button onClick={() => onEdit('lab_test', t)} className="p-2 bg-slate-100 rounded-xl text-slate-600 hover:bg-blue-100 hover:text-blue-600 transition-all" title="Edit Test"><Zap size={14} /></button>
-                      <button onClick={() => onDelete('lab_test', t.id)} className="p-2 bg-slate-100 rounded-xl text-slate-600 hover:bg-red-100 hover:text-red-600 transition-all" title="Delete Test"><X size={14} /></button>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </div>
         )}
@@ -6292,16 +6446,47 @@ export default function App() {
   };
 
   const handleToggleTestActive = async (testItem: LabTest) => {
-    if (!user || profile?.role !== UserRole.ADMIN) {
+    if (!user || (profile?.role !== UserRole.ADMIN && profile?.role !== UserRole.MODERATOR)) {
       alert("অ্যাডমিন পারমিশন নেই।");
       return;
     }
+    const newActiveState = testItem.isActive === false ? true : false;
+    // Optimistic instant UI update
+    setLabTests(prev => prev.map(t => t.id === testItem.id ? { ...t, isActive: newActiveState } : t));
     try {
-      const updatedItem = { ...testItem, isActive: testItem.isActive === false ? true : false };
+      const updatedItem = { ...testItem, isActive: newActiveState };
       await setDoc(doc(db, 'lab_tests', testItem.id), updatedItem, { merge: true });
-      await fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error toggling test active state:", error);
+      // Revert if error
+      setLabTests(prev => prev.map(t => t.id === testItem.id ? { ...t, isActive: testItem.isActive } : t));
+      alert("টেস্ট স্ট্যাটাস সেভ করতে সমস্যা হয়েছে: " + (error?.message || error));
+    }
+  };
+
+  const handleToggleAllTests = async (active: boolean) => {
+    if (!user || (profile?.role !== UserRole.ADMIN && profile?.role !== UserRole.MODERATOR)) {
+      alert("অ্যাডমিন পারমিশন নেই।");
+      return;
+    }
+    const actionText = active ? "সকল টেস্ট চালু (পাবলিক)" : "সকল টেস্ট সাময়িক বন্ধ (OFF)";
+    if (!window.confirm(`আপনি কি নিশ্চিত যে ${actionText} করতে চান?`)) return;
+    try {
+      setIsProcessing(true);
+      // Optimistic instant update
+      setLabTests(prev => prev.map(t => ({ ...t, isActive: active })));
+      const batch = writeBatch(db);
+      labTests.forEach(t => {
+        batch.set(doc(db, 'lab_tests', t.id), { ...t, isActive: active }, { merge: true });
+      });
+      await batch.commit();
+      alert(active ? "সকল টেস্ট সফলভাবে চালু ও পাবলিক করা হয়েছে!" : "সকল টেস্ট সফলভাবে বন্ধ (OFF) করা হয়েছে!");
+    } catch (error: any) {
+      console.error("Error toggling all tests:", error);
+      alert("সব টেস্ট আপডেট করতে সমস্যা হয়েছে: " + (error?.message || error));
+      await fetchData();
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -6573,6 +6758,7 @@ export default function App() {
                 isLabTestsServiceEnabled={isLabTestsServiceEnabled}
                 onToggleGlobalLabTestsService={handleToggleGlobalLabTestsService}
                 onToggleTestActive={handleToggleTestActive}
+                onToggleAllTests={handleToggleAllTests}
                 onCouponsUpdated={fetchCouponsList}
               />
 
