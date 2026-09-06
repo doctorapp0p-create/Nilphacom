@@ -6417,6 +6417,10 @@ export default function App() {
   }, [hospitals, selectedLocation, searchTerm]);
 
   const filteredLabTests = useMemo(() => {
+    // If master service is off, show NO tests in public view
+    if (!isLabTestsServiceEnabled) {
+      return [];
+    }
     return labTests.filter(t => {
       const search = searchTerm.toLowerCase().trim();
       const matchesSearch = !search ||
@@ -6425,23 +6429,36 @@ export default function App() {
         (t.hospital_name || '').toLowerCase().includes(search) ||
         (t.category || '').toLowerCase().includes(search);
       const matchesCategory = selectedTestCategory === 'all' || t.category === selectedTestCategory;
+      // Inactive tests (isActive === false) must NEVER be shown in the public list
       const isActive = t.isActive !== false;
-      const isVisible = isAdmin || isActive;
-      return matchesSearch && matchesCategory && isVisible;
+      return matchesSearch && matchesCategory && isActive;
     });
-  }, [searchTerm, labTests, selectedTestCategory, isAdmin]);
+  }, [searchTerm, labTests, selectedTestCategory, isLabTestsServiceEnabled]);
 
   const handleToggleGlobalLabTestsService = async (enabled: boolean) => {
-    if (!user || profile?.role !== UserRole.ADMIN) {
+    if (!user || (profile?.role !== UserRole.ADMIN && profile?.role !== UserRole.MODERATOR)) {
       alert("অ্যাডমিন পারমিশন নেই।");
       return;
     }
     try {
+      setIsProcessing(true);
       setIsLabTestsServiceEnabled(enabled);
+      // Optimistically update all tests active status
+      setLabTests(prev => prev.map(t => ({ ...t, isActive: enabled })));
       await setDoc(doc(db, 'settings', 'lab_tests_status'), { enabled, key: 'lab_tests_status' }, { merge: true });
-    } catch (error) {
+
+      const batch = writeBatch(db);
+      labTests.forEach(t => {
+        batch.set(doc(db, 'lab_tests', t.id), { ...t, isActive: enabled }, { merge: true });
+      });
+      await batch.commit();
+      alert(enabled ? "সকল টেস্ট সফলভাবে চালু ও পাবলিক করা হয়েছে!" : "সকল টেস্ট সফলভাবে বন্ধ (OFF) করা হয়েছে!");
+    } catch (error: any) {
       console.error("Error toggling global lab tests service status:", error);
-      alert("সেবা স্ট্যাটাস সেভ করতে সমস্যা হয়েছে।");
+      alert("সেবা স্ট্যাটাস সেভ করতে সমস্যা হয়েছে: " + (error?.message || error));
+      await fetchData();
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -6452,7 +6469,15 @@ export default function App() {
     }
     const newActiveState = testItem.isActive === false ? true : false;
     // Optimistic instant UI update
-    setLabTests(prev => prev.map(t => t.id === testItem.id ? { ...t, isActive: newActiveState } : t));
+    setLabTests(prev => {
+      const next = prev.map(t => t.id === testItem.id ? { ...t, isActive: newActiveState } : t);
+      // If we turn on any test while master service was off, turn master service on as well
+      if (newActiveState && !isLabTestsServiceEnabled) {
+        setIsLabTestsServiceEnabled(true);
+        setDoc(doc(db, 'settings', 'lab_tests_status'), { enabled: true, key: 'lab_tests_status' }, { merge: true }).catch(console.error);
+      }
+      return next;
+    });
     try {
       const updatedItem = { ...testItem, isActive: newActiveState };
       await setDoc(doc(db, 'lab_tests', testItem.id), updatedItem, { merge: true });
@@ -6475,6 +6500,9 @@ export default function App() {
       setIsProcessing(true);
       // Optimistic instant update
       setLabTests(prev => prev.map(t => ({ ...t, isActive: active })));
+      setIsLabTestsServiceEnabled(active);
+      await setDoc(doc(db, 'settings', 'lab_tests_status'), { enabled: active, key: 'lab_tests_status' }, { merge: true });
+
       const batch = writeBatch(db);
       labTests.forEach(t => {
         batch.set(doc(db, 'lab_tests', t.id), { ...t, isActive: active }, { merge: true });
@@ -7911,9 +7939,22 @@ export default function App() {
                            </div>
 
                            {filteredLabTests.length === 0 ? (
-                             <Card className="p-10 text-center text-slate-400 font-bold text-xs space-y-2">
-                               <div className="text-3xl">🔬</div>
-                               <p>এই ক্যাটাগরিতে কোনো টেস্ট পাওয়া যায়নি।</p>
+                             <Card className="p-10 text-center font-bold text-xs space-y-3 bg-white border border-slate-100 shadow-sm">
+                               <div className="text-3xl">
+                                 {!isLabTestsServiceEnabled ? '🛑' : '🔬'}
+                               </div>
+                               <div className="space-y-1">
+                                 <p className="text-sm font-black text-slate-700">
+                                   {!isLabTestsServiceEnabled
+                                     ? 'ল্যাব টেস্ট সেবা এডমিন প্যানেল থেকে বন্ধ (OFF) রাখা হয়েছে।'
+                                     : 'বর্তমানে এই ক্যাটাগরিতে কোনো টেস্ট উপলব্ধ নেই।'}
+                                 </p>
+                                 <p className="text-[11px] text-slate-400 font-normal">
+                                   {!isLabTestsServiceEnabled
+                                     ? 'এডমিন প্যানেল থেকে টেস্ট চালু (ON) করলে পুনরায় প্রদর্শিত হবে।'
+                                     : 'অন্য কোনো ক্যাটাগরি বেছে নিন অথবা পরবর্তীতে চেক করুন।'}
+                                 </p>
+                               </div>
                              </Card>
                            ) : (
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
