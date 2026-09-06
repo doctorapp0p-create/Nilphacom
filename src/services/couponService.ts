@@ -1,5 +1,5 @@
 import { collection, getDocs, doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { db } from './firebase';
+import { db } from '../../services/firebase';
 import { Coupon } from '../../types';
 
 export const DEFAULT_COUPONS: Coupon[] = [

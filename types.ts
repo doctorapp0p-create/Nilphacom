@@ -93,6 +93,7 @@ export interface Order {
   user_email: string;
   item_name: string;
   amount: number;
+  original_amount?: number;
   shipping: number;
   delivery_distance_label?: string;
   payment_method: string;

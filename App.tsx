@@ -58,7 +58,10 @@ import { DoctorProfileAdBannerCard } from './src/components/DoctorProfileAdBanne
 import { LiveDoctorModal } from './src/components/LiveDoctorModal';
 import { GovtHealthPortal } from './src/components/GovtHealthPortal';
 import { BloodDonationSection } from './src/components/BloodDonationSection';
-import { Share2, Bot, Video, Microscope, Ambulance, Star, ShieldCheck, Zap, MessageSquare, ArrowRight, X, Download, Smartphone, Stethoscope, Percent, MapPin, Calendar, Clock, Phone, BadgeCheck, Search, ChevronRight, FileText, Youtube, User, HelpCircle, Wallet, LogOut, Gift, Building, HeartHandshake, Baby, Heart, CreditCard, Plus, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { CouponManager } from './src/components/CouponManager';
+import { fetchCoupons, validateCoupon } from './src/services/couponService';
+import { Coupon } from './types';
+import { Share2, Bot, Video, Microscope, Ambulance, Star, ShieldCheck, Zap, MessageSquare, ArrowRight, X, Download, Smartphone, Stethoscope, Percent, MapPin, Calendar, Clock, Phone, BadgeCheck, Search, ChevronRight, FileText, Youtube, User, HelpCircle, Wallet, LogOut, Gift, Building, HeartHandshake, Baby, Heart, CreditCard, Plus, CheckCircle2, AlertCircle, RefreshCw, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const WHATSAPP_NUMBER = '8801352669100';
@@ -779,8 +782,9 @@ const AdminDashboard: React.FC<{
   isLabTestsServiceEnabled?: boolean,
   onToggleGlobalLabTestsService?: (enabled: boolean) => Promise<void>,
   onToggleTestActive?: (test: LabTest) => Promise<void>,
-}> = ({ profile, onLogout, ticker, setTicker, onUpdateTicker, doctors, hospitals, labTests, orders, profiles, appointments, onAdd, onEdit, onDelete, onRefreshAdminData, onUpdateAppointmentStatus, onUpdateOrderStatus, quizzes = [], submissions = [], withdrawals = [], onAddQuiz, onUpdateSubmissionStatus, onUpdateWithdrawalStatus, isLabTestsServiceEnabled = true, onToggleGlobalLabTestsService, onToggleTestActive }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'today_apps' | 'overview' | 'doctors' | 'orders' | 'hospitals' | 'labtests' | 'billing' | 'referrals' | 'patients' | 'quizzes' | 'withdrawals' | 'free_doctors' | 'maternity_donation' | 'subscriptions' | 'doctor_portal'>('today_apps');
+  onCouponsUpdated?: () => void,
+}> = ({ profile, onLogout, ticker, setTicker, onUpdateTicker, doctors, hospitals, labTests, orders, profiles, appointments, onAdd, onEdit, onDelete, onRefreshAdminData, onUpdateAppointmentStatus, onUpdateOrderStatus, quizzes = [], submissions = [], withdrawals = [], onAddQuiz, onUpdateSubmissionStatus, onUpdateWithdrawalStatus, isLabTestsServiceEnabled = true, onToggleGlobalLabTestsService, onToggleTestActive, onCouponsUpdated }) => {
+  const [activeSubTab, setActiveSubTab] = useState<'today_apps' | 'overview' | 'doctors' | 'orders' | 'hospitals' | 'labtests' | 'coupons' | 'billing' | 'referrals' | 'patients' | 'quizzes' | 'withdrawals' | 'free_doctors' | 'maternity_donation' | 'subscriptions' | 'doctor_portal'>('today_apps');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedDocId, setExpandedDocId] = useState<string | null>(null);
 
@@ -1321,6 +1325,7 @@ const AdminDashboard: React.FC<{
           { id: 'orders', label: 'Booking Orders', icon: <MessageSquare size={14} /> },
           { id: 'hospitals', label: 'Clinics', icon: <Microscope size={14} /> },
           { id: 'labtests', label: 'Manage Lab Tests', icon: <FileText size={14} /> },
+          { id: 'coupons', label: '🎟️ কুপন কোড (Coupons)', icon: <Tag size={14} className="text-pink-500" /> },
           { id: 'referrals', label: 'Rural Doctors', icon: <BadgeCheck size={14} className="text-emerald-500" /> },
           { id: 'patients', label: 'Patient Search & Serials', icon: <User size={14} className="text-blue-500" /> },
           { id: 'quizzes', label: 'Quiz Admin', icon: <HelpCircle size={14} className="text-purple-500" /> },
@@ -1862,37 +1867,74 @@ const AdminDashboard: React.FC<{
 
         {activeSubTab === 'labtests' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 text-left">
-            {/* Global Master Control Banner */}
-            <div className={`p-6 rounded-[28px] border shadow-sm transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${
+            {/* Master Control: Only ONE single button for ON and OFF all tests */}
+            <div className={`p-6 sm:p-7 rounded-[32px] border-2 shadow-lg transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-5 ${
               isLabTestsServiceEnabled 
-                ? 'bg-gradient-to-r from-emerald-900 via-teal-900 to-emerald-950 text-white border-emerald-700/50' 
-                : 'bg-gradient-to-r from-rose-950 via-red-900 to-slate-900 text-white border-rose-800/50'
+                ? 'bg-gradient-to-br from-emerald-900 via-teal-950 to-slate-900 text-white border-emerald-500/50 shadow-emerald-950/30' 
+                : 'bg-gradient-to-br from-rose-950 via-red-950 to-slate-950 text-white border-rose-500/50 shadow-rose-950/30'
             }`}>
-              <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 bg-white/15 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
-                  <span className={`w-2.5 h-2.5 rounded-full ${isLabTestsServiceEnabled ? 'bg-emerald-400 animate-ping' : 'bg-rose-400'}`} />
-                  গ্লোবাল টেস্ট সার্ভিস স্টেটাস (Global Test Status)
+              <div className="space-y-1.5 max-w-2xl">
+                <div className="inline-flex items-center gap-2 bg-white/10 px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md">
+                  <span className={`w-2.5 h-2.5 rounded-full ${isLabTestsServiceEnabled ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
+                  মাস্টার কন্ট্রোল সুইচ (একক বাটন)
                 </div>
-                <h3 className="text-xl font-black tracking-tight">
-                  {isLabTestsServiceEnabled ? '🟢 ল্যাব ও ডায়াগনস্টিক টেস্ট চালু আছে (ON)' : '🔴 ল্যাব ও ডায়াগনস্টিক টেস্ট বন্ধ রাখা হয়েছে (OFF)'}
-                </h3>
-                <p className="text-xs text-slate-200 font-medium max-w-xl leading-relaxed">
+                <h3 className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
                   {isLabTestsServiceEnabled 
-                    ? 'বর্তমানে অ্যাপে সকল সদস্য টেস্ট দেখতে ও অনলাইনে অর্ডার করতে পারছেন। সেবা বন্ধ করতে পাশের বাটনে ক্লিক করুন।' 
-                    : 'বর্তমানে সাধারণ ব্যবহারকারীদের জন্য ল্যাব টেস্ট সেবা স্থগিত রয়েছে। সেবা পুনরায় চালু করতে পাশের বাটনে ক্লিক করুন।'}
+                    ? '🟢 সকল টেস্ট পাবলিক ও চালু রয়েছে (ALL TESTS ON)' 
+                    : '🔴 সকল টেস্ট সম্পূর্ণ বন্ধ রয়েছে (ALL TESTS OFF)'}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
+                  {isLabTestsServiceEnabled 
+                    ? 'অ্যাপের সাধারণ ভিজিটররা বর্তমানে সকল প্রকার ল্যাব টেস্ট দেখতে পাচ্ছেন ও অর্ডার করতে পারছেন। সব টেস্ট একসাথে বন্ধ করতে পাশের বাটনে ক্লিক করুন।' 
+                    : 'বর্তমানে সাধারণ ব্যবহারকারীদের জন্য সব ধরনের টেস্ট বন্ধ রাখা হয়েছে। এক ক্লিকে পুনরায় সকল টেস্ট পাবলিক করতে পাশের বাটনে চাপুন।'}
                 </p>
               </div>
 
+              {/* শুধুমাত্র একটি বাটন অন এবং অফ করার জন্য */}
               <button
                 type="button"
                 onClick={() => onToggleGlobalLabTestsService && onToggleGlobalLabTestsService(!isLabTestsServiceEnabled)}
-                className={`px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg active:scale-95 transition-all shrink-0 ${
+                className={`px-7 py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider flex items-center gap-2.5 shadow-xl active:scale-95 transition-all shrink-0 select-none ${
                   isLabTestsServiceEnabled
-                    ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-900/40'
-                    : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-900/40'
+                    ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-900/50 hover:shadow-rose-800'
+                    : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-900/50 hover:shadow-emerald-800 animate-pulse'
                 }`}
               >
-                {isLabTestsServiceEnabled ? '🔴 টেস্ট সেবা বন্ধ করুন (Turn OFF)' : '🟢 টেস্ট সেবা চালু করুন (Turn ON)'}
+                {isLabTestsServiceEnabled ? (
+                  <>
+                    <span className="text-base">🔴</span>
+                    <span>সকল টেস্ট অফ করুন (Turn OFF)</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-base">🟢</span>
+                    <span>সকল টেস্ট অন করুন (Turn ON)</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Quick Coupon Management Banner */}
+            <div className="bg-gradient-to-r from-pink-50 via-purple-50 to-blue-50 p-5 rounded-[28px] border border-pink-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center font-black shrink-0">
+                  <Tag size={24} />
+                </div>
+                <div>
+                  <h4 className="text-sm font-black text-slate-900">
+                    🎟️ টেস্ট অর্ডারের জন্য শতকরা ডিসকাউন্ট কুপন কোড
+                  </h4>
+                  <p className="text-xs text-slate-600 font-medium">
+                    এডমিন প্যানেল থেকে কুপন কোড (যেমন: TEST20, NILPHA15) তৈরি ও শতকরা (%) ছাড় নিয়ন্ত্রণ করুন।
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveSubTab('coupons')}
+                className="px-5 py-2.5 bg-pink-600 hover:bg-pink-700 text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-sm transition-all shrink-0"
+              >
+                কুপন পরিচালনা করুন →
               </button>
             </div>
 
@@ -1903,7 +1945,9 @@ const AdminDashboard: React.FC<{
                    🧪 ল্যাব টেস্ট তালিকা ({labTests.length} টি)
                  </h2>
                  <p className="text-xs font-bold text-slate-500 mt-0.5">
-                   প্রতিটি টেস্ট অন/অফ করুন বা নতুন টেস্ট যুক্ত করুন
+                   {isLabTestsServiceEnabled 
+                     ? 'মাস্টার সুইচ ON থাকায় সকল টেস্ট বর্তমানে পাবলিক রয়েছে' 
+                     : 'মাস্টার সুইচ OFF থাকায় সকল টেস্ট বর্তমানে বন্ধ রয়েছে'}
                  </p>
                </div>
                <Button onClick={() => onAdd('lab_test')} variant="success" className="px-5 py-2.5 rounded-2xl text-xs font-black">
@@ -1914,25 +1958,22 @@ const AdminDashboard: React.FC<{
             {/* Tests List */}
             <div className="space-y-3">
               {labTests.map(t => {
-                const isActive = t.isActive !== false;
                 const finalPrice = t.discountPrice || t.price;
                 return (
-                  <div key={t.id} className={`p-4 rounded-[28px] border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-sm transition-all ${
-                    isActive ? 'bg-white border-slate-100' : 'bg-slate-50/80 border-slate-200/80'
-                  }`}>
+                  <div key={t.id} className="p-4 rounded-[28px] border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-sm transition-all bg-white border-slate-100">
                     <div className="flex items-center gap-3">
-                      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center text-lg shrink-0 ${
-                        isActive ? 'bg-blue-50 text-blue-600' : 'bg-slate-200 text-slate-400'
-                      }`}>
+                      <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-lg shrink-0 bg-blue-50 text-blue-600">
                         <Microscope size={20} />
                       </div>
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="text-sm font-black text-slate-800 leading-tight">{t.name}</p>
                           <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
-                            isActive ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-rose-100 text-rose-800 border border-rose-200'
+                            isLabTestsServiceEnabled 
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
+                              : 'bg-rose-100 text-rose-800 border border-rose-200'
                           }`}>
-                            {isActive ? '🟢 ON (উন্মুক্ত)' : '🔴 OFF (বন্ধ)'}
+                            {isLabTestsServiceEnabled ? '🟢 পাবলিক (ON)' : '🔴 বন্ধ (OFF)'}
                           </span>
                         </div>
                         <p className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">
@@ -1942,24 +1983,20 @@ const AdminDashboard: React.FC<{
                     </div>
 
                     <div className="flex items-center gap-2 self-end sm:self-center">
-                      <button
-                        type="button"
-                        onClick={() => onToggleTestActive && onToggleTestActive(t)}
-                        className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
-                          isActive 
-                            ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200' 
-                            : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
-                        }`}
-                      >
-                        {isActive ? '🔴 অফ করুন' : '🟢 অন করুন'}
-                      </button>
-                      <button onClick={() => onEdit('lab_test', t)} className="p-2 bg-slate-100 rounded-xl text-slate-600 hover:bg-blue-100 hover:text-blue-600 transition-all"><Zap size={14} /></button>
-                      <button onClick={() => onDelete('lab_test', t.id)} className="p-2 bg-slate-100 rounded-xl text-slate-600 hover:bg-red-100 hover:text-red-600 transition-all"><X size={14} /></button>
+                      <button onClick={() => onEdit('lab_test', t)} className="p-2 bg-slate-100 rounded-xl text-slate-600 hover:bg-blue-100 hover:text-blue-600 transition-all" title="Edit Test"><Zap size={14} /></button>
+                      <button onClick={() => onDelete('lab_test', t.id)} className="p-2 bg-slate-100 rounded-xl text-slate-600 hover:bg-red-100 hover:text-red-600 transition-all" title="Delete Test"><X size={14} /></button>
                     </div>
                   </div>
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {/* Coupons Management Subtab */}
+        {activeSubTab === 'coupons' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 text-left">
+            <CouponManager onCouponsUpdated={onCouponsUpdated} />
           </div>
         )}
 
@@ -2038,6 +2075,11 @@ const AdminDashboard: React.FC<{
                           <p className="text-[11px] text-slate-600 pt-1">
                             💰 সার্ভিস ফি: ৳{order.amount} | 🚗 ট্রান্সপোর্ট চার্জ: ৳{order.shipping || 0}
                           </p>
+                          {order.coupon_code && (
+                            <p className="text-[10px] text-pink-600 font-extrabold flex items-center gap-1 bg-pink-50 p-1.5 rounded-lg border border-pink-100">
+                              🎟️ কুপন: <span className="font-mono font-black">{order.coupon_code}</span> ({order.coupon_discount_percent}% ছাড় - ৳{order.coupon_discount_amount || 0})
+                            </p>
+                          )}
                           {order.delivery_distance_label && (
                             <p className="text-[10px] text-indigo-600 font-black">
                               📍 দূরত্ব কাভারেজ: {order.delivery_distance_label}
@@ -3732,6 +3774,46 @@ export default function App() {
   const [paymentType, setPaymentType] = useState<'online' | 'offline'>('online');
   const [trxId, setTrxId] = useState('');
   
+  // Coupon States for Checkout
+  const [couponsList, setCouponsList] = useState<Coupon[]>([]);
+  const [couponCodeInput, setCouponCodeInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponError, setCouponError] = useState('');
+  const [couponSuccess, setCouponSuccess] = useState('');
+
+  const handleApplyCoupon = (overrideCode?: string) => {
+    setCouponError('');
+    setCouponSuccess('');
+    const code = (overrideCode || couponCodeInput).trim().toUpperCase();
+    if (!code) {
+      setCouponError('অনুগ্রহ করে কুপন কোড লিখুন।');
+      return;
+    }
+    const result = validateCoupon(code, showPayment.amount, !!showPayment.isTest, couponsList);
+    if (result.valid && result.coupon) {
+      setAppliedCoupon(result.coupon);
+      setCouponSuccess(result.message);
+    } else {
+      setCouponError(result.message);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCodeInput('');
+    setCouponError('');
+    setCouponSuccess('');
+  };
+
+  const fetchCouponsList = useCallback(async () => {
+    try {
+      const list = await fetchCoupons();
+      setCouponsList(list);
+    } catch (err) {
+      console.warn("Notice: coupons fetch error:", err);
+    }
+  }, []);
+  
   // Serial Form State
   const [showSerialModal, setShowSerialModal] = useState(false);
   const [serialStep, setSerialStep] = useState(0);
@@ -3938,13 +4020,17 @@ export default function App() {
       deliveryDistance === 'around_10km' ? 'নীলফামারী শহর (১০ কিমি)' :
       'সরাসরি চেম্বার/সেন্টার';
 
-    const totalAmount = showPayment.amount + transportFee;
+    const couponDiscPct = appliedCoupon ? appliedCoupon.discount_percent : 0;
+    const couponDiscAmt = appliedCoupon ? Math.round((showPayment.amount * couponDiscPct) / 100) : 0;
+    const discServiceAmount = Math.max(0, showPayment.amount - couponDiscAmt);
+    const totalAmount = discServiceAmount + transportFee;
+    const couponInfo = appliedCoupon ? `\n🎟️ কুপন ডিসকাউন্ট: ${appliedCoupon.code} (${couponDiscPct}% ছাড় = -৳${couponDiscAmt} BDT)` : '';
     const testHospitalInfo = showPayment.isTest
       ? `\n🏥 নির্বাচিত টেস্টের হাসপাতাল: ${selectedTestHospital === 'none' ? 'নির্দিষ্ট কোনো হাসপাতাল নেই (অন্য যেকোনো স্থান/বিশ্বস্ত ল্যাব)' : selectedTestHospital}`
       : (showPayment.hospitalName ? `\n🏥 হাসপাতাল: ${showPayment.hospitalName}` : '');
     const userRefCode = profile?.referred_by_code || profile?.referral_code || localStorage.getItem('prefilled_referral_code') || '';
     const refCodeInfo = userRefCode ? `\n🔑 রেফার কোড: ${userRefCode}` : '';
-    const message = `হ্যালো নিলফা হেলথকেয়ার,\n\nআমি একটি সার্ভিস/পণ্য বুক করতে চাই:\n📝 আইটেম: ${showPayment.item}${testHospitalInfo}${refCodeInfo}\n💰 সার্ভিস মূল্য: ৳${showPayment.amount}\n🚗 যাতায়াত/ডেলিভারি ফি: ৳${transportFee} (${distanceLabel})\n💳 সর্বমোট: ৳${totalAmount} BDT\n\n👤 সেবা গ্রহণকারী/রোগী: ${patientName}\n📱 মোবাইল: ${contactPhone}\n📍 ঠিকানা: ${deliveryAddress || 'উলেখিত নেই'}\n💳 পেমেন্ট পদ্ধতি: ${paymentType === 'offline' ? 'ক্যাশ অন সার্ভিস' : (paymentMethod || 'bkash') + ' (TrxID: ' + (trxId || 'N/A') + ')'}\n\nদয়া করে আমার এই বুকিং টি দ্রুত কনফার্ম করুন।`;
+    const message = `হ্যালো নিলফা হেলথকেয়ার,\n\nআমি একটি সার্ভিস/পণ্য বুক করতে চাই:\n📝 আইটেম: ${showPayment.item}${testHospitalInfo}${refCodeInfo}\n💰 সার্ভিস মূল্য: ৳${showPayment.amount}${couponInfo}\n🚗 যাতায়াত/ডেলিভারি ফি: ৳${transportFee} (${distanceLabel})\n💳 সর্বমোট প্রদেয়: ৳${totalAmount} BDT\n\n👤 সেবা গ্রহণকারী/রোগী: ${patientName}\n📱 মোবাইল: ${contactPhone}\n📍 ঠিকানা: ${deliveryAddress || 'উলেখিত নেই'}\n💳 পেমেন্ট পদ্ধতি: ${paymentType === 'offline' ? 'ক্যাশ অন সার্ভিস' : (paymentMethod || 'bkash') + ' (TrxID: ' + (trxId || 'N/A') + ')'}\n\nদয়া করে আমার এই বুকিং টি দ্রুত কনফার্ম করুন।`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -4171,6 +4257,9 @@ export default function App() {
       
       // Fetch initial data
       await fetchData();
+      
+      // Fetch initial coupons
+      await fetchCouponsList();
       
       setIsLoading(false);
     };
@@ -5781,12 +5870,17 @@ export default function App() {
       deliveryDistance === 'around_10km' ? 'নীলফামারী শহর (১০ কিমি - ৳৮০)' :
       'সরাসরি চেম্বার/সেন্টার (৳০)';
 
+    const couponDiscPct = appliedCoupon ? appliedCoupon.discount_percent : 0;
+    const couponDiscAmt = appliedCoupon ? Math.round((showPayment.amount * couponDiscPct) / 100) : 0;
+    const discountedServiceAmount = Math.max(0, showPayment.amount - couponDiscAmt);
+
     setIsProcessing(true);
     const newOrder: Order = {
       user_id: user.uid || user.id,
       user_email: user.email || 'guest@jb.com',
       item_name: showPayment.item || 'সাধারণ হেলথ সেবা',
-      amount: showPayment.amount,
+      amount: discountedServiceAmount,
+      original_amount: showPayment.amount,
       shipping: calculatedShipping,
       delivery_distance_label: deliveryDistanceLabel,
       payment_method: paymentType === 'offline' ? 'Cash at Delivery/Clinic' : (paymentMethod || 'bkash'),
@@ -5799,6 +5893,9 @@ export default function App() {
       hospital_name: showPayment.isTest
         ? (selectedTestHospital === 'none' ? 'নির্দিষ্ট কোনো হাসপাতাল নেই' : selectedTestHospital)
         : (showPayment.hospitalName || ''),
+      coupon_code: appliedCoupon ? appliedCoupon.code : undefined,
+      coupon_discount_percent: appliedCoupon ? appliedCoupon.discount_percent : undefined,
+      coupon_discount_amount: couponDiscAmt > 0 ? couponDiscAmt : undefined,
       subscription_plan_name: profile?.active_subscription?.plan_name || (profile?.active_subscription ? `${profile.active_subscription.package_type === 'test_discount_only' ? 'Package 1 (Test 30% Discount)' : 'Package 2 (Test 30% + Free Doctor Consultation)'} - ${profile.active_subscription.years} Years` : ''),
       referred_by_code: profile?.referred_by_code || profile?.referral_code || localStorage.getItem('prefilled_referral_code') || '',
       status: 'pending'
@@ -5812,6 +5909,7 @@ export default function App() {
       setPatientName('');
       setDeliveryAddress('');
       setPaymentType('online');
+      handleRemoveCoupon();
       alert('আপনার অর্ডার রিকুয়েস্ট সফলভাবে গ্রহণ করা হয়েছে! অ্যাডমিন প্যানেল থেকে রিভিউর পর আপনাকে নিশ্চিত করা হবে।');
       fetchUserData();
     };
@@ -6300,7 +6398,11 @@ export default function App() {
     deliveryDistance === 'within_2km' ? 30 :
     deliveryDistance === 'around_5km' ? 50 :
     deliveryDistance === 'around_10km' ? 80 : 0;
-  const totalPayableAmount = showPayment.amount + activeTransportFee;
+
+  const couponDiscountPercent = appliedCoupon ? appliedCoupon.discount_percent : 0;
+  const couponDiscountAmount = appliedCoupon ? Math.round((showPayment.amount * couponDiscountPercent) / 100) : 0;
+  const discountedServiceAmount = Math.max(0, showPayment.amount - couponDiscountAmount);
+  const totalPayableAmount = discountedServiceAmount + activeTransportFee;
   const currentPayMethod = (paymentMethod || 'bkash') as 'bkash' | 'nagad';
   const currentPayNumber = PAYMENT_NUMBERS[currentPayMethod] || '01518395772';
 
@@ -6442,6 +6544,7 @@ export default function App() {
                 isLabTestsServiceEnabled={isLabTestsServiceEnabled}
                 onToggleGlobalLabTestsService={handleToggleGlobalLabTestsService}
                 onToggleTestActive={handleToggleTestActive}
+                onCouponsUpdated={fetchCouponsList}
               />
 
               <AdminDataModal
@@ -8394,7 +8497,10 @@ export default function App() {
                   </p>
                 </div>
                 <button 
-                  onClick={() => setShowPayment({ show: false, amount: 0, item: '', shipping: 0 })}
+                  onClick={() => {
+                    setShowPayment({ show: false, amount: 0, item: '', shipping: 0 });
+                    handleRemoveCoupon();
+                  }}
                   className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 font-bold"
                 >
                   ✕
@@ -8411,14 +8517,107 @@ export default function App() {
                   <span>সার্ভিস / পরীক্ষার ফি:</span>
                   <span>৳{showPayment.amount} BDT</span>
                 </div>
+                {appliedCoupon && couponDiscountAmount > 0 && (
+                  <div className="flex justify-between items-center text-xs font-black text-pink-600 bg-pink-50 p-2 rounded-xl border border-pink-200">
+                    <span className="flex items-center gap-1.5">
+                      <Tag size={13} /> কুপন ডিসকাউন্ট ({appliedCoupon.code} - {appliedCoupon.discount_percent}% ছাড়):
+                    </span>
+                    <span className="text-sm">-৳{couponDiscountAmount} BDT</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-xs font-bold text-slate-600">
                   <span>যাতায়াত / ডেলিভারি চার্জ (নীলফামারী শহর হতে):</span>
                   <span className="text-blue-600">৳{activeTransportFee} BDT</span>
                 </div>
                 <div className="flex justify-between text-sm font-black text-blue-600 pt-2 border-t border-slate-200">
                   <span>সর্বমোট প্রদেয় টাকা:</span>
-                  <span className="text-base text-emerald-600">৳{totalPayableAmount} BDT</span>
+                  <span className="text-base text-emerald-600 font-black">৳{totalPayableAmount} BDT</span>
                 </div>
+              </div>
+
+              {/* Coupon Code Section for Test Orders & Services */}
+              <div className="bg-gradient-to-r from-pink-50/80 via-purple-50/80 to-blue-50/80 p-4 rounded-2xl border border-pink-200/90 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-black uppercase text-slate-800 flex items-center gap-1.5">
+                    <Tag size={13} className="text-pink-600" />
+                    <span>ডিসকাউন্ট কুপন কোড (Coupon Code)</span>
+                  </label>
+                  {appliedCoupon && (
+                    <span className="text-[9px] bg-pink-600 text-white font-black px-2.5 py-0.5 rounded-full shadow-xs">
+                      {appliedCoupon.discount_percent}% ছাড় প্রযোজ্য
+                    </span>
+                  )}
+                </div>
+
+                {appliedCoupon ? (
+                  <div className="p-3 bg-white rounded-xl border border-emerald-300 flex items-center justify-between gap-2 shadow-xs">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xs shrink-0">
+                        ✓
+                      </span>
+                      <div>
+                        <p className="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                          <span>{appliedCoupon.code}</span>
+                          <span className="text-[10px] text-emerald-600 font-extrabold">({appliedCoupon.discount_percent}% ছাড়)</span>
+                        </p>
+                        <p className="text-[10px] text-slate-500 font-medium">
+                          {appliedCoupon.title} • মোট সাশ্রয় ৳{couponDiscountAmount} BDT
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="px-2.5 py-1 text-[10px] font-black text-rose-600 hover:bg-rose-50 rounded-lg border border-rose-200 transition-all active:scale-95 shrink-0"
+                    >
+                      ✕ কুপন বাতিল
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={couponCodeInput}
+                        onChange={(e) => {
+                          setCouponCodeInput(e.target.value.toUpperCase());
+                          setCouponError('');
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleApplyCoupon();
+                          }
+                        }}
+                        placeholder="কুপন কোড লিখুন (যেমন: TEST20)"
+                        className="flex-1 px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-mono font-black uppercase text-slate-800 outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleApplyCoupon()}
+                        className="px-4 py-2.5 bg-pink-600 hover:bg-pink-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-sm active:scale-95 transition-all shrink-0"
+                      >
+                        প্রয়োগ করুন
+                      </button>
+                    </div>
+
+                    {couponError && (
+                      <p className="text-[11px] text-rose-600 font-bold flex items-center gap-1">
+                        <AlertCircle size={12} /> {couponError}
+                      </p>
+                    )}
+
+                    {couponSuccess && (
+                      <p className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
+                        <CheckCircle2 size={12} /> {couponSuccess}
+                      </p>
+                    )}
+
+                    <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
+                      💡 কুপন কোড দিলে টেস্ট ফি থেকে স্বয়ংক্রিয়ভাবে শতকরা (%) নির্ধারিত টাকা ডিসকাউন্ট বাদ হয়ে যাবে।
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Hospital Choice for Test Order */}
