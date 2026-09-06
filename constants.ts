@@ -889,7 +889,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ebadot"
     ],
-    "schedule": "প্রতি শুক্রবার সকাল ৯টা – রাত ৮টা পর্যন্ত",
+    "schedule": "প্রতি বৃহঃপতিবার বিকাল ৩ টা - রাত ৯ টা",
     "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
@@ -976,7 +976,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-janata"
     ],
-    "schedule": "প্রতি বৃহস্পতিবার বিকাল ৪ টা - রাত ৮ টা পর্যন্ত।",
+    "schedule": "প্রতি শনিবার বিকাল ৪ টা - রাত ১০ টা",
     "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
@@ -1027,7 +1027,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-pacific"
     ],
-    "schedule": "প্রতি শুক্রবার সকাল ১০টা – রাত ৮টা এবং প্রতি রবিবার বিকাল ৫টা – রাত ৮টা",
+    "schedule": "প্রতি শুক্রবার বিকাল ৩ টা - রাত ৯ টা",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -1180,7 +1180,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-greensign"
     ],
-    "schedule": "প্রতি শনিবার - বৃহস্পতিবার (শুক্রবার বন্ধ)",
+    "schedule": "শনিবার, রবিবার, সোমবার ও বুধবার: বিকাল ৪:০০ টা - রাত ৯:০০ টা পর্যন্ত",
     "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1623854767233-2d2c322cc4e2?auto=format&fit=crop&q=80&w=200",
@@ -1248,7 +1248,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-greensign"
     ],
-    "schedule": "প্রতিদিন বিকাল ৫ টা - রাত ৯ টা পর্যন্ত। (সোমবার ও বৃহস্পতিবার বন্ধ)",
+    "schedule": "প্রতি শনি, রবি, মঙ্গল ও বুধবার বিকাল ৪:০০ টা - রাত ৯:০০ টা পর্যন্ত",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -1350,7 +1350,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-greensign"
     ],
-    "schedule": "প্রতি শুক্রবার বিকাল ৫টা - রাত ৯টা পর্যন্ত",
+    "schedule": "প্রতি শুক্রবার বিকাল ৩ টা - রাত ৯ টা",
     "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
@@ -1367,7 +1367,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-greensign"
     ],
-    "schedule": "প্রতি শুক্রবার বিকাল ৩ টা - রাত ৯ টা পর্যন্ত।",
+    "schedule": "শুধু শুক্রবার: বিকাল ৩:০০ টা - রাত ৯:০০ টা পর্যন্ত",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -1392,7 +1392,7 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "mad-sakib",
-    "name": "Dr. Mostafizur Rahman (Sakib)",
+    "name": "Dr. Shahidul Islam (Sakib)",
     "degree": "MBBS, BCS (Health), MD (Nephrology - Registrar) | National Institute of Kidney Diseases and Urology, Dhaka",
     "specialty": "Nephrology",
     "districts": [
@@ -1401,7 +1401,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-madina"
     ],
-    "schedule": "প্রতি বুধবার ও শুক্রবার দুপুর ২ টা - রাত ৮ টা পর্যন্ত।",
+    "schedule": "প্রতি শুক্রবার বিকাল ৪ টা - রাত ৯ টা",
     "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -1571,7 +1571,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-evercare-spec"
     ],
-    "schedule": "নিয়মিত চেম্বার",
+    "schedule": "প্রতি শনি, রবি, মঙ্গল, বুধ ও শুক্রবার বিকাল ৪ টা - রাত ৯ টা",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
@@ -1588,7 +1588,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-evercare-spec"
     ],
-    "schedule": "প্রতি শুক্রবার: বিকাল ৪:০০ - রাত ১০:০০",
+    "schedule": "প্রতি শুক্রবার ও শনিবার বিকাল ৪ টা - রাত ৯ টা",
     "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -1826,7 +1826,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ekota"
     ],
-    "schedule": "প্রতি বৃহস্পতিবার বিকাল ৪টা – রাত ৯টা",
+    "schedule": "প্রতিদিন বিকাল ৫ টা - রাত ১০ টা",
     "availableToday": false,
     "rating": 4.7,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -2132,7 +2132,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-janata"
     ],
-    "schedule": "প্রতি মঙ্গলবার বিকাল ৩:০০টা – রাত ৯:০০টা এবং শুক্রবার সকাল ১০:০০টা – রাত ৮:০০টা",
+    "schedule": "প্রতি শুক্রবার বিকাল ৩ টা - রাত ৯ টা",
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=200",

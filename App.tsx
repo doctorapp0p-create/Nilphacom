@@ -4391,12 +4391,18 @@ export default function App() {
         });
       }
 
-      // Auto-sync updated c-ar doctors in DB if user is admin/moderator
+      // Auto-sync updated target doctors in DB if user is admin/moderator
       if (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
         import('firebase/firestore').then(({ doc, setDoc }) => {
-          const arTargetDocs = DOCTORS.filter(d => ['dr-ar-hasina-banu', 'dr-ar-shamsur', 'dr-ar-mahbubul'].includes(d.id));
-          arTargetDocs.forEach(arDoc => {
-            setDoc(doc(db, 'doctors', arDoc.id), arDoc, { merge: true }).catch(e => console.warn(`Auto-syncing ${arDoc.id} in DB:`, e));
+          const targetDoctorSyncIds = [
+            'dr-ar-hasina-banu', 'dr-ar-shamsur', 'dr-ar-mahbubul',
+            'eb-saiful-card', 'j-rikkon', 'j-shaheen-gyn', 'pacific-shahjada',
+            'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
+            'ev-asad', 'ev-nripen', 'ek-gyn1'
+          ];
+          const targetDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id));
+          targetDocs.forEach(tDoc => {
+            setDoc(doc(db, 'doctors', tDoc.id), tDoc, { merge: true }).catch(e => console.warn(`Auto-syncing ${tDoc.id} in DB:`, e));
           });
         });
       }
@@ -4404,9 +4410,23 @@ export default function App() {
       const dbHospitals = hospRes.docs.map(h => ({ id: h.id, ...h.data() } as Clinic));
       const dbTests = testRes.docs.map(t => ({ id: t.id, ...t.data() } as LabTest));
 
-      // Merge DB data with local constants: DB version has precedence, but local entries not in DB are merged
+      // Merge DB data with local constants: DB version has precedence, but newly updated verified doctor records and local entries not in DB take precedence
+      const updatedDoctorTargetIds = [
+        'eb-saiful-card', 'j-rikkon', 'j-shaheen-gyn', 'pacific-shahjada',
+        'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
+        'ev-asad', 'ev-nripen', 'ek-gyn1'
+      ];
       const mergedDoctors = dbDoctors.length > 0
-        ? [...dbDoctors, ...DOCTORS.filter(d => !dbDoctors.some(dbD => dbD.id === d.id))]
+        ? [
+            ...dbDoctors.map(dbD => {
+              if (updatedDoctorTargetIds.includes(dbD.id)) {
+                const freshDoc = DOCTORS.find(d => d.id === dbD.id);
+                return freshDoc || dbD;
+              }
+              return dbD;
+            }),
+            ...DOCTORS.filter(d => !dbDoctors.some(dbD => dbD.id === d.id))
+          ]
         : DOCTORS;
 
       // Sequential list ordering: hospital/clinic/thana doctors appear first in sequential order, and Dr. Habibur Rahman (Dentist) is placed at the very end of the list
@@ -4424,7 +4444,8 @@ export default function App() {
             if (localC) {
               const combinedDoctors = dbH.id === 'c-ar'
                 ? (localC.doctors || [])
-                : Array.from(new Set([...(dbH.doctors || []), ...(localC.doctors || [])])).filter(id => id !== 'moun-biplab');
+                : Array.from(new Set([...(dbH.doctors || []), ...(localC.doctors || [])]))
+                    .filter(id => id !== 'moun-biplab' && !(dbH.id === 'c-greensign' && id === 'pacific-shahjada'));
               
               // If c-moun hospital has moun-biplab in its DB doctors array, and active user is admin, auto-correct the database
               if (dbH.id === 'c-moun' && dbH.doctors?.includes('moun-biplab') && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
@@ -4442,6 +4463,15 @@ export default function App() {
                     address: localC.address,
                     doctors: localC.doctors
                   }).catch(e => console.warn("Auto-syncing c-ar in DB: ", e));
+                });
+              }
+
+              // Auto-sync c-greensign hospital details in DB if user is admin/moderator
+              if (dbH.id === 'c-greensign' && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
+                import('firebase/firestore').then(({ doc, updateDoc }) => {
+                  updateDoc(doc(db, 'hospitals', 'c-greensign'), {
+                    doctors: combinedDoctors
+                  }).catch(e => console.warn("Auto-syncing c-greensign in DB: ", e));
                 });
               }
 
