@@ -38,40 +38,9 @@ import { SponsorSlide, DurationUnit, SponsorSliderSettings, Profile, Hospital } 
 
 const DEFAULT_DOCTOR_IMAGE = '/src/assets/images/doctor_sponsor_banner_1785435948836.jpg';
 const DEFAULT_HOSPITAL_IMAGE = '/ar_general_hospital.png';
-const DEMO_DOCTOR_BANNER_IMAGE = '/src/assets/images/demo_doctor_banner_1788648969320.jpg';
 
 // High-quality Initial Default Slides
 export const DEFAULT_SPONSOR_SLIDES: SponsorSlide[] = [
-  {
-    id: 'slide_demo_doctor_profile_ad',
-    title: 'ডাঃ মোঃ তানভীর আহমেদ (ডেমো ডাক্তার) — MBBS, FCPS, MD',
-    subtitle: 'মেডিসিন ও হৃদরোগ বিশেষজ্ঞ • [ডেমো হাসপাতাল] এ আর জেনারেল হাসপাতাল, নীলফামারী। আপনার প্রতিষ্ঠানের ডাক্তার এর প্রোফাইল ব্যানার এবং অ্যাড ব্যানার দিতে আমাদের সাথে যোগাযোগ করুন (01352-669100)।',
-    badge: '📢 বিজ্ঞাপন স্পট খালি • ডক্টর প্রোফাইল ব্যানার',
-    image: DEMO_DOCTOR_BANNER_IMAGE,
-    durationValue: 8,
-    durationUnit: 'seconds',
-    actionType: 'whatsapp',
-    actionTarget: '8801352669100',
-    buttonText: 'ব্যানার দিতে যোগাযোগ করুন 💬',
-    isActive: true,
-    order: 1,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'slide_demo_hospital_doctor_ad',
-    title: 'আপনার প্রতিষ্ঠানের ডাক্তার এর প্রোফাইল ব্যানার এবং অ্যাড ব্যানার দিতে আমাদের সাথে যোগাযোগ করুন',
-    subtitle: 'ডেমো ডাক্তার: ডাঃ সালমা আক্তার, MBBS, DGO, FCPS (গাইনী ও প্রসূতিরোগ বিশেষজ্ঞ) • চেম্বার: [আপনার হাসপাতালের নাম]। নীলফামারীর রোগীদের কাছে আপনার প্রতিষ্ঠানের ডাক্তারদের প্রচার করুন।',
-    badge: '🏥 হাসপাতাল ও ডায়াগনস্টিক পার্টনারশিপ ব্যানার',
-    image: DEFAULT_HOSPITAL_IMAGE,
-    durationValue: 8,
-    durationUnit: 'seconds',
-    actionType: 'whatsapp',
-    actionTarget: '8801352669100',
-    buttonText: 'বিজ্ঞাপন দিতে যোগাযোগ করুন 📞',
-    isActive: true,
-    order: 2,
-    createdAt: new Date().toISOString()
-  },
   {
     id: 'slide_featured_hospital',
     title: 'এ আর জেনারেল হাসপাতাল অ্যান্ড ডিজিটাল ডায়াগনস্টিক',
@@ -84,7 +53,7 @@ export const DEFAULT_SPONSOR_SLIDES: SponsorSlide[] = [
     actionTarget: 'hospitals',
     buttonText: 'হাসপাতাল বিস্তারিত',
     isActive: true,
-    order: 3,
+    order: 1,
     createdAt: new Date().toISOString()
   },
   {
@@ -250,6 +219,13 @@ export const SponsorBannerSlider: React.FC<SponsorBannerSliderProps> = ({
     fetchSlidesData();
   }, []);
 
+  const isDemoDoctorSlide = (s: any) =>
+    s?.id === 'slide_demo_doctor_profile_ad' ||
+    s?.id === 'slide_demo_hospital_doctor_ad' ||
+    (typeof s?.id === 'string' && (s.id.includes('demo_doctor') || s.id.includes('demo_hospital'))) ||
+    (typeof s?.title === 'string' && s.title.includes('ডেমো ডাক্তার')) ||
+    (typeof s?.subtitle === 'string' && s.subtitle.includes('ডেমো ডাক্তার'));
+
   const fetchSlidesData = async () => {
     // 1. Immediately hydrate from localStorage for instant offline rendering
     try {
@@ -257,20 +233,15 @@ export const SponsorBannerSlider: React.FC<SponsorBannerSliderProps> = ({
       if (localSaved) {
         const parsed = JSON.parse(localSaved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Check if demo doctor slides are present; if not, merge default demo slides to top
-          const hasDemo = parsed.some((s: any) => s.id === 'slide_demo_doctor_profile_ad');
-          if (!hasDemo) {
-            const merged = [
-              DEFAULT_SPONSOR_SLIDES[0],
-              DEFAULT_SPONSOR_SLIDES[1],
-              ...parsed.filter((s: any) => s.id !== 'slide_demo_doctor_profile_ad' && s.id !== 'slide_demo_hospital_doctor_ad')
-            ];
-            setSlides(merged);
-            localStorage.setItem('nilpha_sponsor_slides', JSON.stringify(merged));
-          } else {
-            setSlides(parsed);
-          }
+          const cleaned = parsed.filter((s: any) => !isDemoDoctorSlide(s));
+          const finalLocal = cleaned.length > 0 ? cleaned : DEFAULT_SPONSOR_SLIDES;
+          setSlides(finalLocal);
+          localStorage.setItem('nilpha_sponsor_slides', JSON.stringify(finalLocal));
+        } else {
+          setSlides(DEFAULT_SPONSOR_SLIDES);
         }
+      } else {
+        setSlides(DEFAULT_SPONSOR_SLIDES);
       }
       const localSettings = localStorage.getItem('nilpha_sponsor_slider_settings');
       if (localSettings) {
@@ -288,14 +259,20 @@ export const SponsorBannerSlider: React.FC<SponsorBannerSliderProps> = ({
       if (snap.exists()) {
         const data = snap.data();
         if (data.slides && Array.isArray(data.slides) && data.slides.length > 0) {
-          const hasDemo = data.slides.some((s: any) => s.id === 'slide_demo_doctor_profile_ad');
-          const finalSlides = hasDemo ? data.slides : [
-            DEFAULT_SPONSOR_SLIDES[0],
-            DEFAULT_SPONSOR_SLIDES[1],
-            ...data.slides.filter((s: any) => s.id !== 'slide_demo_doctor_profile_ad' && s.id !== 'slide_demo_hospital_doctor_ad')
-          ];
+          const hadDemo = data.slides.some((s: any) => isDemoDoctorSlide(s));
+          const cleaned = data.slides.filter((s: any) => !isDemoDoctorSlide(s));
+          const finalSlides = cleaned.length > 0 ? cleaned : DEFAULT_SPONSOR_SLIDES;
           setSlides(finalSlides);
           localStorage.setItem('nilpha_sponsor_slides', JSON.stringify(finalSlides));
+
+          // If Firestore still had demo doctor slides, automatically clean it in Firestore
+          if (hadDemo) {
+            try {
+              await setDoc(docRef, { slides: finalSlides }, { merge: true });
+            } catch (e) {
+              console.warn("Cleaned demo slides firestore update notice:", e);
+            }
+          }
         }
         if (data.settings) {
           setSliderSettings(data.settings);
@@ -407,8 +384,8 @@ export const SponsorBannerSlider: React.FC<SponsorBannerSliderProps> = ({
         }
         break;
       case 'whatsapp': {
-        const defaultMsg = slide.id.includes('demo_doctor') || slide.id.includes('institution') || slide.title.includes('ব্যানার')
-          ? `হ্যালো nilpha.com, আমি আমার প্রতিষ্ঠানের ডাক্তারদের প্রোফাইল ব্যানার এবং অ্যাড ব্যানার দিতে চাই। বিস্তারিত প্রসেস ও খরচ জানতে চাচ্ছি।`
+        const defaultMsg = slide.id.includes('institution') || slide.title.includes('ব্যানার')
+          ? `হ্যালো nilpha.com, আমি স্পন্সর বা বিজ্ঞাপন ব্যানার দিতে চাই। বিস্তারিত প্রসেস ও খরচ জানতে চাচ্ছি।`
           : `Hello nilpha.com, I am interested in: ${slide.title}`;
         window.open(`https://wa.me/88${whatsappNumber.replace(/^88/, '')}?text=${encodeURIComponent(defaultMsg)}`, '_blank');
         break;
@@ -596,30 +573,6 @@ export const SponsorBannerSlider: React.FC<SponsorBannerSliderProps> = ({
               transition={{ duration: 0.4 }}
               className="space-y-1.5 max-w-2xl"
             >
-              {/* Special Tag for Demo Doctor Profile & Ad Banner */}
-              {currentSlide.id.includes('demo_doctor') && (
-                <div className="flex flex-wrap items-center gap-1.5 pb-1">
-                  <span className="text-[9px] sm:text-[10px] bg-emerald-500 text-slate-950 font-black px-2 py-0.5 rounded shadow">
-                    ✓ ডেমো ডক্টর
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded shadow">
-                    ডিগ্রী: MBBS, FCPS, MD
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] bg-sky-500 text-white font-black px-2 py-0.5 rounded shadow">
-                    এ আর জেনারেল হাসপাতাল (ডেমো)
-                  </span>
-                </div>
-              )}
-              {currentSlide.id.includes('demo_hospital') && (
-                <div className="flex flex-wrap items-center gap-1.5 pb-1">
-                  <span className="text-[9px] sm:text-[10px] bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded shadow">
-                    📢 বিজ্ঞাপন দিন
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] bg-sky-400 text-slate-950 font-black px-2 py-0.5 rounded shadow">
-                    আপনার প্রতিষ্ঠানের ডাক্তার ব্যানার
-                  </span>
-                </div>
-              )}
 
               <h3 className="text-sm sm:text-base lg:text-lg font-black text-white tracking-wide drop-shadow-md flex items-center gap-2 leading-tight">
                 {currentSlide.title}

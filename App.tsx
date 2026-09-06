@@ -54,7 +54,6 @@ import { DonationPortalSection } from './src/components/DonationPortalSection';
 import { SubscriptionSection } from './src/components/SubscriptionSection';
 import { DoctorPortal } from './src/components/DoctorPortal';
 import { SponsorBannerSlider } from './src/components/SponsorBannerSlider';
-import { DoctorProfileAdBannerCard } from './src/components/DoctorProfileAdBannerCard';
 import { LiveDoctorModal } from './src/components/LiveDoctorModal';
 import { GovtHealthPortal } from './src/components/GovtHealthPortal';
 import { BloodDonationSection } from './src/components/BloodDonationSection';
@@ -6790,11 +6789,6 @@ export default function App() {
                          <div className="space-y-6">
                             {/* Today's Doctors Highlight Banner (Only inside Doctors section) */}
                             <TodaysDoctorsBanner doctors={doctors} />
-                            {/* Promotional Demo Doctor Profile Banner & Ad Placement Notice */}
-                            <DoctorProfileAdBannerCard 
-                              hotline={HOTLINE_CONTACT}
-                              whatsappNumber={WHATSAPP_NUMBER}
-                            />
                             {/* Location Filter Bar (Right above Saturday/Sunday Day selector) */}
                             <div className="space-y-1.5">
                                <div className="flex items-center justify-between text-[10px] font-black uppercase text-slate-500 tracking-wider px-1">
@@ -7450,11 +7444,6 @@ export default function App() {
 
                        {homeSubCategory === 'hospitals' && (
                          <div className="space-y-4">
-                            {/* Promotional Demo Doctor Profile Banner & Ad Placement Notice */}
-                            <DoctorProfileAdBannerCard 
-                              hotline={HOTLINE_CONTACT}
-                              whatsappNumber={WHATSAPP_NUMBER}
-                            />
                             {/* Location Filter Bar for Hospitals */}
                             <div className="space-y-1.5">
                                <div className="flex items-center justify-between text-[10px] font-black uppercase text-slate-500 tracking-wider px-1">
