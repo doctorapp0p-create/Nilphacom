@@ -107,8 +107,6 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
     }
   }, [doctor, isOpen]);
 
-  if (!isOpen || !doctor) return null;
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -163,6 +161,8 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
     }
   };
 
+  if (!isOpen || !doctor) return null;
+
   const isChanged = previewUrl !== doctor.image;
 
   return (
@@ -197,12 +197,18 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
           {/* Doctor Info Card */}
           <div className="flex items-center gap-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
             <div className="relative shrink-0">
-              <img
-                src={previewUrl || doctor.image}
-                alt={doctor.name}
-                referrerPolicy="no-referrer"
-                className="w-16 h-20 rounded-xl object-cover bg-white border-2 border-blue-500 shadow-sm"
-              />
+              {(previewUrl || doctor.image) ? (
+                <img
+                  src={previewUrl || doctor.image}
+                  alt={doctor.name}
+                  referrerPolicy="no-referrer"
+                  className="w-16 h-20 rounded-xl object-cover bg-white border-2 border-blue-500 shadow-sm"
+                />
+              ) : (
+                <div className="w-16 h-20 rounded-xl bg-slate-100 border-2 border-blue-500 shadow-sm flex items-center justify-center text-slate-400">
+                  <User size={24} />
+                </div>
+              )}
               {isChanged && (
                 <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-xs flex items-center gap-0.5">
                   <Check size={10} /> নতুন
@@ -378,13 +384,19 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
           {/* Live Full Preview Container */}
           <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <img
-                src={previewUrl}
-                alt="New Preview"
-                referrerPolicy="no-referrer"
-                className="w-14 h-16 rounded-xl object-cover bg-white border border-slate-200 shadow-xs"
-                onError={() => setUploadError('ছবি লোড করা যায়নি। সঠিক লিংক প্রদান করুন।')}
-              />
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  alt="New Preview"
+                  referrerPolicy="no-referrer"
+                  className="w-14 h-16 rounded-xl object-cover bg-white border border-slate-200 shadow-xs"
+                  onError={() => setUploadError('ছবি লোড করা যায়নি। সঠিক লিংক প্রদান করুন।')}
+                />
+              ) : (
+                <div className="w-14 h-16 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-center text-slate-300">
+                  <User size={20} />
+                </div>
+              )}
               <div>
                 <p className="text-[11px] font-black text-slate-700">নির্বাচিত ছবি প্রিভিউ</p>
                 <p className="text-[10px] text-slate-400 font-bold">

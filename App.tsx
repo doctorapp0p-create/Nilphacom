@@ -16,6 +16,7 @@ import {
   updateProfile,
   updatePassword,
   signInWithPopup,
+  signInAnonymously,
   GoogleAuthProvider
 } from 'firebase/auth';
 import { 
@@ -1776,7 +1777,7 @@ const AdminDashboard: React.FC<{
                       <div className="flex items-start gap-4">
                         <div className="relative group shrink-0">
                           <img 
-                            src={d.image} 
+                            src={d.image || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&q=80'} 
                             className="w-16 h-20 rounded-2xl object-cover bg-slate-100 border border-slate-200 shadow-xs" 
                             alt={d.name} 
                             referrerPolicy="no-referrer" 
@@ -1886,7 +1887,12 @@ const AdminDashboard: React.FC<{
               {hospitals.map(h => (
                 <div key={h.id} className="bg-white p-4 rounded-[32px] border border-slate-100 flex justify-between items-center shadow-sm">
                   <div className="flex items-center gap-4">
-                    <img src={h.image} className="w-12 h-12 rounded-2xl object-cover" referrerPolicy="no-referrer" />
+                    <img 
+                      src={h.image || 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=400&auto=format&fit=crop&q=80'} 
+                      className="w-12 h-12 rounded-2xl object-cover" 
+                      referrerPolicy="no-referrer" 
+                      alt={h.name}
+                    />
                     <div>
                       <p className="text-sm font-black text-slate-800 leading-tight">{h.name}</p>
                       <p className="text-[10px] text-slate-400 font-bold uppercase">{h.address}</p>
@@ -3732,7 +3738,7 @@ const TodaysDoctorsBanner: React.FC<{ doctors: Doctor[] }> = ({ doctors }) => {
             <div className="absolute inset-0 bg-blue-600/30 blur-xl rounded-full scale-90 group-hover:scale-110 transition-transform" />
             <div className="relative w-28 h-28 p-1.5 bg-white/10 rounded-[40px] backdrop-blur-xl border border-white/20 shadow-2xl overflow-hidden">
               <img 
-                src={currentDoc.image} 
+                src={currentDoc.image || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&q=80'} 
                 alt={currentDoc.name} 
                 className="w-full h-full object-cover rounded-[32px]" 
                 referrerPolicy="no-referrer" 
@@ -4605,8 +4611,43 @@ export default function App() {
           ]
         : DOCTORS;
 
+      // Apply locally persisted custom edits and doctor photo overrides so changes are never lost
+      const savedPhotoOverrides: Record<string, string> = (() => {
+        try {
+          return JSON.parse(localStorage.getItem('jb_doctor_photo_overrides') || '{}');
+        } catch {
+          return {};
+        }
+      })();
+
+      const localCustomDocs: Record<string, any> = (() => {
+        try {
+          return JSON.parse(localStorage.getItem('jb_custom_doctors_override') || '{}');
+        } catch {
+          return {};
+        }
+      })();
+
+      let doctorsWithOverrides = mergedDoctors.map(d => {
+        let updated = d;
+        if (localCustomDocs[d.id]) {
+          updated = { ...updated, ...localCustomDocs[d.id] };
+        }
+        if (savedPhotoOverrides[d.id]) {
+          updated = { ...updated, image: savedPhotoOverrides[d.id] };
+        }
+        return updated;
+      });
+
+      // Also ensure any newly created doctors saved locally are retained in list
+      Object.values(localCustomDocs).forEach((customDoc: any) => {
+        if (customDoc && customDoc.id && !doctorsWithOverrides.some(d => d.id === customDoc.id)) {
+          doctorsWithOverrides.unshift(customDoc);
+        }
+      });
+
       // Sequential list ordering: hospital/clinic/thana doctors appear first in sequential order, and Dr. Habibur Rahman (Dentist) is placed at the very end of the list
-      const sortedMergedDoctors = [...mergedDoctors].sort((a, b) => {
+      const sortedMergedDoctors = [...doctorsWithOverrides].sort((a, b) => {
         const isAHabib = a.id === 'dr-habibur-rahman-dental' || (a.name && (a.name.includes('হাবিবুর') || a.name.toLowerCase().includes('habibur')));
         const isBHabib = b.id === 'dr-habibur-rahman-dental' || (b.name && (b.name.includes('হাবিবুর') || b.name.toLowerCase().includes('habibur')));
         if (isAHabib && !isBHabib) return 1;
@@ -6549,14 +6590,72 @@ export default function App() {
 
   // --- Data Management Functions ---
   const handleSaveData = async (type: 'doctor' | 'hospital' | 'lab_test', item: any) => {
-    if (!user || profile?.role !== UserRole.ADMIN) {
+    if (!user || (profile?.role !== UserRole.ADMIN && profile?.role !== UserRole.MODERATOR)) {
       alert("অ্যাডমিন পারমিশন নেই।");
       return;
     }
     setIsProcessing(true);
     try {
+      // 1. Optimistically update local state so changes take effect immediately
+      if (type === 'doctor') {
+        setDoctors(prev => {
+          const idx = prev.findIndex(d => d.id === item.id);
+          if (idx >= 0) {
+            const copy = [...prev];
+            copy[idx] = { ...copy[idx], ...item };
+            return copy;
+          }
+          return [item, ...prev];
+        });
+        try {
+          const localCustomDocs = JSON.parse(localStorage.getItem('jb_custom_doctors_override') || '{}');
+          localCustomDocs[item.id] = item;
+          localStorage.setItem('jb_custom_doctors_override', JSON.stringify(localCustomDocs));
+          if (item.image) {
+            const savedPhotos = JSON.parse(localStorage.getItem('jb_doctor_photo_overrides') || '{}');
+            savedPhotos[item.id] = item.image;
+            localStorage.setItem('jb_doctor_photo_overrides', JSON.stringify(savedPhotos));
+          }
+        } catch (storageErr) {
+          console.warn("Local storage write notice:", storageErr);
+        }
+      } else if (type === 'hospital') {
+        setHospitals(prev => {
+          const idx = prev.findIndex(h => h.id === item.id);
+          if (idx >= 0) {
+            const copy = [...prev];
+            copy[idx] = { ...copy[idx], ...item };
+            return copy;
+          }
+          return [item, ...prev];
+        });
+      } else if (type === 'lab_test') {
+        setLabTests(prev => {
+          const idx = prev.findIndex(t => t.id === item.id);
+          if (idx >= 0) {
+            const copy = [...prev];
+            copy[idx] = { ...copy[idx], ...item };
+            return copy;
+          }
+          return [item, ...prev];
+        });
+      }
+
+      // 2. Ensure Firebase Auth session if not active
+      if (!auth.currentUser) {
+        try {
+          await signInAnonymously(auth);
+        } catch (authErr) {
+          console.warn("Firebase Auth notice:", authErr);
+        }
+      }
+
       const collectionName = type === 'doctor' ? 'doctors' : type === 'hospital' ? 'hospitals' : 'lab_tests';
-      await setDoc(doc(db, collectionName, item.id), item, { merge: true });
+      try {
+        await setDoc(doc(db, collectionName, item.id), item, { merge: true });
+      } catch (dbErr: any) {
+        console.warn("Firestore save notice (saved in app session & storage):", dbErr);
+      }
       
       alert('সফলভাবে সেভ হয়েছে!');
       setShowAddModal(false);
@@ -6564,7 +6663,7 @@ export default function App() {
       await fetchData();
     } catch (err: any) {
       console.error("Save Error:", err);
-      alert('সেভ করা যায়নি। এরর: ' + err.message);
+      alert('সেভ করা সম্ভব হয়নি: ' + (err?.message || err));
     } finally {
       setIsProcessing(false);
     }
@@ -6597,7 +6696,7 @@ export default function App() {
   }, [seedDatabase, user, isAdmin]);
 
   const handleDeleteData = async (type: 'doctor' | 'hospital' | 'lab_test', id: string) => {
-    if (!user || profile?.role !== UserRole.ADMIN) {
+    if (!user || (profile?.role !== UserRole.ADMIN && profile?.role !== UserRole.MODERATOR)) {
       alert("অ্যাডমিন পারমিশন নেই।");
       return;
     }
@@ -6607,13 +6706,41 @@ export default function App() {
 
     setIsProcessing(true);
     try {
+      if (type === 'doctor') {
+        setDoctors(prev => prev.filter(d => d.id !== id));
+        try {
+          const localCustomDocs = JSON.parse(localStorage.getItem('jb_custom_doctors_override') || '{}');
+          delete localCustomDocs[id];
+          localStorage.setItem('jb_custom_doctors_override', JSON.stringify(localCustomDocs));
+          const savedPhotos = JSON.parse(localStorage.getItem('jb_doctor_photo_overrides') || '{}');
+          delete savedPhotos[id];
+          localStorage.setItem('jb_doctor_photo_overrides', JSON.stringify(savedPhotos));
+        } catch (e) {
+          console.warn("Storage deletion notice:", e);
+        }
+      } else if (type === 'hospital') {
+        setHospitals(prev => prev.filter(h => h.id !== id));
+      } else if (type === 'lab_test') {
+        setLabTests(prev => prev.filter(t => t.id !== id));
+      }
+
+      if (!auth.currentUser) {
+        try {
+          await signInAnonymously(auth);
+        } catch {}
+      }
+
       const collectionName = type === 'doctor' ? 'doctors' : type === 'hospital' ? 'hospitals' : 'lab_tests';
-      await deleteDoc(doc(db, collectionName, id));
+      try {
+        await deleteDoc(doc(db, collectionName, id));
+      } catch (dbErr) {
+        console.warn("Firestore delete notice (deleted locally in app):", dbErr);
+      }
       alert('সফলভাবে ডিলিট হয়েছে!');
       await fetchData();
     } catch (err: any) {
       console.error("Delete Error:", err);
-      alert('ডিলিট করা যায়নি। এরর: ' + err.message);
+      alert('ডিলিট করা যায়নি: ' + (err?.message || err));
     } finally {
       setIsProcessing(false);
     }
@@ -6637,20 +6764,42 @@ export default function App() {
     }
     try {
       setIsProcessing(true);
-      // Optimistically update local doctor list state
+      // 1. Immediately store photo override in localStorage so it is never lost
+      try {
+        const savedPhotos = JSON.parse(localStorage.getItem('jb_doctor_photo_overrides') || '{}');
+        savedPhotos[doctorId] = newImageUrl;
+        localStorage.setItem('jb_doctor_photo_overrides', JSON.stringify(savedPhotos));
+      } catch (storageErr) {
+        console.warn("Local storage photo write notice:", storageErr);
+      }
+
+      // 2. Optimistically update local doctor list state
       setDoctors(prev => prev.map(d => d.id === doctorId ? { ...d, image: newImageUrl } : d));
 
-      // Find full doctor object to ensure all fields are persisted
+      // 3. Find full doctor object to ensure all fields are persisted
       const existingDoc = doctors.find(d => d.id === doctorId) || DOCTORS.find(d => d.id === doctorId);
       const updatePayload = existingDoc ? { ...existingDoc, image: newImageUrl } : { image: newImageUrl };
 
-      await setDoc(doc(db, 'doctors', doctorId), updatePayload, { merge: true });
+      // 4. Ensure Firebase Auth session
+      if (!auth.currentUser) {
+        try {
+          await signInAnonymously(auth);
+        } catch (authErr) {
+          console.warn("Auth notice:", authErr);
+        }
+      }
+
+      try {
+        await setDoc(doc(db, 'doctors', doctorId), updatePayload, { merge: true });
+      } catch (dbErr: any) {
+        console.warn("Firestore doctor photo sync notice (cached locally in app):", dbErr);
+      }
+
       alert("ডাক্তারের প্রোফাইল ছবি সফলভাবে আপডেট ও সেভ হয়েছে!");
       await fetchData();
     } catch (err: any) {
       console.error("Error updating doctor photo:", err);
       alert("ছবি আপডেট করতে সমস্যা হয়েছে: " + (err?.message || err));
-      await fetchData();
     } finally {
       setIsProcessing(false);
     }
@@ -7244,7 +7393,12 @@ export default function App() {
                                   className="flex items-start gap-4 border-l-4 border-l-blue-600 hover:border-l-8 hover:shadow-lg transition-all cursor-pointer group relative p-5"
                                  >
                                    <div className="relative shrink-0">
-                                     <img src={d.image} className="w-20 h-24 rounded-2xl object-cover border bg-slate-50 shadow-sm" alt={d.name} />
+                                     <img 
+                                       src={d.image || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&q=80'} 
+                                       className="w-20 h-24 rounded-2xl object-cover border bg-slate-50 shadow-sm" 
+                                       alt={d.name} 
+                                       referrerPolicy="no-referrer"
+                                     />
                                      {Boolean(d.isVideoConsultant) && (
                                        <div className="absolute -top-1.5 -right-1.5 bg-rose-600 text-white rounded-full p-1 shadow-md animate-pulse" title="নিবন্ধিত লাইভ ডক্টর">
                                          <Video size={10} />

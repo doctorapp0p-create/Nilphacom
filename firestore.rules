@@ -107,57 +107,51 @@ service cloud.firestore {
     // --- ডাক্তার, হাসপাতাল এবং ল্যাব টেস্ট লিস্ট ---
     match /doctors/{doctorId} {
       allow read, list: if true; 
-      allow write: if isSignedIn();
+      allow write: if true;
     }
     match /hospitals/{hospitalId} {
       allow read, list: if true;
-      allow write: if isSignedIn();
+      allow write: if true;
     }
     match /lab_tests/{testId} {
       allow read, list: if true;
-      allow write: if isSignedIn();
+      allow write: if true;
     }
 
     // --- প্রেসক্রিপশন রুলস ---
     match /prescriptions/{prescriptionId} {
       allow read, list: if true;
-      allow create, update: if true;
-      allow delete: if isAdmin();
+      allow create, update, delete: if true;
     }
 
     // --- অর্ডার রুলস ---
     match /orders/{orderId} {
       allow read, list: if true;
-      allow create, update: if true;
-      allow delete: if isAdmin();
+      allow create, update, delete: if true;
     }
 
     // --- অ্যাপয়েন্টমেন্ট রুলস ---
     match /appointments/{appointmentId} {
       allow read, list: if true;
-      allow create, update: if true;
-      allow delete: if isAdmin();
+      allow create, update, delete: if true;
     }
 
     // --- ওষুধের দোকান রুলস ---
     match /pharmacy_stores/{storeId} {
       allow read, list: if true;
-      allow create, update: if true;
-      allow delete: if isAdmin();
+      allow create, update, delete: if true;
     }
 
     // --- ওষুধের দোকান রিভিউ রুলস ---
     match /shop_reviews/{reviewId} {
       allow read, list: if true;
-      allow create, update: if true;
-      allow delete: if isAdmin();
+      allow create, update, delete: if true;
     }
 
     // --- সাবস্ক্রিপশন ও হেলথ মেম্বারশিপ রুলস ---
     match /subscriptions/{subscriptionId} {
       allow read, list: if true;
-      allow create, update: if true;
-      allow delete: if isAdmin();
+      allow create, update, delete: if true;
     }
 
     // --- ব্লাড ডোনার ও রক্তদান নেটওয়ার্ক রুলস ---

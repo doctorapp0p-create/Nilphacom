@@ -42,8 +42,6 @@ export const AdminDataModal: React.FC<AdminDataModalProps> = ({
   setTempImage,
   handleImageUpload,
 }) => {
-  if (!isOpen) return null;
-
   // Doctor state fields
   const [docId, setDocId] = useState(initialItem?.id || '');
   const [docName, setDocName] = useState(initialItem?.name || '');
@@ -241,6 +239,8 @@ export const AdminDataModal: React.FC<AdminDataModalProps> = ({
       await onSave('lab_test', testData);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
@@ -473,12 +473,18 @@ export const AdminDataModal: React.FC<AdminDataModalProps> = ({
                     ছবি আপলোড বা ছবি লিংক (Image URL / Upload)
                   </label>
                   <div className="flex items-center gap-3">
-                    <img
-                      src={tempImage || docImageUrl}
-                      alt="Doctor preview"
-                      referrerPolicy="no-referrer"
-                      className="w-12 h-14 rounded-xl object-cover bg-slate-100 border border-slate-200 shrink-0 shadow-2xs"
-                    />
+                    {(tempImage || docImageUrl) ? (
+                      <img
+                        src={tempImage || docImageUrl}
+                        alt="Doctor preview"
+                        referrerPolicy="no-referrer"
+                        className="w-12 h-14 rounded-xl object-cover bg-slate-100 border border-slate-200 shrink-0 shadow-2xs"
+                      />
+                    ) : (
+                      <div className="w-12 h-14 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0">
+                        <Upload size={18} />
+                      </div>
+                    )}
                     <div className="flex-1 flex gap-2">
                       <input
                         type="text"
