@@ -274,7 +274,8 @@ export const CLINICS: Clinic[] = [
       "j-shakil",
       "j-shaheen-gyn",
       "j-parul-gyn",
-      "j-masud-med"
+      "j-masud-med",
+      "j-al-amin"
     ],
     "image": "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&q=80&w=800"
   },
@@ -2205,6 +2206,24 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 600
+  },
+  {
+    "id": "j-al-amin",
+    "name": "ডাঃ মোঃ আল-আমিন",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডিইএম (বাংলাদেশ মেডিক্যাল বিশ্ববিদ্যালয়, ঢাকা), এফসিপিএস, এফপি (এন্ডোক্রাইনোলজি এন্ড মেটাবলিজম) | রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | হরমোন, দীর্ঘমেয়াদি ডায়াবেটিস ও থাইরয়েডজনিত রোগের বিশেষজ্ঞ চিকিৎসক",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-janata"
+    ],
+    "schedule": "প্রতি রবিবার দুপুর ২টা থেকে রাত ৮টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=400",
+    "consultationFee": 700
   },
   {
     "id": "ek-amit-med",

@@ -43,6 +43,7 @@ import { AdminLabBillBuilder } from './src/components/AdminLabBillBuilder';
 import { AuthModal } from './src/components/AuthModal';
 import { BuyMedicineSection } from './src/components/BuyMedicineSection';
 import { AdminDataModal } from './src/components/AdminDataModal';
+import { DoctorPhotoModal } from './src/components/DoctorPhotoModal';
 import { LevelUpRewardSection } from './src/components/LevelUpRewardSection';
 import { AmbulanceCalculator } from './src/components/AmbulanceCalculator';
 const doctorSponsorBanner = '/src/assets/images/doctor_sponsor_banner_1785435948836.jpg';
@@ -60,7 +61,7 @@ import { BloodDonationSection } from './src/components/BloodDonationSection';
 import { CouponManager } from './src/components/CouponManager';
 import { fetchCoupons, validateCoupon } from './src/services/couponService';
 import { Coupon } from './types';
-import { Share2, Bot, Video, Microscope, Ambulance, Star, ShieldCheck, Zap, MessageSquare, ArrowRight, X, Download, Smartphone, Stethoscope, Percent, MapPin, Calendar, Clock, Phone, BadgeCheck, Search, ChevronRight, FileText, Youtube, User, HelpCircle, Wallet, LogOut, Gift, Building, HeartHandshake, Baby, Heart, CreditCard, Plus, CheckCircle2, AlertCircle, RefreshCw, Tag } from 'lucide-react';
+import { Share2, Bot, Video, Microscope, Ambulance, Star, ShieldCheck, Zap, MessageSquare, ArrowRight, X, Download, Smartphone, Stethoscope, Percent, MapPin, Calendar, Clock, Phone, BadgeCheck, Search, ChevronRight, FileText, Youtube, User, HelpCircle, Wallet, LogOut, Gift, Building, HeartHandshake, Baby, Heart, CreditCard, Plus, CheckCircle2, AlertCircle, RefreshCw, Tag, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const WHATSAPP_NUMBER = '8801352669100';
@@ -783,7 +784,8 @@ const AdminDashboard: React.FC<{
   onToggleTestActive?: (test: LabTest) => Promise<void>,
   onToggleAllTests?: (active: boolean) => Promise<void>,
   onCouponsUpdated?: () => void,
-}> = ({ profile, onLogout, ticker, setTicker, onUpdateTicker, doctors, hospitals, labTests, orders, profiles, appointments, onAdd, onEdit, onDelete, onRefreshAdminData, onUpdateAppointmentStatus, onUpdateOrderStatus, quizzes = [], submissions = [], withdrawals = [], onAddQuiz, onUpdateSubmissionStatus, onUpdateWithdrawalStatus, isLabTestsServiceEnabled = true, onToggleGlobalLabTestsService, onToggleTestActive, onToggleAllTests, onCouponsUpdated }) => {
+  onChangeDoctorPhoto?: (doctor: Doctor) => void,
+}> = ({ profile, onLogout, ticker, setTicker, onUpdateTicker, doctors, hospitals, labTests, orders, profiles, appointments, onAdd, onEdit, onDelete, onRefreshAdminData, onUpdateAppointmentStatus, onUpdateOrderStatus, quizzes = [], submissions = [], withdrawals = [], onAddQuiz, onUpdateSubmissionStatus, onUpdateWithdrawalStatus, isLabTestsServiceEnabled = true, onToggleGlobalLabTestsService, onToggleTestActive, onToggleAllTests, onCouponsUpdated, onChangeDoctorPhoto }) => {
   const [activeSubTab, setActiveSubTab] = useState<'today_apps' | 'overview' | 'doctors' | 'orders' | 'hospitals' | 'labtests' | 'coupons' | 'billing' | 'referrals' | 'patients' | 'quizzes' | 'withdrawals' | 'free_doctors' | 'maternity_donation' | 'subscriptions' | 'doctor_portal'>('today_apps');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedDocId, setExpandedDocId] = useState<string | null>(null);
@@ -1772,12 +1774,23 @@ const AdminDashboard: React.FC<{
                       className="bg-white p-5 rounded-[28px] border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-all text-left relative"
                     >
                       <div className="flex items-start gap-4">
-                        <img 
-                          src={d.image} 
-                          className="w-16 h-20 rounded-2xl object-cover bg-slate-100 shrink-0 border shadow-xs" 
-                          alt={d.name} 
-                          referrerPolicy="no-referrer" 
-                        />
+                        <div className="relative group shrink-0">
+                          <img 
+                            src={d.image} 
+                            className="w-16 h-20 rounded-2xl object-cover bg-slate-100 border border-slate-200 shadow-xs" 
+                            alt={d.name} 
+                            referrerPolicy="no-referrer" 
+                          />
+                          <button
+                            type="button"
+                            onClick={() => onChangeDoctorPhoto?.(d)}
+                            className="absolute inset-0 bg-slate-900/65 opacity-0 group-hover:opacity-100 rounded-2xl flex flex-col items-center justify-center text-white transition-all text-[9px] font-black gap-0.5 cursor-pointer shadow-sm"
+                            title="ছবি পরিবর্তন বা আপলোড করুন"
+                          >
+                            <Camera size={16} />
+                            <span>ছবি বদলান</span>
+                          </button>
+                        </div>
                         <div className="flex-1 min-w-0 space-y-1">
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="bg-blue-50 text-blue-700 font-black text-[9px] px-2 py-0.5 rounded-md uppercase tracking-wider border border-blue-200/50">
@@ -1830,20 +1843,28 @@ const AdminDashboard: React.FC<{
                       </div>
 
                       {/* Action Buttons for Edit & Delete */}
-                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
                         <span className="text-[9px] font-mono text-slate-400">ID: {d.id}</span>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <button 
+                            type="button"
+                            onClick={() => onChangeDoctorPhoto?.(d)} 
+                            className="px-3 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-xs active:scale-95 cursor-pointer"
+                            title="ছবি পরিবর্তন বা আপলোড করুন"
+                          >
+                            <Camera size={13} /> ছবি আপলোড
+                          </button>
                           <button 
                             onClick={() => onEdit('doctor', d)} 
-                            className="px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-xs active:scale-95"
+                            className="px-3.5 py-2 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-xs active:scale-95"
                           >
-                            <span>✏️</span> এডিট তথ্য (Edit Info)
+                            <span>✏️</span> এডিট তথ্য
                           </button>
                           <button 
                             onClick={() => onDelete('doctor', d.id)} 
-                            className="px-3.5 py-2 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-xs active:scale-95"
+                            className="px-3 py-2 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-xs active:scale-95"
                           >
-                            <X size={14} /> মুছুন
+                            <X size={13} /> মুছুন
                           </button>
                         </div>
                       </div>
@@ -4060,6 +4081,7 @@ export default function App() {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [tempImage, setTempImage] = useState<string | null>(null);
+  const [photoModalDoctor, setPhotoModalDoctor] = useState<Doctor | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -4550,7 +4572,7 @@ export default function App() {
         import('firebase/firestore').then(({ doc, setDoc }) => {
           const targetDoctorSyncIds = [
             'dr-ar-hasina-banu', 'dr-ar-shamsur', 'dr-ar-mahbubul',
-            'eb-saiful-card', 'j-rikkon', 'j-shaheen-gyn', 'pacific-shahjada',
+            'eb-saiful-card', 'j-rikkon', 'j-shaheen-gyn', 'j-al-amin', 'pacific-shahjada',
             'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
             'ev-asad', 'ev-nripen', 'ek-gyn1'
           ];
@@ -4566,7 +4588,7 @@ export default function App() {
 
       // Merge DB data with local constants: DB version has precedence, but newly updated verified doctor records and local entries not in DB take precedence
       const updatedDoctorTargetIds = [
-        'eb-saiful-card', 'j-rikkon', 'j-shaheen-gyn', 'pacific-shahjada',
+        'eb-saiful-card', 'j-rikkon', 'j-shaheen-gyn', 'j-al-amin', 'pacific-shahjada',
         'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
         'ev-asad', 'ev-nripen', 'ek-gyn1'
       ];
@@ -4575,7 +4597,7 @@ export default function App() {
             ...dbDoctors.map(dbD => {
               if (updatedDoctorTargetIds.includes(dbD.id)) {
                 const freshDoc = DOCTORS.find(d => d.id === dbD.id);
-                return freshDoc || dbD;
+                return freshDoc ? { ...freshDoc, ...dbD } : dbD;
               }
               return dbD;
             }),
@@ -6608,6 +6630,32 @@ export default function App() {
     }
   };
 
+  const handleUpdateDoctorPhoto = async (doctorId: string, newImageUrl: string) => {
+    if (!user || (profile?.role !== UserRole.ADMIN && profile?.role !== UserRole.MODERATOR)) {
+      alert("ছবি পরিবর্তন করার জন্য অ্যাডমিন এক্সেস প্রয়োজন।");
+      return;
+    }
+    try {
+      setIsProcessing(true);
+      // Optimistically update local doctor list state
+      setDoctors(prev => prev.map(d => d.id === doctorId ? { ...d, image: newImageUrl } : d));
+
+      // Find full doctor object to ensure all fields are persisted
+      const existingDoc = doctors.find(d => d.id === doctorId) || DOCTORS.find(d => d.id === doctorId);
+      const updatePayload = existingDoc ? { ...existingDoc, image: newImageUrl } : { image: newImageUrl };
+
+      await setDoc(doc(db, 'doctors', doctorId), updatePayload, { merge: true });
+      alert("ডাক্তারের প্রোফাইল ছবি সফলভাবে আপডেট ও সেভ হয়েছে!");
+      await fetchData();
+    } catch (err: any) {
+      console.error("Error updating doctor photo:", err);
+      alert("ছবি আপডেট করতে সমস্যা হয়েছে: " + (err?.message || err));
+      await fetchData();
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   // --- Update ticker message in database ---
   const updateTicker = async () => {
     if (!user || !isAdmin) return;
@@ -6788,6 +6836,7 @@ export default function App() {
                 onToggleTestActive={handleToggleTestActive}
                 onToggleAllTests={handleToggleAllTests}
                 onCouponsUpdated={fetchCouponsList}
+                onChangeDoctorPhoto={(doc) => setPhotoModalDoctor(doc)}
               />
 
               <AdminDataModal
@@ -6804,6 +6853,14 @@ export default function App() {
                 tempImage={tempImage}
                 setTempImage={setTempImage}
                 handleImageUpload={handleImageUpload}
+              />
+
+              <DoctorPhotoModal
+                isOpen={!!photoModalDoctor}
+                onClose={() => setPhotoModalDoctor(null)}
+                doctor={photoModalDoctor}
+                onSavePhoto={handleUpdateDoctorPhoto}
+                isProcessing={isProcessing}
               />
             </>
           ) : (

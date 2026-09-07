@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Doctor, Clinic, LabTest } from '../../types';
 import { SPECIALTIES } from '../../constants';
-import { X, Upload, Plus, Check, MapPin, Building, Stethoscope, DollarSign, Clock, Star, Video } from 'lucide-react';
+import { X, Upload, Plus, Check, MapPin, Building, Stethoscope, DollarSign, Clock, Star, Video, Camera, RefreshCw } from 'lucide-react';
+import { compressDoctorImage } from './DoctorPhotoModal';
 
 interface AdminDataModalProps {
   isOpen: boolean;
@@ -469,25 +470,48 @@ export const AdminDataModal: React.FC<AdminDataModalProps> = ({
 
                 <div>
                   <label className="text-[11px] font-black uppercase text-slate-600 block mb-1">
-                    ছবি আপলোড বা ছবি লিংক (Image URL)
+                    ছবি আপলোড বা ছবি লিংক (Image URL / Upload)
                   </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={docImageUrl}
-                      onChange={e => setDocImageUrl(e.target.value)}
-                      placeholder="https://..."
-                      className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold outline-none focus:border-blue-600 focus:bg-white"
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={tempImage || docImageUrl}
+                      alt="Doctor preview"
+                      referrerPolicy="no-referrer"
+                      className="w-12 h-14 rounded-xl object-cover bg-slate-100 border border-slate-200 shrink-0 shadow-2xs"
                     />
-                    <label className="bg-slate-100 hover:bg-slate-200 px-3 py-3 rounded-2xl cursor-pointer border border-slate-200 flex items-center justify-center text-slate-600">
-                      <Upload size={16} />
+                    <div className="flex-1 flex gap-2">
                       <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
+                        type="text"
+                        value={docImageUrl}
+                        onChange={e => {
+                          setDocImageUrl(e.target.value);
+                          setTempImage(null);
+                        }}
+                        placeholder="https://..."
+                        className="flex-1 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-blue-600 focus:bg-white"
                       />
-                    </label>
+                      <label className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-2.5 rounded-xl cursor-pointer border border-blue-200 flex items-center justify-center gap-1 text-xs font-black transition-all">
+                        <Upload size={14} />
+                        <span className="hidden sm:inline">আপলোড</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              try {
+                                const compressed = await compressDoctorImage(file, 500, 600, 0.82);
+                                setTempImage(compressed);
+                                setDocImageUrl(compressed);
+                              } catch {
+                                handleImageUpload(e);
+                              }
+                            }
+                          }}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
