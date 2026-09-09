@@ -415,6 +415,20 @@ export const CLINICS: Clinic[] = [
       "dr-habibur-rahman-dental"
     ],
     "image": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-siddhika-domar",
+    "name": "সিদ্দিকা মেমোরিয়াল ক্রিটিক্যাল কেয়ার ডায়াগনস্টিক সেন্টার",
+    "district": "Nilphamari",
+    "address": "হাজী হোসেন আলী কমপ্লেক্স, ডি.বি. রোড, ডোমার, নীলফামারী।",
+    "doctors": [
+      "dr-shariful-islam-ratan",
+      "dr-soheli-binte-mostafa",
+      "dr-gopal-chandra-roy",
+      "dr-rashed-menon-ent",
+      "dr-mithun-chandra-bhowmik"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   }
 ];
 
@@ -2275,6 +2289,105 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 700
+  },
+  {
+    "id": "dr-shariful-islam-ratan",
+    "name": "ডাঃ মোঃ শরিফুল ইসলাম রতন",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডি-কার্ড, এমডি (কার্ডিওলজি) - জাতীয় হৃদরোগ ইনস্টিটিউট ও হাসপাতাল, ঢাকা | পিজিটিডি, FESC (ইউরোপ-লন্ডন), FACC (আমেরিকা), FAPSIC (সিঙ্গাপুর), MACP, FSCAI (আমেরিকা) | সহযোগী অধ্যাপক, ডিপার্টমেন্ট অব কার্ডিওলজি, টি.এম.এস.এস মেডিকেল কলেজ এন্ড হাসপাতাল | মেডিসিন, হৃদরোগ, ডায়াবেটিস ও বাতব্যথা বিশেষজ্ঞ",
+    "specialty": "Cardiology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার"
+    ],
+    "clinics": [
+      "c-siddhika-domar"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ৯টা থেকে সন্ধ্যা ৬টা পর্যন্ত।",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 800
+  },
+  {
+    "id": "dr-soheli-binte-mostafa",
+    "name": "ডাঃ সোহেলী বিনতে মোস্তফা (মিষ্টি)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমএস (গাইনি এন্ড অবস), বিএসএমএমইউ | আবাসিক সার্জন (গাইনি এন্ড অবস), রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | প্রসূতি, স্ত্রীরোগ বিশেষজ্ঞ ও সার্জন",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-siddhika-domar"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ৯টা থেকে সন্ধ্যা ৬টা পর্যন্ত।",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-gopal-chandra-roy",
+    "name": "ডাঃ গোপাল চন্দ্র রায়",
+    "degree": "এমবিবিএস (রংপুর মেডিকেল কলেজ), ডিও (বিএসএমএমইউ, ঢাকা), ফেলো ইন এসআইসিএস মাইক্রো সার্জারি ও ফ্যাকো সার্জারি (ইসলামী ব্যাংক চক্ষু হাসপাতাল, ঢাকা) | ডাইরেক্টর ও কনসালটেন্ট, গ্রামীণ চক্ষু হাসপাতাল, ঠাকুরগাঁও | চক্ষু বিশেষজ্ঞ ও ফ্যাকো সার্জন",
+    "specialty": "Ophthalmology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Thakurgaon"
+    ],
+    "clinics": [
+      "c-siddhika-domar"
+    ],
+    "schedule": "প্রতি শুক্রবার বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত।",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-rashed-menon-ent",
+    "name": "ডাঃ মোঃ রাশেদ মেনন",
+    "degree": "এমবিবিএস, বিসিএস, ডিএলও (বিএসএমএমইউ) | বঙ্গবন্ধু শেখ মুজিব মেডিকেল বিশ্ববিদ্যালয় | বিভাগ: নাক, কান, গলা ও হেড-নেক সার্জারি বিভাগ, রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | নাক, কান, গলা ও হেড-নেক সার্জারি বিশেষজ্ঞ",
+    "specialty": "ENT",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-siddhika-domar"
+    ],
+    "schedule": "প্রতি মঙ্গলবার বিকাল ৪টা থেকে রাত ৮টা পর্যন্ত।",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-mithun-chandra-bhowmik",
+    "name": "ডাঃ মিথুন চন্দ্র ভৌমিক",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি-ডার্মাটোলজি, সি.সি.টি. (বাংলাদেশ), পিজিটি (চর্ম ও যৌন) | সহকারী অধ্যাপক (ডার্মাটোলজি), দিনাজপুর মেডিকেল কলেজ ও হাসপাতাল, দিনাজপুর | চর্ম, যৌন ও এলার্জি রোগ বিশেষজ্ঞ",
+    "specialty": "Dermatology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Dinajpur"
+    ],
+    "clinics": [
+      "c-siddhika-domar"
+    ],
+    "schedule": "প্রতি বুধবার বিকাল ৪টা থেকে রাত ৮টা পর্যন্ত।",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
   },
   {
     "id": "dr-habibur-rahman-dental",

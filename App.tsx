@@ -4580,13 +4580,26 @@ export default function App() {
             'dr-ar-hasina-banu', 'dr-ar-shamsur', 'dr-ar-mahbubul',
             'eb-saiful-card', 'j-rikkon', 'j-shaheen-gyn', 'j-al-amin', 'pacific-shahjada',
             'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
-            'ev-asad', 'ev-nripen', 'ek-gyn1'
+            'ev-asad', 'ev-nripen', 'ek-gyn1',
+            'dr-shariful-islam-ratan', 'dr-soheli-binte-mostafa', 'dr-gopal-chandra-roy',
+            'dr-rashed-menon-ent', 'dr-mithun-chandra-bhowmik'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
           missingDocs.forEach(tDoc => {
             setDoc(doc(db, 'doctors', tDoc.id), tDoc, { merge: true }).catch(e => console.warn(`Auto-syncing missing ${tDoc.id} in DB:`, e));
           });
+
+          // Also auto-sync or update hospital in DB
+          const siddhikaDoc = hospRes.docs.find(docH => docH.id === 'c-siddhika-domar');
+          const siddhikaHosp = CLINICS.find(c => c.id === 'c-siddhika-domar');
+          if (siddhikaHosp) {
+            if (!siddhikaDoc) {
+              setDoc(doc(db, 'hospitals', siddhikaHosp.id), siddhikaHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-siddhika-domar in DB:`, e));
+            } else if (siddhikaDoc.data()?.name !== siddhikaHosp.name) {
+              setDoc(doc(db, 'hospitals', siddhikaHosp.id), { name: siddhikaHosp.name }, { merge: true }).catch(e => console.warn(`Updating c-siddhika-domar name:`, e));
+            }
+          }
         }).catch(() => {});
       }
 
