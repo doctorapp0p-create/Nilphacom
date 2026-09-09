@@ -1076,16 +1076,26 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
       {/* ========================================================================= */}
       <AnimatePresence>
         {showRegModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/75 backdrop-blur-md overflow-hidden">
+            {/* Backdrop click dismiss */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-6 my-8 text-left"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowRegModal(false)}
+              className="absolute inset-0 cursor-pointer"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="bg-white rounded-3xl max-w-xl w-full max-h-[92dvh] sm:max-h-[88vh] shadow-2xl border border-slate-100 flex flex-col overflow-hidden text-left relative z-10"
             >
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              {/* Pinned / Fixed Header */}
+              <div className="flex items-center justify-between border-b border-slate-100 p-4 sm:p-6 bg-white shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-xl font-black">
+                  <div className="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-xl font-black shrink-0">
                     🩸
                   </div>
                   <div>
@@ -1098,153 +1108,164 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setShowRegModal(false)}
-                  className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-500 transition-all cursor-pointer"
+                  className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-500 transition-all cursor-pointer shrink-0"
+                  aria-label="বন্ধ করুন"
                 >
-                  <X size={16} />
+                  <X size={18} />
                 </button>
               </div>
 
-              <form onSubmit={handleRegisterDonor} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Name */}
+              {/* Form wrapping scrollable inputs and pinned footer */}
+              <form onSubmit={handleRegisterDonor} className="flex flex-col flex-1 overflow-hidden min-h-0">
+                {/* Scrollable Form Body */}
+                <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4 overscroll-contain">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Name */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-slate-700">আপনার পূর্ণ নাম *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="যেমন: মো: আরিফুল ইসলাম"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
+                      />
+                    </div>
+
+                    {/* Blood Group */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-slate-700">রক্তের গ্রুপ *</label>
+                      <select
+                        value={formData.bloodGroup}
+                        onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value as BloodGroup })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-rose-700 outline-none focus:border-rose-500"
+                      >
+                        {BLOOD_GROUPS.map(grp => (
+                          <option key={grp} value={grp}>{grp} ({grp.includes('+') ? 'পজিটিভ' : 'নেগেটিভ'})</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Phone */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-slate-700">মোবাইল নম্বর *</label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="যেমন: 01712345678"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
+                      />
+                    </div>
+
+                    {/* Alternate Phone */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-slate-700">বিকল্প নম্বর / হোয়াটসঅ্যাপ (ঐচ্ছিক)</label>
+                      <input
+                        type="tel"
+                        placeholder="বিকল্প নম্বর"
+                        value={formData.alternatePhone}
+                        onChange={(e) => setFormData({ ...formData, alternatePhone: e.target.value })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
+                      />
+                    </div>
+
+                    {/* District */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-slate-700">জেলা *</label>
+                      <select
+                        value={formData.district}
+                        onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
+                      >
+                        <option value="নীলফামারী">নীলফামারী</option>
+                        <option value="রংপুর">রংপুর</option>
+                        <option value="দিনাজপুর">দিনাজপুর</option>
+                        <option value="কুড়িগ্রাম">কুড়িগ্রাম</option>
+                        <option value="লালমনিরহাট">লালমনিরহাট</option>
+                        <option value="পঞ্চগড়">পঞ্চগড়</option>
+                        <option value="ঠাকুরগাঁও">ঠাকুরগাঁও</option>
+                        <option value="ঢাকা">ঢাকা</option>
+                        <option value="অন্যান্য">অন্যান্য</option>
+                      </select>
+                    </div>
+
+                    {/* Upazila */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-slate-700">উপজেলা / থানা</label>
+                      <input
+                        type="text"
+                        placeholder="যেমন: সদর / সৈয়দপুর / ডোমার / ডিমলা"
+                        value={formData.upazila}
+                        onChange={(e) => setFormData({ ...formData, upazila: e.target.value })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Detailed Address */}
                   <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-700">আপনার পূর্ণ নাম *</label>
+                    <label className="text-xs font-black text-slate-700">বিস্তারিত ঠিকানা / গ্রাম / মহল্লা *</label>
                     <input
                       type="text"
                       required
-                      placeholder="যেমন: মো: আরিফুল ইসলাম"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="যেমন: কলেজ রোড, নতুন বাজার, নীলফামারী"
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
                     />
                   </div>
 
-                  {/* Blood Group */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-700">রক্তের গ্রুপ *</label>
-                    <select
-                      value={formData.bloodGroup}
-                      onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value as BloodGroup })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-rose-700 outline-none focus:border-rose-500"
-                    >
-                      {BLOOD_GROUPS.map(grp => (
-                        <option key={grp} value={grp}>{grp} ({grp.includes('+') ? 'পজিটিভ' : 'নেগেটিভ'})</option>
-                      ))}
-                    </select>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Last Donation Date */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-slate-700">সর্বশেষ রক্তদানের তারিখ (যদি দিয়ে থাকেন)</label>
+                      <input
+                        type="date"
+                        value={formData.lastDonationDate}
+                        onChange={(e) => setFormData({ ...formData, lastDonationDate: e.target.value })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
+                      />
+                    </div>
+
+                    {/* Ready to Donate */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-slate-700">রক্তদানে বর্তমান প্রস্তুতি</label>
+                      <select
+                        value={formData.isAvailable ? 'yes' : 'no'}
+                        onChange={(e) => setFormData({ ...formData, isAvailable: e.target.value === 'yes' })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
+                      >
+                        <option value="yes">🟢 হ্যাঁ, আমি রক্তদানে প্রস্তুত</option>
+                        <option value="no">⏳ সাময়িক বিরতিতে আছি (৩ মাস পর)</option>
+                      </select>
+                    </div>
                   </div>
 
-                  {/* Phone */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-700">মোবাইল নম্বর *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="যেমন: 01712345678"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
-                    />
-                  </div>
-
-                  {/* Alternate Phone */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-700">বিকল্প নম্বর / হোয়াটসঅ্যাপ (ঐচ্ছিক)</label>
-                    <input
-                      type="tel"
-                      placeholder="বিকল্প নম্বর"
-                      value={formData.alternatePhone}
-                      onChange={(e) => setFormData({ ...formData, alternatePhone: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
-                    />
-                  </div>
-
-                  {/* District */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-700">জেলা *</label>
-                    <select
-                      value={formData.district}
-                      onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
-                    >
-                      <option value="নীলফামারী">নীলফামারী</option>
-                      <option value="রংপুর">রংপুর</option>
-                      <option value="দিনাজপুর">দিনাজপুর</option>
-                      <option value="কুড়িগ্রাম">কুড়িগ্রাম</option>
-                      <option value="লালমনিরহাট">লালমনিরহাট</option>
-                      <option value="পঞ্চগড়">পঞ্চগড়</option>
-                      <option value="ঠাকুরগাঁও">ঠাকুরগাঁও</option>
-                      <option value="ঢাকা">ঢাকা</option>
-                      <option value="অন্যান্য">অন্যান্য</option>
-                    </select>
-                  </div>
-
-                  {/* Upazila */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-700">উপজেলা / থানা</label>
-                    <input
-                      type="text"
-                      placeholder="যেমন: সদর / সৈয়দপুর / ডোমার / ডিমলা"
-                      value={formData.upazila}
-                      onChange={(e) => setFormData({ ...formData, upazila: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
-                    />
-                  </div>
+                  <p className="text-[11px] text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-200 font-medium">
+                    🔒 আপনার দেওয়া তথ্য শুধুমাত্র জরুরি রক্তের প্রয়োজনে রক্তগ্রহীতাদের সাহায্যার্থে ব্যবহার হবে।
+                  </p>
                 </div>
 
-                {/* Detailed Address */}
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-slate-700">বিস্তারিত ঠিকানা / গ্রাম / মহল্লা *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="যেমন: কলেজ রোড, নতুন বাজার, নীলফামারী"
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Last Donation Date */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-700">সর্বশেষ রক্তদানের তারিখ (যদি দিয়ে থাকেন)</label>
-                    <input
-                      type="date"
-                      value={formData.lastDonationDate}
-                      onChange={(e) => setFormData({ ...formData, lastDonationDate: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
-                    />
-                  </div>
-
-                  {/* Ready to Donate */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-700">রক্তদানে বর্তমান প্রস্তুতি</label>
-                    <select
-                      value={formData.isAvailable ? 'yes' : 'no'}
-                      onChange={(e) => setFormData({ ...formData, isAvailable: e.target.value === 'yes' })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-rose-500"
-                    >
-                      <option value="yes">🟢 হ্যাঁ, আমি রক্তদানে প্রস্তুত</option>
-                      <option value="no">⏳ সাময়িক বিরতিতে আছি (৩ মাস পর)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+                {/* Pinned Action Footer - Always visible and accessible on mobile screen */}
+                <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/95 backdrop-blur-sm flex items-center justify-end gap-3 shrink-0 z-10">
                   <button
                     type="button"
                     onClick={() => setShowRegModal(false)}
-                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl cursor-pointer"
+                    className="px-4 py-3 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all cursor-pointer"
                   >
                     বাতিল
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmittingReg}
-                    className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-black rounded-xl shadow-lg active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+                    className="flex-1 sm:flex-none px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-xs sm:text-sm font-black rounded-xl shadow-lg shadow-red-200 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    {isSubmittingReg ? <RefreshCw size={14} className="animate-spin" /> : <Check size={14} />}
+                    {isSubmittingReg ? <RefreshCw size={16} className="animate-spin" /> : <Check size={16} />}
                     <span>নিবন্ধন কনফার্ম করুন</span>
                   </button>
                 </div>
@@ -1259,16 +1280,24 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
       {/* ========================================================================= */}
       <AnimatePresence>
         {showEmergencyModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/75 backdrop-blur-md overflow-hidden">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-red-100 space-y-6 my-8 text-left"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowEmergencyModal(false)}
+              className="absolute inset-0 cursor-pointer"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="bg-white rounded-3xl max-w-lg w-full max-h-[92dvh] sm:max-h-[88vh] shadow-2xl border border-red-100 flex flex-col overflow-hidden text-left relative z-10"
             >
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center justify-between border-b border-slate-100 p-4 sm:p-6 bg-white shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-red-600 text-white flex items-center justify-center text-xl font-black">
+                  <div className="w-10 h-10 rounded-2xl bg-red-600 text-white flex items-center justify-center text-xl font-black shrink-0">
                     🚨
                   </div>
                   <div>
@@ -1281,90 +1310,94 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setShowEmergencyModal(false)}
-                  className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-500 transition-all cursor-pointer"
+                  className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-500 transition-all cursor-pointer shrink-0"
+                  aria-label="বন্ধ করুন"
                 >
-                  <X size={16} />
+                  <X size={18} />
                 </button>
               </div>
 
-              <form onSubmit={handleSendEmergencyRequest} className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-700">প্রয়োজনীয় রক্তের গ্রুপ *</label>
-                    <select
-                      value={emergencyBloodGroup}
-                      onChange={(e) => setEmergencyBloodGroup(e.target.value as BloodGroup)}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-red-600 outline-none"
-                    >
-                      {BLOOD_GROUPS.map(grp => (
-                        <option key={grp} value={grp}>{grp}</option>
-                      ))}
-                    </select>
+              <form onSubmit={handleSendEmergencyRequest} className="flex flex-col flex-1 overflow-hidden min-h-0">
+                <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4 overscroll-contain">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-slate-700">প্রয়োজনীয় রক্তের গ্রুপ *</label>
+                      <select
+                        value={emergencyBloodGroup}
+                        onChange={(e) => setEmergencyBloodGroup(e.target.value as BloodGroup)}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-red-600 outline-none"
+                      >
+                        {BLOOD_GROUPS.map(grp => (
+                          <option key={grp} value={grp}>{grp}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-black text-slate-700">রক্তের পরিমাণ (ব্যাগ) *</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={emergencyBags}
+                        onChange={(e) => setEmergencyBags(e.target.value)}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-700">রক্তের পরিমাণ (ব্যাগ) *</label>
+                    <label className="text-xs font-black text-slate-700">হাসপাতালের নাম ও ঠিকানা *</label>
                     <input
-                      type="number"
-                      min="1"
-                      max="10"
-                      value={emergencyBags}
-                      onChange={(e) => setEmergencyBags(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none"
+                      type="text"
+                      required
+                      placeholder="যেমন: নীলফামারী সদর হাসপাতাল / রংপুর মেডিকেল"
+                      value={emergencyHospital}
+                      onChange={(e) => setEmergencyHospital(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-slate-700">রোগীর স্বজনের মোবাইল নম্বর *</label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="যেমন: 01712345678"
+                      value={emergencyPhone}
+                      onChange={(e) => setEmergencyPhone(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-slate-700">অতিরিক্ত বিবরণ বা রোগীর সমস্যা</label>
+                    <textarea
+                      rows={2}
+                      placeholder="যেমন: রোগীর সিজারিয়ান অপারেশন / ডেঙ্গু রোগী / রক্তের অতি জরুরি প্রয়োজন"
+                      value={emergencyNotes}
+                      onChange={(e) => setEmergencyNotes(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 outline-none focus:border-red-500"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-slate-700">হাসপাতালের নাম ও ঠিকানা *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="যেমন: নীলফামারী সদর হাসপাতাল / রংপুর মেডিকেল"
-                    value={emergencyHospital}
-                    onChange={(e) => setEmergencyHospital(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-slate-700">রোগীর স্বজনের মোবাইল নম্বর *</label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="যেমন: 01712345678"
-                    value={emergencyPhone}
-                    onChange={(e) => setEmergencyPhone(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-black text-slate-700">অতিরিক্ত বিবরণ বা রোগীর সমস্যা</label>
-                  <textarea
-                    rows={2}
-                    placeholder="যেমন: রোগীর সিজারিয়ান অপারেশন / ডেঙ্গু রোগী / রক্তের অতি জরুরি প্রয়োজন"
-                    value={emergencyNotes}
-                    onChange={(e) => setEmergencyNotes(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 outline-none focus:border-red-500"
-                  />
-                </div>
-
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+                <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/95 backdrop-blur-sm flex items-center justify-end gap-3 shrink-0 z-10">
                   <button
                     type="button"
                     onClick={() => setShowEmergencyModal(false)}
-                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl cursor-pointer"
+                    className="px-4 py-3 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all cursor-pointer"
                   >
                     বাতিল
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-black rounded-xl shadow-lg active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+                    className="flex-1 sm:flex-none px-6 py-3 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-black rounded-xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <MessageSquare size={14} />
-                    <span>হোয়াটসঅ্যাপে সাপোর্ট টিমকে জানান</span>
+                    <MessageSquare size={16} />
+                    <span>হোয়াটসঅ্যাপে জানান</span>
                   </button>
                 </div>
               </form>
@@ -1378,16 +1411,24 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
       {/* ========================================================================= */}
       <AnimatePresence>
         {showPhoneLookupModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/75 backdrop-blur-md overflow-hidden">
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowPhoneLookupModal(false)}
+              className="absolute inset-0 cursor-pointer"
+            />
+
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              className="bg-white rounded-3xl max-w-md w-full max-h-[92dvh] sm:max-h-[88vh] shadow-2xl border border-slate-100 flex flex-col overflow-hidden relative z-10 text-left"
             >
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center justify-between border-b border-slate-100 p-4 sm:p-5 shrink-0 bg-white">
                 <div className="flex items-center gap-2 text-slate-800">
-                  <div className="w-9 h-9 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-lg">
+                  <div className="w-9 h-9 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-lg shrink-0">
                     📱
                   </div>
                   <div>
@@ -1396,63 +1437,67 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setShowPhoneLookupModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 cursor-pointer shrink-0"
+                  aria-label="বন্ধ করুন"
                 >
                   <X size={18} />
                 </button>
               </div>
 
-              <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                আপনি যদি ইতিপূর্বে রক্তদাতা হিসেবে রেজিস্ট্রেশন করে থাকেন, তবে নিচে আপনার মোবাইল নম্বরটি লিখুন। নম্বর মিলে গেলে সকল রক্তদাতার নম্বর তাৎক্ষণিকভাবে আপনার জন্য আনলক হয়ে যাবে।
-              </p>
+              <form onSubmit={handlePhoneLookup} className="flex flex-col flex-1 overflow-hidden min-h-0">
+                <div className="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4 overscroll-contain">
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                    আপনি যদি ইতিপূর্বে রক্তদাতা হিসেবে রেজিস্ট্রেশন করে থাকেন, তবে নিচে আপনার মোবাইল নম্বরটি লিখুন। নম্বর মিলে গেলে সকল রক্তদাতার নম্বর তাৎক্ষণিকভাবে আপনার জন্য আনলক হয়ে যাবে।
+                  </p>
 
-              <form onSubmit={handlePhoneLookup} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-black text-slate-700">আপনার মোবাইল নম্বর</label>
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      required
-                      autoFocus
-                      placeholder="যেমন: 01712345678"
-                      value={phoneLookupInput}
-                      onChange={(e) => {
-                        setPhoneLookupInput(e.target.value);
-                        setLookupError('');
-                      }}
-                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-rose-500"
-                    />
-                    <Phone size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
-                  </div>
-                  {lookupError && (
-                    <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-bold space-y-2">
-                      <p>{lookupError}</p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowPhoneLookupModal(false);
-                          setShowRegModal(true);
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-black text-slate-700">আপনার মোবাইল নম্বর</label>
+                    <div className="relative">
+                      <input
+                        type="tel"
+                        required
+                        autoFocus
+                        placeholder="যেমন: 01712345678"
+                        value={phoneLookupInput}
+                        onChange={(e) => {
+                          setPhoneLookupInput(e.target.value);
+                          setLookupError('');
                         }}
-                        className="text-xs text-rose-800 underline font-black cursor-pointer"
-                      >
-                        নতুন রক্তদাতা হিসেবে নিবন্ধন করতে এখানে ক্লিক করুন →
-                      </button>
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 outline-none focus:border-rose-500"
+                      />
+                      <Phone size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
                     </div>
-                  )}
+                    {lookupError && (
+                      <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-bold space-y-2">
+                        <p>{lookupError}</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowPhoneLookupModal(false);
+                            setShowRegModal(true);
+                          }}
+                          className="text-xs text-rose-800 underline font-black cursor-pointer"
+                        >
+                          নতুন রক্তদাতা হিসেবে নিবন্ধন করতে এখানে ক্লিক করুন →
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-slate-100">
+                <div className="p-4 border-t border-slate-100 bg-slate-50/95 backdrop-blur-sm flex items-center justify-end gap-2.5 shrink-0 z-10">
                   <button
                     type="button"
                     onClick={() => setShowPhoneLookupModal(false)}
-                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl cursor-pointer"
+                    className="px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 cursor-pointer"
                   >
                     বাতিল
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-xs font-black rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
+                    className="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-xs font-black rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
                   >
                     যাচাই ও আনলক করুন
                   </button>
