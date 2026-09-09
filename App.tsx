@@ -6993,6 +6993,8 @@ export default function App() {
         doctorSpecialty={bookingDoctor?.specialty || ''} 
         hotline={HOTLINE_CONTACT} 
         onSuccess={handleBookingSuccess}
+        doctor={bookingDoctor}
+        isLiveDoctor={Boolean(bookingDoctor?.isVideoConsultant)}
       />
 
       <Routes>

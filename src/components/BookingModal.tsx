@@ -13,9 +13,20 @@ interface BookingModalProps {
   doctorSpecialty: string;
   hotline: string;
   onSuccess?: () => void;
+  doctor?: any;
+  isLiveDoctor?: boolean;
 }
 
-export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doctorName, doctorSpecialty, hotline, onSuccess }) => {
+export const BookingModal: React.FC<BookingModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  doctorName, 
+  doctorSpecialty, 
+  hotline, 
+  onSuccess,
+  doctor,
+  isLiveDoctor: propIsLiveDoctor 
+}) => {
   const [user, setUser] = useState(auth.currentUser);
   const [profile, setProfile] = useState<any>(null);
   const [activeSubscription, setActiveSubscription] = useState<any>(null);
@@ -516,7 +527,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
     activeSubscription && activeSubscription.plan_type === 'test_discount' && !isFreeDoctorSubscriber
   );
 
-  const feeAmount = isFreeDoctorSubscriber ? 0 : 50;
+  const isLive = Boolean(propIsLiveDoctor ?? doctor?.isVideoConsultant);
+  const liveFee = doctor?.liveFee || doctor?.consultationFee || 200;
+  const feeAmount = isLive ? (isFreeDoctorSubscriber ? 0 : liveFee) : (doctor?.consultationFee || 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -531,10 +544,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
       return;
     }
 
-    // If non-subscriber, check if they acknowledged the 50 BDT fee
-    if (!isFreeDoctorSubscriber && !isPaidChecked && !trxId.trim()) {
+    // Only if it's an actual live doctor and non-subscriber, check if they acknowledged the fee
+    if (isLive && !isFreeDoctorSubscriber && !isPaidChecked && !trxId.trim()) {
       const confirmProceed = window.confirm(
-        "অনলাইনে ডাক্তার দেখানোর জন্য ৫০ টাকা কনসালটেশন ফি প্রযোজ্য। আপনি কি বিকাশ/নগদে ৫০ টাকা ফি পরিশোধ করতে সম্মত আছেন এবং সিরিয়াল সাবমিট করতে চান?"
+        `অনলাইনে লাইভ ডাক্তার দেখানোর জন্য ৳${liveFee} কনসালটেশন ফি প্রযোজ্য। আপনি কি বিকাশ/নগদে ফি পরিশোধ করতে সম্মত আছেন এবং সিরিয়াল সাবমিট করতে চান?`
       );
       if (!confirmProceed) return;
     }
@@ -579,10 +592,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
         referred_by_code: referralCode,
         referred_by_name: refDocNameVal,
         consultation_fee: feeAmount,
-        payment_method: isFreeDoctorSubscriber ? 'free_subscription' : paymentMethod,
-        payment_trx_id: trxId.trim(),
-        payment_sender_phone: senderPhone.trim() || formData.phone,
-        payment_status: isFreeDoctorSubscriber ? 'waived' : (trxId.trim() ? 'paid' : 'pending'),
+        booking_type: isLive ? 'live_consultation' : 'chamber_serial',
+        payment_method: isLive ? (isFreeDoctorSubscriber ? 'free_subscription' : paymentMethod) : 'chamber_payment',
+        payment_trx_id: isLive ? trxId.trim() : '',
+        payment_sender_phone: isLive ? (senderPhone.trim() || formData.phone) : '',
+        payment_status: isLive ? (isFreeDoctorSubscriber ? 'waived' : (trxId.trim() ? 'paid' : 'pending')) : 'chamber_payable',
         subscription_card_number: activeSubscription?.card_number || '',
         subscription_plan_name: activeSubscription?.plan_name || '',
         has_30_discount_on_tests: Boolean(activeSubscription),
@@ -592,7 +606,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
       await addDoc(appointmentRef, appRecord);
 
       // WhatsApp message structure
-      let message = `*নতুন অনলাইন ডাক্তার সিরিয়াল বুকিং*\n\n`;
+      let message = isLive ? `*নতুন অনলাইন লাইভ ডাক্তার কনসালটেশন বুকিং*\n\n` : `*নতুন ডাক্তার চেম্বার সিরিয়াল বুকিং*\n\n`;
       message += `👨‍⚕️ ডাক্তার: *${doctorName}*\n`;
       message += `🩺 বিশেষজ্ঞ: ${doctorSpecialty}\n`;
       message += `------------------------------------\n`;
@@ -603,23 +617,27 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
       message += `• মোবাইল: ${formData.phone}\n`;
       message += `• সমস্যা: ${formData.problem || 'উল্লিখিত নেই'}\n`;
       message += `• সাক্ষাতের তারিখ: *${formData.date}*\n`;
+      if (!isLive && doctor?.consultationFee) {
+        message += `• ডাক্তার চেম্বার ফি: ৳${doctor.consultationFee} (চেম্বারে প্রযোজ্য)\n`;
+      }
       message += `------------------------------------\n`;
-      message += `💳 *সাবস্ক্রিপশন ও প্যাকেজ স্ট্যাটাস:*\n`;
-      if (activeSubscription) {
-        message += `⭐ প্যাকেজ: *${activeSubscription.plan_name}*\n`;
-        message += `🔖 মেম্বারশিপ কার্ড: *${activeSubscription.card_number}*\n`;
-        message += `✨ সকল টেস্টে ২০% ডিসকাউন্ট: *প্রযোজ্য (সক্রিয়)*\n`;
-        if (isFreeDoctorSubscriber) {
+      if (isLive) {
+        message += `💳 *লাইভ কনসালটেশন ফি ও পেমেন্ট:*\n`;
+        if (activeSubscription && isFreeDoctorSubscriber) {
+          message += `⭐ প্যাকেজ: *${activeSubscription.plan_name}*\n`;
+          message += `🔖 মেম্বারশিপ কার্ড: *${activeSubscription.card_number}*\n`;
           message += `🎁 ডাক্তার ফি: *৳০ (ফ্রি সাবস্ক্রিপশন)*\n`;
         } else {
-          message += `💵 ডাক্তার ফি: *৳৫০* (পেমেন্ট: ${paymentMethod}, TrxID: ${trxId || 'পেন্ডিং'})\n`;
+          message += `💵 লাইভ ডাক্তার ফি: *৳${liveFee}*\n`;
+          message += `• পেমেন্ট মেথড: ${paymentMethod === 'bkash' ? 'বিকাশ' : 'নগদ'}\n`;
+          if (senderPhone) message += `• প্রেরক নম্বর: ${senderPhone}\n`;
+          if (trxId) message += `• TrxID: ${trxId}\n`;
         }
-      } else {
-        message += `• প্যাকেজ: কোনো সাবস্ক্রিপশন প্যাকেজ নেই\n`;
-        message += `💵 ডাক্তার কনসালটেশন ফি: *৳৫০*\n`;
-        message += `• পেমেন্ট মেথড: ${paymentMethod === 'bkash' ? 'বিকাশ' : 'নগদ'}\n`;
-        if (senderPhone) message += `• প্রেরক নম্বর: ${senderPhone}\n`;
-        if (trxId) message += `• TrxID: ${trxId}\n`;
+      } else if (activeSubscription) {
+        message += `💳 *মেম্বারশিপ ও সাবস্ক্রিপশন:*\n`;
+        message += `⭐ প্যাকেজ: *${activeSubscription.plan_name}*\n`;
+        message += `🔖 মেম্বারশিপ কার্ড: *${activeSubscription.card_number}*\n`;
+        message += `✨ সকল টেস্টে ২০% ডিসকাউন্ট: *প্রযোজ্য*\n`;
       }
 
       if (referralCode) {
@@ -1046,35 +1064,55 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
                     </p>
                     <div className="text-[10px] font-bold text-emerald-700 flex flex-col gap-0.5">
                       <span>✓ সকল ল্যাব টেস্টে ২০% বিশেষ ছাড় সক্রিয়</span>
-                      {isFreeDoctorSubscriber ? (
-                        <span className="font-black text-blue-700">🎁 অনলাইন ডাক্তার ফি: সম্পূর্ণ ফ্রি (৳০)</span>
+                      {isLive ? (
+                        isFreeDoctorSubscriber ? (
+                          <span className="font-black text-blue-700">🎁 লাইভ ডাক্তার ফি: সম্পূর্ণ ফ্রি (৳০)</span>
+                        ) : (
+                          <span className="text-slate-600">💵 লাইভ ডাক্তার ফি: ৳{liveFee}</span>
+                        )
                       ) : (
-                        <span className="text-slate-600">💵 অনলাইন ডাক্তার ফি: ৫০ টাকা</span>
+                        isFreeDoctorSubscriber && (
+                          <span className="font-black text-blue-700">🎁 ফ্রি কনসালটেশন মেম্বারশিপ অন্তর্ভুক্ত</span>
+                        )
                       )}
                     </div>
                   </div>
-                ) : (
-                  <div className="bg-amber-50/70 border border-amber-200 rounded-3xl p-4 space-y-2">
+                ) : isLive ? (
+                  <div className="bg-rose-50/70 border border-rose-200 rounded-3xl p-4 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-black text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
-                        💳 অনলাইন কনসালটেশন ফি
+                      <span className="text-[11px] font-black text-rose-900 uppercase tracking-wider flex items-center gap-1.5">
+                        🔴 অনলাইন লাইভ কনসালটেশন ফি
                       </span>
-                      <span className="bg-amber-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full">
-                        ফি: ৫০ টাকা
+                      <span className="bg-rose-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full">
+                        ফি: ৳{liveFee}
                       </span>
                     </div>
                     <p className="text-[11px] font-bold text-slate-700 leading-relaxed">
-                      যাদের কোনো সাবস্ক্রিপশন প্যাকেজ নেওয়া নেই, তারা ৫০ টাকা ফি পরিশোধ করে অনলাইনে ডাক্তারের সাথে কথা বা পরামর্শ নিতে পারবেন।
+                      যাদের কোনো সাবস্ক্রিপশন প্যাকেজ নেওয়া নেই, তারা ৳{liveFee} ফি পরিশোধ করে ডাক্তারের সাথে সরাসরি অনলাইনে লাইভ পরামর্শ নিতে পারবেন।
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-slate-50 border border-slate-200 rounded-3xl p-3.5 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                        🏥 ডাক্তারের চেম্বার সিরিয়াল
+                      </span>
+                      <span className="bg-emerald-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full">
+                        সিরিয়াল ফ্রি
+                      </span>
+                    </div>
+                    <p className="text-[10px] font-medium text-slate-500 leading-relaxed">
+                      অনলাইনে সিরিয়াল দিতে কোনো অগ্রিম ফি নেই। ডাক্তারের নির্ধারিত ভিজিট ফি চেম্বারে রোগী দেখানোর সময় সরাসরি প্রদান করবেন।
                     </p>
                   </div>
                 )}
 
-                {/* 50 BDT Payment Section for Non-Free Subscribers */}
-                {!isFreeDoctorSubscriber && (
+                {/* Live Doctor Fee Payment Section - ONLY for actual live doctors when not free */}
+                {isLive && !isFreeDoctorSubscriber && (
                   <div className="bg-slate-50 border border-slate-200 rounded-3xl p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <label className="text-[10px] font-black uppercase text-slate-600 tracking-wider">
-                        পেমেন্ট মাধ্যম (৫০ টাকা পাঠান)
+                        পেমেন্ট মাধ্যম (৳{liveFee} পাঠান)
                       </label>
                       <div className="flex gap-1.5">
                         <button
@@ -1119,7 +1157,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
                           type="text"
                           value={trxId}
                           onChange={(e) => setTrxId(e.target.value)}
-                          placeholder="যেমন: TR98XXXXX"
+                          placeholder=" যেমন: TR98XXXXX"
                           className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 uppercase"
                         />
                       </div>
@@ -1133,7 +1171,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
                         className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300"
                       />
                       <span className="text-[10px] font-bold text-slate-600">
-                        আমি ৫০ টাকা ফি পরিশোধ করেছি / চেম্বার বা অনলাইনে পরিশোধ করতে সম্মত।
+                        আমি ৳{liveFee} ফি পরিশোধ করেছি / চেম্বার বা অনলাইনে পরিশোধ করতে সম্মত।
                       </span>
                     </label>
                   </div>
@@ -1143,7 +1181,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
                   type="submit" 
                   className="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-5 rounded-[24px] font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-emerald-100 active:scale-95 transition-all flex items-center justify-center gap-3 mt-4 cursor-pointer"
                 >
-                  {isFreeDoctorSubscriber ? 'বিনামূল্যে সিরিয়াল পাঠান (৳০)' : 'সিরিয়াল ও বুকিং নিশ্চিত করুন (৳৫০)'} <ArrowRight size={16} />
+                  {isLive 
+                    ? (isFreeDoctorSubscriber ? 'বিনামূল্যে লাইভ কনসালটেশন পাঠান (৳০)' : `লাইভ কনসালটেশন নিশ্চিত করুন (৳${liveFee})`)
+                    : 'সিরিয়াল ও বুকিং নিশ্চিত করুন'
+                  } <ArrowRight size={16} />
                 </button>
                 
                 <p className="text-[9px] text-slate-400 text-center font-bold uppercase tracking-tight">

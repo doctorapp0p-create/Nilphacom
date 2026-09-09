@@ -468,6 +468,8 @@ export const DoctorProfilePage: React.FC<{ doctorsList?: Doctor[]; clinicsList?:
           doctorName={doctor.name}
           doctorSpecialty={doctor.specialty}
           hotline={HOTLINE}
+          doctor={doctor}
+          isLiveDoctor={Boolean(doctor?.isVideoConsultant)}
         />
         
         {/* FAQs Section */}
@@ -679,6 +681,8 @@ export const ClinicLandingPage: React.FC<{ doctorsList?: Doctor[]; clinicsList?:
                   doctorName={selectedDoctor.name}
                   doctorSpecialty={selectedDoctor.specialty}
                   hotline={HOTLINE}
+                  doctor={selectedDoctor}
+                  isLiveDoctor={Boolean(selectedDoctor?.isVideoConsultant)}
                 />
               )}
            </div>
@@ -836,6 +840,8 @@ export const SpecialistLandingPage: React.FC<{ doctorsList?: Doctor[] }> = ({ do
                           doctorName={selectedDoctor.name}
                           doctorSpecialty={selectedDoctor.specialty}
                           hotline={HOTLINE}
+                          doctor={selectedDoctor}
+                          isLiveDoctor={Boolean(selectedDoctor?.isVideoConsultant)}
                         />
                     )}
 
@@ -942,6 +948,8 @@ export const DistrictLandingPage: React.FC<{ doctorsList?: Doctor[] }> = ({ doct
                         doctorName={selectedDoctor.name}
                         doctorSpecialty={selectedDoctor.specialty}
                         hotline={HOTLINE}
+                        doctor={selectedDoctor}
+                        isLiveDoctor={Boolean(selectedDoctor?.isVideoConsultant)}
                     />
                 )}
             </div>
