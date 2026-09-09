@@ -465,6 +465,22 @@ export const CLINICS: Clinic[] = [
       "dr-aleya-khatun-gyn"
     ],
     "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-al-madina-domar",
+    "name": "আল-মদিনা ডায়াগনষ্টিক সেন্টার",
+    "district": "Nilphamari",
+    "address": "বনওয়ারীর মোড়, ডিবি রোড, ডোমার, নীলফামারী।",
+    "doctors": [
+      "dr-anwarur-rahman-anon",
+      "dr-mominur-rahman-sonet",
+      "dr-gaosul-alam-mostakin",
+      "dr-tapan-kumar-roy-med",
+      "dr-ashim-roy-chowdhury-ortho",
+      "dr-tahmina-sultana-toma-gyn",
+      "dr-fahim-kiswal-skin"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   }
 ];
 
@@ -2567,7 +2583,7 @@ export const DOCTORS: Doctor[] = [
   {
     "id": "dr-mominur-rahman-sonet",
     "name": "ডাঃ মোঃ মমিনুর রহমান (সনেট)",
-    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), পিজিটি (জেনারেল সার্জারী), সিসিডি (বারডেম), সিএমইউ (আল্ট্রা), এমএস (রেসিডেন্ট, ইন কোর্স) | মেডিকেল অফিসার, উপজেলা স্বাস্থ্য কমপ্লেক্স, ডিমলা, নীলফামারী | হাড় জোড়া, বাত, ব্যথা রোগ চিকিৎসক ও সার্জন",
+    "degree": "এম.বি.বি.এস, বি.সি.এস. (স্বাস্থ্য), পিজিটি (অর্থোপেডিক্স সার্জারী), পিজিটি (জেনারেল সার্জারী), সি.সি.ডি. (বারডেম), সি.এম.ইউ (আল্ট্রাসনোগ্রাম), ময়মনসিংহ মেডিকেল কলেজ এন্ড হাসপাতাল, এম.এস (ইনকোর্স) | বি.এম.ডি.সি রেজি: এ-৬৯৭১৪ | মেডিসিন, অর্থোপেডিক্স ও বাত-ব্যথা অভিজ্ঞ",
     "specialty": "Orthopedics",
     "districts": [
       "Nilphamari",
@@ -2576,9 +2592,10 @@ export const DOCTORS: Doctor[] = [
       "Dimla"
     ],
     "clinics": [
-      "c-seven-star-domar"
+      "c-seven-star-domar",
+      "c-al-madina-domar"
     ],
-    "schedule": "প্রতিদিন বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত",
+    "schedule": "সেভেন স্টার ও আল-মদিনা: প্রতিদিন বিকাল ৩টা থেকে রাত ৮টা",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
@@ -2663,8 +2680,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-gaosul-alam-mostakin",
-    "name": "ডাঃ মোঃ গাওসুল আলম মোস্তাকিন",
-    "degree": "এম.বি.বি.এস (আর.ইউ), সি.এম.ইউ/ডি.এম.ইউ, ক্লিনিকাল সনোলজিস্ট (আল্ট্রাসনোগ্রাম) | বিএমডিসি রেজি নংঃ এ-১৩১৮২৯ | মেডিসিন ও বাত-ব্যথা রোগের চিকিৎসক",
+    "name": "ডাঃ মোঃ গাওসুল আলম মোস্তাকিন (ইয়েন)",
+    "degree": "এমবিবিএস (আর ইউ), ডিএমইউ, সিএমইউ (ক্লিনিক্যাল সনোলজিষ্ট) | প্রাক্তন মেডিকেল অফিসার, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল, রংপুর | বিএমডিসি রেজি নং-১৩১৮২৯ | সার্বক্ষনিক মেডিসিন চিকিৎসক ও ক্লিনিক্যাল সনোলজিস্ট",
     "specialty": "Medicine",
     "districts": [
       "Nilphamari",
@@ -2672,9 +2689,10 @@ export const DOCTORS: Doctor[] = [
       "ডোমার"
     ],
     "clinics": [
-      "c-seven-star-domar"
+      "c-seven-star-domar",
+      "c-al-madina-domar"
     ],
-    "schedule": "প্রতিদিন সকাল ১০টা হতে রাত ৮টা পর্যন্ত",
+    "schedule": "প্রতিদিন সকাল ১০টা থেকে বিকাল ৫টা পর্যন্ত",
     "availableToday": true,
     "rating": 4.7,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
@@ -2756,6 +2774,105 @@ export const DOCTORS: Doctor[] = [
     "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-anwarur-rahman-anon",
+    "name": "ডাঃ আনোয়ারুর রহমান (আনোন)",
+    "degree": "এম.বি.বি.এস (সি.এম.সি), পি.জি.টি (ই.এন.টি), ডি.এল.ও, বঙ্গবন্ধু শেখ মুজিব মেডিকেল বিশ্ববিদ্যালয় (পিজি হাসপাতাল) | ককলিয়ার ইমপ্ল্যান্ট ও কানের মাইক্রোসার্জারীতে বিশেষ প্রশিক্ষণপ্রাপ্ত | রেজিস্ট্রার, প্রাইম মেডিকেল কলেজ হাসপাতাল, রংপুর | নাক, কান, গলা রোগ বিশেষজ্ঞ এবং হেড নেক সার্জন",
+    "specialty": "ENT",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-al-madina-domar"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে বিকাল ৫টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-tapan-kumar-roy-med",
+    "name": "ডাঃ তপন কুমার রায়",
+    "degree": "এমবিবিএস (রামেক), বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন) শেষ পর্ব, এম ডি (বক্ষব্যাধি) কোর্স, ঢাকা মেডিকেল কলেজ হাসপাতাল, ঢাকা | BMDC No-A-73287 | মেডিসিন ও বক্ষব্যাধি বিশেষজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-al-madina-domar"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে সন্ধ্যা ৭টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-ashim-roy-chowdhury-ortho",
+    "name": "ডাঃ অসীম রায় চৌধুরী",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডি-অর্থো (বঙ্গবন্ধু শেখ মুজিব মেডিকেল বিশ্ববিদ্যালয়) | অর্থোপেডিক্স ও ট্রমা সার্জন | সহকারী রেজিস্ট্রার, অর্থোপেডিক্স বিভাগ, দিনাজপুর মেডিকেল কলেজ হাসপাতাল, দিনাজপুর | হাড়-জোড়, হাড় ভাঙ্গা, বাত-ব্যথা, জয়েন্ট ব্যথা অর্থোপেডিক্স বিশেষজ্ঞ ও ট্রমা সার্জন",
+    "specialty": "Orthopedics",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Dinajpur"
+    ],
+    "clinics": [
+      "c-al-madina-domar"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে বিকাল ৫টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-tahmina-sultana-toma-gyn",
+    "name": "ডাঃ তাহমিনা সুলতানা (তমা)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এম এস (গাইনী এন্ড অবস্), বাংলাদেশ মেডিকেল বিশ্ববিদ্যালয়, এফসিপিএস (শেষ পর্ব) | বন্ধ্যাত্ব বিষয়ে উচ্চতর প্রশিক্ষণপ্রাপ্ত | ল্যাপারোস্কপিক ও হিস্টেরোস্কোপিক সার্জন | বন্ধ্যাত্ব, স্ত্রীরোগ ও প্রসূতিবিদ্যা বিশেষজ্ঞ এবং সার্জন",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার"
+    ],
+    "clinics": [
+      "c-al-madina-domar"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৩টা থেকে রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-fahim-kiswal-skin",
+    "name": "ডাঃ ফাহিম কিসওয়াল",
+    "degree": "এমবিবিএস, ডিডিভি, সিসিডি, এফ.এল.সি.এস (থাইল্যান্ড), এফ.সি.পি.এস (শেষ পর্ব), ফেলোশীপ ইন লেজার এন্ড স্কীন সার্জারী | চর্ম, যৌন, সেক্স ও এ্যালার্জি রোগ বিশেষজ্ঞ | সহকারী অধ্যাপক ও বিভাগীয় প্রধান, চেম্বারঃ নর্দান মেডিকেল কলেজ ও হাসপাতাল",
+    "specialty": "Dermatology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-al-madina-domar"
+    ],
+    "schedule": "প্রতি বৃহস্পতিবার দুপুর ১২টা থেকে রাত ৮টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 500
   },
   {

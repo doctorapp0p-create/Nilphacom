@@ -3905,6 +3905,23 @@ const generateReferralCode = (fullName: string, uid: string) => {
   return `${cleanName}${suffix}`;
 };
 
+const HOME_SERVICES_CATEGORIES = [
+  { id: 'doctors', icon: '👨‍⚕️', label: 'ডক্টর' },
+  { id: 'live_doctor', icon: '🔴', label: 'লাইভ ডক্টর' },
+  { id: 'blood_donation', icon: '🩸', label: 'ব্লাড ডোনেট' },
+  { id: 'govt_health', icon: '🏛️', label: 'সরকারি স্বাস্থ্য ও টিকিট' },
+  { id: 'subscriptions', icon: '💳', label: 'সাবস্ক্রিপশন' },
+  { id: 'free_doctors', icon: '🎁', label: 'ফ্রি ডাক্তার' },
+  { id: 'maternity_donation', icon: '🤰', label: 'সিজার অনুদান' },
+  { id: 'donation', icon: '🤲', label: 'ডোনেট করুন' },
+  { id: 'hospitals', icon: '🏥', label: 'হাসপাতাল' },
+  { id: 'dental', icon: '🦷', label: 'ডেন্টাল সেবা' },
+  { id: 'labtests', icon: '🧪', label: 'ল্যাব ও টেস্ট' },
+  { id: 'emergency', icon: '🆘', label: 'SOS সেবা' },
+  { id: 'buy_medicine', icon: '💊', label: 'ঔষধ পণ্য' },
+  { id: 'medical_accessories', icon: '🩺', label: 'মেডিকেল এক্সেসরিজ' }
+] as const;
+
 export default function App() {
   const [showLanding, setShowLanding] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
@@ -4587,7 +4604,8 @@ export default function App() {
             'dr-drishti-saha', 'dr-rashedul-islam-ent', 'dr-ma-sujon', 'dr-sumon-hoque',
             'dr-mominur-rahman-sonet', 'dr-abdul-awal-pediatrics', 'dr-nahid-sultana-laboni',
             'dr-mahmudul-hasan-domar', 'dr-nihar-ranjan-saha', 'dr-gaosul-alam-mostakin',
-            'dr-kallol-kumar-kundu', 'dr-paramita-roy', 'dr-md-abu-taher-gyn', 'dr-aleya-khatun-gyn'
+            'dr-kallol-kumar-kundu', 'dr-paramita-roy', 'dr-md-abu-taher-gyn', 'dr-aleya-khatun-gyn',
+            'dr-anwarur-rahman-anon', 'dr-tapan-kumar-roy-med', 'dr-ashim-roy-chowdhury-ortho', 'dr-tahmina-sultana-toma-gyn', 'dr-fahim-kiswal-skin'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -4603,6 +4621,27 @@ export default function App() {
               clinics: updatedClinics, 
               schedule: "সেভেন স্টার: দুপুর ৩টা - রাত ৯টা | পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ৮টা" 
             }, { merge: true }).catch(e => console.warn(`Updating dr-drishti-saha clinics in DB:`, e));
+          }
+
+          // Sync dr-mominur-rahman-sonet new clinic in DB if missing
+          const sonetDoc = docRes.docs.find(docD => docD.id === 'dr-mominur-rahman-sonet');
+          if (sonetDoc && !sonetDoc.data()?.clinics?.includes('c-al-madina-domar')) {
+            const updatedClinics = Array.from(new Set([...(sonetDoc.data()?.clinics || []), 'c-al-madina-domar']));
+            setDoc(doc(db, 'doctors', 'dr-mominur-rahman-sonet'), { 
+              clinics: updatedClinics, 
+              schedule: "সেভেন স্টার ও আল-মদিনা: প্রতিদিন বিকাল ৩টা থেকে রাত ৮টা" 
+            }, { merge: true }).catch(e => console.warn(`Updating dr-mominur-rahman-sonet clinics in DB:`, e));
+          }
+
+          // Sync dr-gaosul-alam-mostakin new clinic in DB if missing
+          const mostakinDoc = docRes.docs.find(docD => docD.id === 'dr-gaosul-alam-mostakin');
+          if (mostakinDoc && !mostakinDoc.data()?.clinics?.includes('c-al-madina-domar')) {
+            const updatedClinics = Array.from(new Set([...(mostakinDoc.data()?.clinics || []), 'c-al-madina-domar']));
+            setDoc(doc(db, 'doctors', 'dr-gaosul-alam-mostakin'), { 
+              clinics: updatedClinics, 
+              name: "ডাঃ মোঃ গাওসুল আলম মোস্তাকিন (ইয়েন)",
+              schedule: "প্রতিদিন সকাল ১০টা থেকে বিকাল ৫টা পর্যন্ত" 
+            }, { merge: true }).catch(e => console.warn(`Updating dr-gaosul-alam-mostakin clinics in DB:`, e));
           }
 
           // Also auto-sync or update hospital in DB
@@ -4635,6 +4674,16 @@ export default function App() {
               setDoc(doc(db, 'hospitals', padmaHosp.id), { name: padmaHosp.name }, { merge: true }).catch(e => console.warn(`Updating c-padma-domar name:`, e));
             }
           }
+
+          const alMadinaDoc = hospRes.docs.find(docH => docH.id === 'c-al-madina-domar');
+          const alMadinaHosp = CLINICS.find(c => c.id === 'c-al-madina-domar');
+          if (alMadinaHosp) {
+            if (!alMadinaDoc) {
+              setDoc(doc(db, 'hospitals', alMadinaHosp.id), alMadinaHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-al-madina-domar in DB:`, e));
+            } else if (alMadinaDoc.data()?.name !== alMadinaHosp.name) {
+              setDoc(doc(db, 'hospitals', alMadinaHosp.id), { name: alMadinaHosp.name, address: alMadinaHosp.address, doctors: alMadinaHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-al-madina-domar name:`, e));
+            }
+          }
         }).catch(() => {});
       }
 
@@ -4660,6 +4709,21 @@ export default function App() {
                   ...dbD,
                   clinics: Array.from(new Set([...(dbD.clinics || []), 'c-padma-domar'])),
                   schedule: "সেভেন স্টার: দুপুর ৩টা - রাত ৯টা | পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ৮টা"
+                };
+              }
+              if (dbD.id === 'dr-mominur-rahman-sonet') {
+                return {
+                  ...dbD,
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-al-madina-domar'])),
+                  schedule: "সেভেন স্টার ও আল-মদিনা: প্রতিদিন বিকাল ৩টা থেকে রাত ৮টা"
+                };
+              }
+              if (dbD.id === 'dr-gaosul-alam-mostakin') {
+                return {
+                  ...dbD,
+                  name: "ডাঃ মোঃ গাওসুল আলম মোস্তাকিন (ইয়েন)",
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-al-madina-domar'])),
+                  schedule: "প্রতিদিন সকাল ১০টা থেকে বিকাল ৫টা পর্যন্ত"
                 };
               }
               return dbD;
@@ -7137,68 +7201,11 @@ export default function App() {
               <main className="flex-1 p-6 mobile-p-safe space-y-8 overflow-y-auto no-scrollbar pb-32">
                 {activeTab === 'home' && (
                   <div className="space-y-6 animate-in fade-in">
-                    {/* Category Menu: Direct one-tap navigation to any section */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h2 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-                          <div className="w-2 h-2 bg-blue-600 rounded-full" />
-                          আমাদের সেবাসমূহ
-                        </h2>
-                        {homeSubCategory !== 'doctors' && (
-                          <button 
-                            onClick={() => {
-                              setHomeSubCategory('doctors');
-                              setSelectedHospitalId(null);
-                              setSearchTerm('');
-                              setSelectedSpecialty(null);
-                              setSelectedDay(null);
-                            }}
-                            className="text-[10px] font-black text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-xl flex items-center gap-1 transition-all cursor-pointer shadow-xs active:scale-95"
-                          >
-                            <span>⬅️</span> ডাক্তারদের তালিকায় ফিরে যান
-                          </button>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-4 sm:grid-cols-7 lg:grid-cols-14 gap-1.5">
-                        {[
-                          { id: 'doctors', icon: '👨‍⚕️', label: 'ডক্টর' },
-                          { id: 'live_doctor', icon: '🔴', label: 'লাইভ ডক্টর' },
-                          { id: 'blood_donation', icon: '🩸', label: 'ব্লাড ডোনেট' },
-                          { id: 'govt_health', icon: '🏛️', label: 'সরকারি স্বাস্থ্য ও টিকিট' },
-                          { id: 'subscriptions', icon: '💳', label: 'সাবস্ক্রিপশন' },
-                          { id: 'free_doctors', icon: '🎁', label: 'ফ্রি ডাক্তার' },
-                          { id: 'maternity_donation', icon: '🤰', label: 'সিজার অনুদান' },
-                          { id: 'donation', icon: '🤲', label: 'ডোনেট করুন' },
-                          { id: 'hospitals', icon: '🏥', label: 'হাসপাতাল' },
-                          { id: 'dental', icon: '🦷', label: 'ডেন্টাল সেবা' },
-                          { id: 'labtests', icon: '🧪', label: 'ল্যাব ও টেস্ট' },
-                          { id: 'emergency', icon: '🆘', label: 'SOS সেবা' },
-                          { id: 'buy_medicine', icon: '💊', label: 'ঔষধ পণ্য' },
-                          { id: 'medical_accessories', icon: '🩺', label: 'মেডিকেল এক্সেসরিজ' }
-                        ].map(cat => (
-                          <button 
-                            key={cat.id} 
-                            onClick={() => { 
-                              setHomeSubCategory(cat.id as any); 
-                              setSelectedHospitalId(null); 
-                              setSearchTerm(''); 
-                              setSelectedSpecialty(null);
-                              setSelectedDay(null);
-                            }}
-                            className={`flex flex-col items-center gap-1.5 py-3 px-1 rounded-2xl transition-all cursor-pointer ${homeSubCategory === cat.id ? 'bg-blue-600 text-white shadow-lg scale-105' : 'bg-white text-slate-500 border border-slate-100 hover:border-slate-300'}`}
-                          >
-                            <span className="text-xl">{cat.icon}</span>
-                            <span className="text-[9px] font-black uppercase tracking-tight text-center leading-none">{cat.label}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Top Hero Section: ONLY displayed on Doctors category */}
+                    {/* Top Hero Section: Sponsor Banner at the very top + 4 Compact Action Buttons */}
                     {homeSubCategory === 'doctors' && (
-                      <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-stretch animate-in fade-in">
-                        {/* LEFT SIDE: Dynamic Multi-Slide Sponsored Doctor & Hospital Promotional Slider with Per-Slide Timers */}
-                        <div className="md:col-span-7 flex flex-col">
+                      <div className="space-y-2.5 animate-in fade-in">
+                        {/* 1. Full-width Sponsor Banner Slider at the very top */}
+                        <div className="w-full rounded-2xl overflow-hidden shadow-xs">
                           <SponsorBannerSlider 
                             isAdmin={isAdmin}
                             hospitals={hospitals}
@@ -7217,47 +7224,50 @@ export default function App() {
                           />
                         </div>
 
-                        {/* RIGHT SIDE: Compact Action Buttons Stacked Vertically */}
-                        <div className="md:col-span-5 flex flex-col gap-2 justify-between">
-                          {/* 2. WhatsApp Button (Compact) */}
+                        {/* 2. Compact 4 Action Buttons (Small, Not Elongated, Sleek 2x2 on Mobile, 4x1 on Desktop) */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                          {/* WhatsApp Button */}
                           <button 
                             onClick={() => window.open(`https://wa.me/88${HOTLINE_CONTACT}?text=Hello,%20I%20want%20to%20know%20more%20about%20doctors`, '_blank')}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-2xl font-bold text-xs shadow-sm active:scale-95 transition-all flex items-center justify-between gap-2 border-b-2 border-emerald-800 cursor-pointer"
+                            title="ডাক্তার সম্পর্কিত জানতে WhatsApp করুন"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] shadow-xs active:scale-95 transition-all flex items-center justify-between gap-1.5 border border-emerald-500/30 cursor-pointer"
                           >
                             <span className="flex items-center gap-1.5 truncate">
-                              <span className="text-sm leading-none">💬</span>
-                              <span className="truncate">ডাক্তার সম্পর্কিত জানতে WhatsApp করুন</span>
+                              <span className="text-sm leading-none shrink-0">💬</span>
+                              <span className="truncate">ডাক্তার জানতে WhatsApp</span>
                             </span>
-                            <span className="text-[9px] bg-emerald-700/80 px-1.5 py-0.5 rounded-md shrink-0 font-black">মেসেজ</span>
+                            <span className="text-[9px] bg-emerald-700 px-1.5 py-0.5 rounded font-black shrink-0">মেসেজ</span>
                           </button>
 
-                          {/* 3. Call Hotline Button (Compact) */}
+                          {/* Direct Call Hotline Button */}
                           <a 
                             href={`tel:${HOTLINE_CONTACT}`}
-                            className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-2xl font-bold text-xs shadow-sm active:scale-95 transition-all flex items-center justify-between gap-2 border-b-2 border-sky-800 cursor-pointer"
+                            title="সরাসরি কল করুন (01352669100)"
+                            className="bg-sky-600 hover:bg-sky-700 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] shadow-xs active:scale-95 transition-all flex items-center justify-between gap-1.5 border border-sky-500/30 cursor-pointer"
                           >
                             <span className="flex items-center gap-1.5 truncate">
-                              <span className="text-sm leading-none">📞</span>
-                              <span className="truncate">সরাসরি কল করুন (01352669100)</span>
+                              <span className="text-sm leading-none shrink-0">📞</span>
+                              <span className="truncate">সরাসরি কল করুন</span>
                             </span>
-                            <span className="text-[9px] bg-sky-700/80 px-1.5 py-0.5 rounded-md shrink-0 font-black">কল</span>
+                            <span className="text-[9px] bg-sky-700 px-1.5 py-0.5 rounded font-black shrink-0">কল</span>
                           </a>
 
-                          {/* 4. Video Guide Button (Compact) */}
+                          {/* Video Guide & Rules Button */}
                           <a 
                             href={YOUTUBE_CHANNEL_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-2xl font-bold text-xs shadow-sm active:scale-95 transition-all flex items-center justify-between gap-2 border-b-2 border-red-800 cursor-pointer"
+                            title="ব্যবহারের নিয়ম-কানুন ও ভিডিও গাইড"
+                            className="bg-red-600 hover:bg-red-700 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] shadow-xs active:scale-95 transition-all flex items-center justify-between gap-1.5 border border-red-500/30 cursor-pointer"
                           >
                             <span className="flex items-center gap-1.5 truncate">
-                              <Youtube size={15} className="fill-white shrink-0" />
-                              <span className="truncate">ব্যবহারের নিয়ম-কানুন ও ভিডিও গাইড</span>
+                              <Youtube size={14} className="fill-white shrink-0" />
+                              <span className="truncate">ভিডিও গাইড ও নিয়ম</span>
                             </span>
-                            <span className="text-[9px] bg-red-700/80 px-1.5 py-0.5 rounded-md shrink-0 font-black">YouTube</span>
+                            <span className="text-[9px] bg-red-700 px-1.5 py-0.5 rounded font-black shrink-0">YouTube</span>
                           </a>
 
-                          {/* 5. Donate Button (Prominent) */}
+                          {/* Donate to Fund Button */}
                           <button 
                             onClick={() => {
                               setHomeSubCategory('donation');
@@ -7266,13 +7276,14 @@ export default function App() {
                               setSelectedSpecialty(null);
                               setSelectedDay(null);
                             }}
-                            className="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white px-3 py-2 rounded-2xl font-bold text-xs shadow-sm active:scale-95 transition-all flex items-center justify-between gap-2 border-b-2 border-emerald-900 cursor-pointer"
+                            title="মানবসেবা ও মায়েদের ফান্ডে ডোনেট করুন"
+                            className="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] shadow-xs active:scale-95 transition-all flex items-center justify-between gap-1.5 border border-teal-500/30 cursor-pointer"
                           >
                             <span className="flex items-center gap-1.5 truncate">
-                              <span className="text-sm leading-none">🤲</span>
-                              <span className="truncate">মানবসেবায় ও মায়েদের ফান্ডে ডোনেট করুন</span>
+                              <span className="text-sm leading-none shrink-0">🤲</span>
+                              <span className="truncate">মানবসেবা ও ফান্ডে দান</span>
                             </span>
-                            <span className="text-[9px] bg-amber-300 text-slate-950 px-1.5 py-0.5 rounded-md shrink-0 font-black">দান করুন</span>
+                            <span className="text-[9px] bg-amber-300 text-slate-950 px-1.5 py-0.5 rounded font-black shrink-0">ডোনেট</span>
                           </button>
                         </div>
                       </div>
@@ -7299,10 +7310,80 @@ export default function App() {
                           </div>
                        </div>
 
+                       {homeSubCategory !== 'doctors' && (
+                         <div className="space-y-2.5 mb-2 animate-in fade-in">
+                           <div className="flex items-center justify-between">
+                             <h2 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                               <div className="w-2 h-2 bg-blue-600 rounded-full" />
+                               আমাদের সেবাসমূহ
+                             </h2>
+                             <button 
+                               onClick={() => {
+                                 setHomeSubCategory('doctors');
+                                 setSelectedHospitalId(null);
+                                 setSearchTerm('');
+                                 setSelectedSpecialty(null);
+                                 setSelectedDay(null);
+                               }}
+                               className="text-[10px] font-black text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-xl flex items-center gap-1 transition-all cursor-pointer shadow-xs active:scale-95"
+                             >
+                               <span>⬅️</span> ডাক্তারদের তালিকায় ফিরে যান
+                             </button>
+                           </div>
+                           <div className="grid grid-cols-4 sm:grid-cols-7 lg:grid-cols-14 gap-1.5">
+                             {HOME_SERVICES_CATEGORIES.map(cat => (
+                               <button 
+                                 key={cat.id} 
+                                 onClick={() => { 
+                                   setHomeSubCategory(cat.id as any); 
+                                   setSelectedHospitalId(null); 
+                                   setSearchTerm(''); 
+                                   setSelectedSpecialty(null); 
+                                   setSelectedDay(null);
+                                 }}
+                                 className={`flex flex-col items-center gap-1.5 py-3 px-1 rounded-2xl transition-all cursor-pointer ${homeSubCategory === cat.id ? 'bg-blue-600 text-white shadow-lg scale-105' : 'bg-white text-slate-500 border border-slate-100 hover:border-slate-300'}`}
+                               >
+                                 <span className="text-xl">{cat.icon}</span>
+                                 <span className="text-[9px] font-black uppercase tracking-tight text-center leading-none">{cat.label}</span>
+                               </button>
+                             ))}
+                           </div>
+                         </div>
+                       )}
+
                        {homeSubCategory === 'doctors' && (
                          <div className="space-y-6">
                             {/* Today's Doctors Highlight Banner (Only inside Doctors section) */}
                             <TodaysDoctorsBanner doctors={doctors} />
+
+                            {/* Category Menu: আমাদের সেবাসমূহ (Directly above এলাকা নির্বাচন করুন) */}
+                            <div className="space-y-2.5">
+                              <div className="flex items-center justify-between">
+                                <h2 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-blue-600 rounded-full" />
+                                  আমাদের সেবাসমূহ
+                                </h2>
+                              </div>
+                              <div className="grid grid-cols-4 sm:grid-cols-7 lg:grid-cols-14 gap-1.5">
+                                {HOME_SERVICES_CATEGORIES.map(cat => (
+                                  <button 
+                                    key={cat.id} 
+                                    onClick={() => { 
+                                      setHomeSubCategory(cat.id as any); 
+                                      setSelectedHospitalId(null); 
+                                      setSearchTerm(''); 
+                                      setSelectedSpecialty(null); 
+                                      setSelectedDay(null);
+                                    }}
+                                    className={`flex flex-col items-center gap-1.5 py-3 px-1 rounded-2xl transition-all cursor-pointer ${homeSubCategory === cat.id ? 'bg-blue-600 text-white shadow-lg scale-105' : 'bg-white text-slate-500 border border-slate-100 hover:border-slate-300'}`}
+                                  >
+                                    <span className="text-xl">{cat.icon}</span>
+                                    <span className="text-[9px] font-black uppercase tracking-tight text-center leading-none">{cat.label}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
                             {/* Location Filter Bar (Right above Saturday/Sunday Day selector) */}
                             <div className="space-y-1.5">
                                <div className="flex items-center justify-between text-[10px] font-black uppercase text-slate-500 tracking-wider px-1">
