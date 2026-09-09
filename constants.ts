@@ -429,6 +429,28 @@ export const CLINICS: Clinic[] = [
       "dr-mithun-chandra-bhowmik"
     ],
     "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-seven-star-domar",
+    "name": "সেভেন স্টার ক্লিনিক এন্ড ডায়াগনষ্টিক সেন্টার",
+    "district": "Nilphamari",
+    "address": "বনওয়ারী মোড় (ডাক বাংলো রোড), ডোমার, নীলফামারী।",
+    "doctors": [
+      "dr-tahsin-md-jabir",
+      "dr-partha-pratim-pramanik",
+      "dr-sharmin-sultana-sathi",
+      "dr-drishti-saha",
+      "dr-rashedul-islam-ent",
+      "dr-ma-sujon",
+      "dr-sumon-hoque",
+      "dr-mominur-rahman-sonet",
+      "dr-abdul-awal-pediatrics",
+      "dr-nahid-sultana-laboni",
+      "dr-mahmudul-hasan-domar",
+      "dr-nihar-ranjan-saha",
+      "dr-gaosul-alam-mostakin"
+    ],
+    "image": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=800"
   }
 ];
 
@@ -2388,6 +2410,260 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
+  },
+  {
+    "id": "dr-tahsin-md-jabir",
+    "name": "ডাঃ তাহসিন মো: জাবির",
+    "degree": "এমবিবিএস (ঢাকা মেডিকেল কলেজ), বিসিএস (স্বাস্থ্য), এফসিপিএস (শেষ পর্ব) মেডিসিন, এমডি ইন কোর্স-(নিউরো মেডিসিন) | ন্যাশনাল ইন্সটিটিউট অব নিউরোসাইন্সেস এন্ড হসপিটাল, ঢাকা | বিএমডিসি রেজিঃ নং- ৯৫৩১৮ | নিউরো মেডিসিন ও মেডিসিন বিশেষজ্ঞ",
+    "specialty": "Neuromedicine",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে সন্ধ্যা ৭টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-partha-pratim-pramanik",
+    "name": "ডাঃ পার্থ প্রতিম প্রামানিক",
+    "degree": "এমবিবিএস, সিসিডি (বারডেম), ডিওসি (চর্ম ও যৌন), এসসিএল (কুষ্ঠ) | প্রাক্তন মেডিকেল অফিসার, ডেনিস বাংলাদেশ লেপ্রসি মিশন হাসপাতাল, নীলফামারী | বিএমডিসি রেজিঃ নং- ৯২১৬৯ | চর্ম, যৌন, কুষ্ঠ ও এলার্জি রোগের অভিজ্ঞ চিকিৎসক",
+    "specialty": "Dermatology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "মঙ্গলবার দুপুর ২টা থেকে সন্ধ্যা ৬টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-sharmin-sultana-sathi",
+    "name": "ডাঃ শারমিন সুলতানা (সাথী)",
+    "degree": "এমবিবিএস (রাজ), সিসিডি (বারডেম), পিজিটি, এমপিএইচ (গাইনী), ডিএমইউ (আল্ট্রাসনোগ্রাফি) | প্রাক্তন নর্দান মেডিকেল কলেজ হাসপাতাল, রংপুর | স্ত্রী, প্রসূতি ও বন্ধ্যাত্ব রোগের চিকিৎসক",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "প্রতিদিন সন্ধ্যা ৬.০০টা থেকে রাত ৯.০০টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-drishti-saha",
+    "name": "ডাঃ দৃষ্টি সাহা",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), পিজিটি (গাইনী এন্ড অবস্), সিএমইড (আল্ট্রাসনোগ্রাফি) | মেডিকেল অফিসার, উপজেলা স্বাস্থ্য কমপ্লেক্স, ডোমার, নীলফামারী | বি.এম.ডি.সি নং: এ-১১১৮৬৭ | স্ত্রী, প্রসূতি ও বন্ধাত্ব রোগের চিকিৎসক",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "প্রতিদিন দুপুর ৩টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-rashedul-islam-ent",
+    "name": "ডাঃ মোঃ রাশেদুল ইসলাম (রাশেদ)",
+    "degree": "এমবিবিএস, ডিএলও (বিএসএসএমইউ), বাংলাদেশ মেডিকেল বিশ্ববিদ্যালয় (সাবেক পিজি হাসপাতাল, ঢাকা) | বিএমডিসি রেজি. নং: ৯০৯৬১ | নাক, কান, গলা, ঘাড়, থাইরয়েড রোগ বিশেষজ্ঞ ও হেড নেক সার্জন",
+    "specialty": "ENT",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "সোমবার দুপুর ২টা থেকে বিকাল ৫টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-ma-sujon",
+    "name": "ডাঃ এম.এ. সুজন",
+    "degree": "এমবিবিএস (রাজশাহী মেডিকেল কলেজ), বিসিএস (স্বাস্থ্য), এম.এস (কোর্স)-জেনারেল সার্জারী | সার্জারী বিভাগ, রংপুর মেডিকেল কলেজ ও হাসপাতাল | বিএমডিসি রেজিঃ নং: এ-৭৯৫৬২ | জেনারেল ফিজিশিয়ান এন্ড সার্জন",
+    "specialty": "Surgery",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "প্রতি বৃহস্পতি বিকাল ৫টা থেকে শুক্রবার রাত ৯টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-sumon-hoque",
+    "name": "ডাঃ মোঃ সুমন হক",
+    "degree": "এমবিবিএস (শহীদ সোহরাওয়ার্দী মেডিকেল কলেজ, ঢাকা), বিসিএস (স্বাস্থ্য), সিএমইউ (আল্ট্রা), এমসিজিপি (জেনারেল প্র্যাকটিস), ডিওসি (চর্ম ও যৌন) | বিএমডিসি রেজিঃ নং- ১৪৫৭১৪ | মেডিসিন, বাত-ব্যাথা ও শিশু রোগের চিকিৎসক, জেনারেল প্র্যাকটিশনার",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "শনিবার থেকে বৃহস্পতি বিকাল ৫টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-mominur-rahman-sonet",
+    "name": "ডাঃ মোঃ মমিনুর রহমান (সনেট)",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), পিজিটি (জেনারেল সার্জারী), সিসিডি (বারডেম), সিএমইউ (আল্ট্রা), এমএস (রেসিডেন্ট, ইন কোর্স) | মেডিকেল অফিসার, উপজেলা স্বাস্থ্য কমপ্লেক্স, ডিমলা, নীলফামারী | হাড় জোড়া, বাত, ব্যথা রোগ চিকিৎসক ও সার্জন",
+    "specialty": "Orthopedics",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Dimla"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-abdul-awal-pediatrics",
+    "name": "ডাঃ মোঃ আব্দুল আউয়াল",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), ডিসিএইচ (শিশু) বিএসএমএমইউ | নবজাতক ও শিশু বিশেষজ্ঞ, কনসালটেন্ট (শিশু বিভাগ), জেনারেল হাসপাতাল, নীলফামারী | বিএমডিসি রেজি. নং: এ-৫৯৫৪৩ | নবজাতক, শিশু ও কিশোর রোগ বিশেষজ্ঞ",
+    "specialty": "Pediatrics",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "প্রতি শনিবার দুপুর ৩টা থেকে রাত ৮টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-nahid-sultana-laboni",
+    "name": "ডাঃ নাহিদ সুলতানা লাবনী",
+    "degree": "এমবিবিএস (ঢাকা মেডিকেল কলেজ), বিসিএস (স্বাস্থ্য), পিজিটি (মেডিসিন), এফসিপিএস (শেষ পার্ট - মেডিসিন) | রেজিস্টার (ইউনিট-১), রংপুর মেডিকেল কলেজ ও হাসপাতাল | বিএমডিসি রেজিঃ নং- ৮৮৩৪৪ | মেডিসিন, ডায়াবেটিস, হরমোন ও বাত-ব্যাথা রোগের অভিজ্ঞ চিকিৎসক",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "প্রতি বৃহস্পতি বিকাল ৫টা থেকে শুক্রবার রাত ৯টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-mahmudul-hasan-domar",
+    "name": "ডাঃ মোঃ মাহমুদুল হাসান",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), সিএমইউ (আল্ট্রা) | মেডিকেল অফিসার, উপজেলা স্বাস্থ্য কমপ্লেক্স, ডোমার, নীলফামারী | বিএমডিসি রেজিঃ নং- এ-১১৬৮১১ | মেডিসিন, ডায়াবেটিস, উচ্চ রক্তচাপ ও বাত-ব্যথা রোগের চিকিৎসক",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-nihar-ranjan-saha",
+    "name": "ডাঃ নিহার রঞ্জন সাহা",
+    "degree": "এম.বি.বি.এস | প্রাক্তন উপজেলা স্বাস্থ্য ও পঃ পঃ কর্মকর্তা, উপজেলা স্বাস্থ্য কমপ্লেক্স, ডোমার, নীলফামারী | মেডিসিন, বাত-ব্যাথা ও শিশু রোগের অভিজ্ঞ চিকিৎসক",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "প্রতিদিন সকাল ১০টা থেকে রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-gaosul-alam-mostakin",
+    "name": "ডাঃ মোঃ গাওসুল আলম মোস্তাকিন",
+    "degree": "এম.বি.বি.এস (আর.ইউ), সি.এম.ইউ/ডি.এম.ইউ, ক্লিনিকাল সনোলজিস্ট (আল্ট্রাসনোগ্রাম) | বিএমডিসি রেজি নংঃ এ-১৩১৮২৯ | মেডিসিন ও বাত-ব্যথা রোগের চিকিৎসক",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার"
+    ],
+    "clinics": [
+      "c-seven-star-domar"
+    ],
+    "schedule": "প্রতিদিন সকাল ১০টা হতে রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.7,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
   },
   {
     "id": "dr-habibur-rahman-dental",

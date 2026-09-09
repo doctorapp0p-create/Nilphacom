@@ -4582,7 +4582,11 @@ export default function App() {
             'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
             'ev-asad', 'ev-nripen', 'ek-gyn1',
             'dr-shariful-islam-ratan', 'dr-soheli-binte-mostafa', 'dr-gopal-chandra-roy',
-            'dr-rashed-menon-ent', 'dr-mithun-chandra-bhowmik'
+            'dr-rashed-menon-ent', 'dr-mithun-chandra-bhowmik',
+            'dr-tahsin-md-jabir', 'dr-partha-pratim-pramanik', 'dr-sharmin-sultana-sathi',
+            'dr-drishti-saha', 'dr-rashedul-islam-ent', 'dr-ma-sujon', 'dr-sumon-hoque',
+            'dr-mominur-rahman-sonet', 'dr-abdul-awal-pediatrics', 'dr-nahid-sultana-laboni',
+            'dr-mahmudul-hasan-domar', 'dr-nihar-ranjan-saha', 'dr-gaosul-alam-mostakin'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -4598,6 +4602,16 @@ export default function App() {
               setDoc(doc(db, 'hospitals', siddhikaHosp.id), siddhikaHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-siddhika-domar in DB:`, e));
             } else if (siddhikaDoc.data()?.name !== siddhikaHosp.name) {
               setDoc(doc(db, 'hospitals', siddhikaHosp.id), { name: siddhikaHosp.name }, { merge: true }).catch(e => console.warn(`Updating c-siddhika-domar name:`, e));
+            }
+          }
+
+          const sevenStarDoc = hospRes.docs.find(docH => docH.id === 'c-seven-star-domar');
+          const sevenStarHosp = CLINICS.find(c => c.id === 'c-seven-star-domar');
+          if (sevenStarHosp) {
+            if (!sevenStarDoc) {
+              setDoc(doc(db, 'hospitals', sevenStarHosp.id), sevenStarHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-seven-star-domar in DB:`, e));
+            } else if (sevenStarDoc.data()?.name !== sevenStarHosp.name) {
+              setDoc(doc(db, 'hospitals', sevenStarHosp.id), { name: sevenStarHosp.name }, { merge: true }).catch(e => console.warn(`Updating c-seven-star-domar name:`, e));
             }
           }
         }).catch(() => {});
