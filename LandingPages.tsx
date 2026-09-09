@@ -2,7 +2,32 @@
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { DOCTORS, CLINICS, SPECIALTIES, DISTRICTS } from './constants';
+import { Doctor, Clinic } from './types';
 import SEO from './SEO';
+
+export const getEffectiveDoctors = (providedDoctors?: Doctor[]): Doctor[] => {
+  let list = (providedDoctors && providedDoctors.length > 0) ? providedDoctors : DOCTORS;
+  try {
+    const photoOverrides = JSON.parse(localStorage.getItem('jb_doctor_photo_overrides') || '{}');
+    const customDocs = JSON.parse(localStorage.getItem('jb_custom_doctors_override') || '{}');
+    return list.map(d => {
+      let updated = d;
+      if (customDocs[d.id]) {
+        updated = { ...updated, ...customDocs[d.id] };
+      }
+      if (photoOverrides[d.id]) {
+        updated = { ...updated, image: photoOverrides[d.id] };
+      }
+      return updated;
+    });
+  } catch {
+    return list;
+  }
+};
+
+export const getEffectiveClinics = (providedClinics?: Clinic[]): Clinic[] => {
+  return (providedClinics && providedClinics.length > 0) ? providedClinics : CLINICS;
+};
 import { motion } from 'motion/react';
 import { Stethoscope, MapPin, Clock, Phone, Star, ArrowRight, Microscope, ShieldCheck, Heart, User, Home, ChevronRight, MessageSquare, Search, Calendar } from 'lucide-react';
 import { slugify } from './utils';
@@ -136,11 +161,16 @@ const checkDay = (docSchedule: string, day: string) => {
 };
 
 // --- Doctor Profile Page ---
-export const DoctorProfilePage: React.FC = () => {
+export const DoctorProfilePage: React.FC<{ doctorsList?: Doctor[]; clinicsList?: Clinic[] }> = ({
+  doctorsList,
+  clinicsList,
+}) => {
   const { slug } = useParams();
   const [showBookingModal, setShowBookingModal] = React.useState(false);
   const decodedSlug = slug ? decodeURIComponent(slug).trim() : '';
-  const doctor = DOCTORS.find(d => 
+  const allDoctors = getEffectiveDoctors(doctorsList);
+  const allClinics = getEffectiveClinics(clinicsList);
+  const doctor = allDoctors.find(d => 
     slugify(d.name) === slug || 
     slugify(d.name) === decodedSlug || 
     d.id === slug || 
@@ -152,7 +182,7 @@ export const DoctorProfilePage: React.FC = () => {
 
   if (!doctor) return <div className="p-20 text-center font-black uppercase text-slate-400">Doctor Not Found</div>;
 
-  const clinic = CLINICS.find(c => c.id === doctor.clinics[0]);
+  const clinic = allClinics.find(c => c.id === doctor.clinics[0]);
   const specialty = SPECIALTIES.find(s => s.id === doctor.specialty.toLowerCase());
   const doctorSlug = slugify(doctor.name);
 
@@ -477,7 +507,7 @@ export const DoctorProfilePage: React.FC = () => {
         <section className="space-y-4">
            <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest px-2">More {doctor.specialty} Specialists</h2>
            <div className="grid grid-cols-1 gap-3">
-             {DOCTORS.filter(d => d.specialty === doctor.specialty && d.id !== doctor.id).slice(0, 3).map(rd => (
+             {allDoctors.filter(d => d.specialty === doctor.specialty && d.id !== doctor.id).slice(0, 3).map(rd => (
                <Link key={rd.id} to={`/doctors/${slugify(rd.name)}`} className="bg-white p-4 rounded-[28px] border border-slate-100 flex items-center gap-4 active:scale-95 transition-all shadow-sm group">
                   <img src={rd.image} className="w-10 h-10 rounded-xl object-cover grayscale group-hover:grayscale-0 transition-all" alt={rd.name} />
                   <div className="flex-1">
@@ -494,7 +524,7 @@ export const DoctorProfilePage: React.FC = () => {
           <section className="space-y-4">
             <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest px-2">Doctors in {clinic?.name || 'Same Hospital'}</h2>
             <div className="grid grid-cols-1 gap-3">
-              {DOCTORS.filter(d => d.clinics.some(c => doctor.clinics.includes(c)) && d.id !== doctor.id).slice(0, 3).map(rd => (
+              {allDoctors.filter(d => d.clinics.some(c => doctor.clinics.includes(c)) && d.id !== doctor.id).slice(0, 3).map(rd => (
                 <Link key={rd.id} to={`/doctors/${slugify(rd.name)}`} className="bg-white p-4 rounded-[28px] border border-slate-100 flex items-center gap-4 active:scale-95 transition-all shadow-sm group">
                     <img src={rd.image} className="w-10 h-10 rounded-xl object-cover" alt={rd.name} />
                     <div className="flex-1">
@@ -530,13 +560,18 @@ export const DoctorProfilePage: React.FC = () => {
 };
 
 // --- Clinic / Hospital Landing Page ---
-export const ClinicLandingPage: React.FC = () => {
+export const ClinicLandingPage: React.FC<{ doctorsList?: Doctor[]; clinicsList?: Clinic[] }> = ({
+  doctorsList,
+  clinicsList,
+}) => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [showBookingModal, setShowBookingModal] = React.useState(false);
   const [selectedDoctor, setSelectedDoctor] = React.useState<any>(null);
   const decodedSlug = slug ? decodeURIComponent(slug).trim() : '';
-  const clinic = CLINICS.find(c => 
+  const allDoctors = getEffectiveDoctors(doctorsList);
+  const allClinics = getEffectiveClinics(clinicsList);
+  const clinic = allClinics.find(c => 
     slugify(c.name) === slug || 
     slugify(c.name) === decodedSlug || 
     c.id === slug || 
@@ -545,7 +580,7 @@ export const ClinicLandingPage: React.FC = () => {
 
   if (!clinic) return <div className="p-20 text-center font-black uppercase text-slate-400">Clinic Not Found</div>;
 
-  const hospitalDocs = DOCTORS.filter(d => d.clinics.includes(clinic.id));
+  const hospitalDocs = allDoctors.filter(d => d.clinics.includes(clinic.id));
   const clinicSlug = slugify(clinic.name);
 
   // Clinic Schema with department doctors
@@ -691,12 +726,13 @@ export const ClinicLandingPage: React.FC = () => {
 };
 
 // --- Specialist / Department Landing Page ---
-export const SpecialistLandingPage: React.FC = () => {
+export const SpecialistLandingPage: React.FC<{ doctorsList?: Doctor[] }> = ({ doctorsList }) => {
     const { slug } = useParams();
     const navigate = useNavigate();
     const [showBookingModal, setShowBookingModal] = React.useState(false);
     const [selectedDoctor, setSelectedDoctor] = React.useState<any>(null);
     const decodedSlug = slug ? decodeURIComponent(slug).trim() : '';
+    const allDoctors = getEffectiveDoctors(doctorsList);
     const specialtyData = SPECIALTIES.find(s => 
       slugify(s.name) === slug || 
       slugify(s.name) === decodedSlug || 
@@ -706,7 +742,7 @@ export const SpecialistLandingPage: React.FC = () => {
       (s.bnName && slugify(s.bnName) === decodedSlug)
     );
     const specialtyName = specialtyData ? specialtyData.name : slug;
-    const specialtyDocs = DOCTORS.filter(d => 
+    const specialtyDocs = allDoctors.filter(d => 
       d.specialty.toLowerCase() === specialtyName?.toLowerCase() ||
       (specialtyData && d.specialty.toLowerCase() === specialtyData.name.toLowerCase())
     );
@@ -817,13 +853,14 @@ export const SpecialistLandingPage: React.FC = () => {
 };
 
 // --- Dictionary / District Index Page ---
-export const DistrictLandingPage: React.FC = () => {
+export const DistrictLandingPage: React.FC<{ doctorsList?: Doctor[] }> = ({ doctorsList }) => {
     const { slug } = useParams();
     const navigate = useNavigate();
     const [showBookingModal, setShowBookingModal] = React.useState(false);
     const [selectedDoctor, setSelectedDoctor] = React.useState<any>(null);
     const decodedSlug = slug ? decodeURIComponent(slug).trim() : '';
-    const districtDocs = DOCTORS.filter(d => 
+    const allDoctors = getEffectiveDoctors(doctorsList);
+    const districtDocs = allDoctors.filter(d => 
       d.districts.some(dist => 
         slugify(dist) === slug || 
         slugify(dist) === decodedSlug || 

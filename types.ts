@@ -478,7 +478,7 @@ export interface SubscriptionPlan {
   titleEn: string;
   badge: string;
   features: string[];
-  discountRate: number; // e.g. 30 for 30%
+  discountRate: number; // e.g. 20 for 20%
   hasFreeDoctor: boolean;
   pricing: {
     durationYears: number; // 3 or 5

@@ -406,7 +406,7 @@ export const LiveDoctorModal: React.FC<LiveDoctorModalProps> = ({
                 ) : (
                   <div className="mt-3 pt-3 border-t border-slate-200 space-y-2 text-xs">
                     <p className="text-[11px] text-slate-600 font-medium">
-                      সাবস্ক্রিপশন নেওয়া থাকলে ডক্টর ফি <strong className="text-emerald-600">৳০ (ফ্রি)</strong> এবং টেস্টে <strong className="text-indigo-600">৩০% ছাড়</strong> পাবেন।
+                      সাবস্ক্রিপশন নেওয়া থাকলে ডক্টর ফি <strong className="text-emerald-600">৳০ (ফ্রি)</strong> এবং টেস্টে <strong className="text-indigo-600">২০% ছাড়</strong> পাবেন।
                     </p>
                     <button
                       type="button"

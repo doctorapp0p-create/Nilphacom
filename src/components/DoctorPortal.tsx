@@ -586,7 +586,7 @@ export const DoctorPortal: React.FC<DoctorPortalProps> = ({
                           </div>
                           
                           <p className="text-[11px] font-bold text-emerald-200">
-                            {app.subscription_plan_name || matchedSub?.plan_name || 'প্যাকেজ ২ (ফ্রি ডক্টর + ৩০% টেস্ট ছাড়)'}
+                            {app.subscription_plan_name || matchedSub?.plan_name || 'প্যাকেজ ২ (ফ্রি ডক্টর + ২০% টেস্ট ছাড়)'}
                           </p>
 
                           {/* Subscription Start Date, Expiry Date & Remaining Days */}

@@ -608,7 +608,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
       if (activeSubscription) {
         message += `⭐ প্যাকেজ: *${activeSubscription.plan_name}*\n`;
         message += `🔖 মেম্বারশিপ কার্ড: *${activeSubscription.card_number}*\n`;
-        message += `✨ সকল টেস্টে ৩০% ডিসকাউন্ট: *প্রযোজ্য (সক্রিয়)*\n`;
+        message += `✨ সকল টেস্টে ২০% ডিসকাউন্ট: *প্রযোজ্য (সক্রিয়)*\n`;
         if (isFreeDoctorSubscriber) {
           message += `🎁 ডাক্তার ফি: *৳০ (ফ্রি সাবস্ক্রিপশন)*\n`;
         } else {
@@ -1045,7 +1045,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, doc
                       প্যাকেজ: {activeSubscription.plan_name}
                     </p>
                     <div className="text-[10px] font-bold text-emerald-700 flex flex-col gap-0.5">
-                      <span>✓ সকল ল্যাব টেস্টে ৩০% বিশেষ ছাড় সক্রিয়</span>
+                      <span>✓ সকল ল্যাব টেস্টে ২০% বিশেষ ছাড় সক্রিয়</span>
                       {isFreeDoctorSubscriber ? (
                         <span className="font-black text-blue-700">🎁 অনলাইন ডাক্তার ফি: সম্পূর্ণ ফ্রি (৳০)</span>
                       ) : (

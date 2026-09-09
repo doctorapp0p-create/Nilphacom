@@ -337,7 +337,7 @@
     },
     "Subscription": {
       "title": "Subscription",
-      "description": "Healthcare membership subscription cards (Tier 1: 30% test discount, Tier 2: 30% test discount + Free online doctor)",
+      "description": "Healthcare membership subscription cards (Tier 1: 20% test discount, Tier 2: 20% test discount + Free online doctor)",
       "type": "object",
       "properties": {
         "id": { "type": "string" },

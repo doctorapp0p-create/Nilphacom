@@ -20,13 +20,13 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'tier1_test_discount',
     title: 'টেস্ট ডিসকাউন্ট হেলথ কার্ড',
-    titleEn: '30% Test Discount Health Card',
-    badge: 'সকল টেস্টে ৩০% ছাড়',
-    discountRate: 30,
+    titleEn: '20% Test Discount Health Card',
+    badge: 'সকল টেস্টে ২০% ছাড়',
+    discountRate: 20,
     hasFreeDoctor: false,
     features: [
-      'সকল প্রকার ল্যাব ও প্যাথলজি টেস্টে ৩০% ফ্ল্যাট ডিসকাউন্ট',
-      'ডিজিটাল এক্স-রে ও আল্ট্রাসোনোগ্রামে (USG) ৩০% ছাড়',
+      'সকল প্রকার ল্যাব ও প্যাথলজি টেস্টে ২০% ফ্ল্যাট ডিসকাউন্ট',
+      'ডিজিটাল এক্স-রে ও আল্ট্রাসোনোগ্রামে (USG) ২০% ছাড়',
       '৩ বছর বা ৫ বছরের দীর্ঘস্থায়ী মেয়াদী সুবিধা',
       'ডিজিটাল সাবস্ক্রিপশন স্মার্ট কার্ড ও আজীবন হিস্টোরি',
       'পরিবারের সদস্যদের টেস্টেও কার্ড ব্যবহারের বিশেষ সুযোগ'
@@ -45,12 +45,12 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'tier2_test_and_doctor',
     title: 'অল-ইন-ওয়ান প্রিমিয়াম হেলথ ও ডক্টর কার্ড',
-    titleEn: '30% Test Discount + Free Online Doctor',
-    badge: '৩০% টেস্ট ছাড় + ফ্রি অনলাইন ডাক্তার',
-    discountRate: 30,
+    titleEn: '20% Test Discount + Free Online Doctor',
+    badge: '২০% টেস্ট ছাড় + ফ্রি অনলাইন ডাক্তার',
+    discountRate: 20,
     hasFreeDoctor: true,
     features: [
-      'সকল প্রকার ডায়াগনস্টিক ও প্যাথলজিক্যাল টেস্টে ৩০% ছাড়',
+      'সকল প্রকার ডায়াগনস্টিক ও প্যাথলজিক্যাল টেস্টে ২০% ছাড়',
       'মেয়াদকালীন সময়ে অভিজ্ঞ চিকিৎসকদের সাথে ফ্রি অনলাইন কনসালটেশন',
       'অনলাইন ভিডিও কল ও ভয়েস কলে সরাসরি প্রেসক্রিপশন সুবিধা',
       '৩ বছর বা ৫ বছর মেয়াদের সর্বোচ্চ সাশ্রয়ী প্রিমিয়াম মেম্বারশিপ',
@@ -260,7 +260,7 @@ export const SubscriptionSection: React.FC<SubscriptionSectionProps> = ({
       }
 
       // Option to notify user via WhatsApp
-      const notifyMsg = `অভিনন্দন ${sub.user_name}! Nilpha Health-এ আপনার সাবস্ক্রিপশন অনুমোদিত হয়েছে।\nকার্ড নং: ${sub.card_number}\nপ্ল্যান: ${sub.plan_name}\nমেয়াদ: ${sub.duration_years} বছর (${new Date(validUntil).toLocaleDateString('bn-BD')} পর্যন্ত)।\nএখন থেকে আপনি সকল টেস্টে ৩০% ডিসকাউন্ট উপভোগ করতে পারবেন!`;
+      const notifyMsg = `অভিনন্দন ${sub.user_name}! Nilpha Health-এ আপনার সাবস্ক্রিপশন অনুমোদিত হয়েছে।\nকার্ড নং: ${sub.card_number}\nপ্ল্যান: ${sub.plan_name}\nমেয়াদ: ${sub.duration_years} বছর (${new Date(validUntil).toLocaleDateString('bn-BD')} পর্যন্ত)।\nএখন থেকে আপনি সকল টেস্টে ২০% ডিসকাউন্ট উপভোগ করতে পারবেন!`;
       const waUrl = `https://wa.me/88${sub.user_phone}?text=${encodeURIComponent(notifyMsg)}`;
       window.open(waUrl, '_blank');
 
@@ -433,7 +433,7 @@ export const SubscriptionSection: React.FC<SubscriptionSectionProps> = ({
                             {isPending ? '⏳ পেন্ডিং ভেরিফিকেশন' : isApproved ? '✅ সক্রিয় মেম্বারশিপ' : '❌ আবেদন বাতিল'}
                           </span>
                           <span className="text-[10px] font-black bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                            {sub.plan_type === 'tier2_test_and_doctor' ? '🎁 ৩০% ছাড় + ফ্রি ডাক্তার' : '🧪 ৩০% টেস্ট ছাড়'}
+                            {sub.plan_type === 'tier2_test_and_doctor' ? '🎁 ২০% ছাড় + ফ্রি ডাক্তার' : '🧪 ২০% টেস্ট ছাড়'}
                           </span>
                         </div>
 
@@ -563,7 +563,7 @@ export const SubscriptionSection: React.FC<SubscriptionSectionProps> = ({
           </h2>
 
           <p className="text-xs sm:text-sm text-indigo-100 font-normal leading-relaxed max-w-2xl">
-            একবার রেজিস্ট্রেশন করে ৩ বছর বা ৫ বছরের জন্য সাবস্ক্রিপশন গ্রহণ করুন। সকল প্যাথলজিক্যাল ও ডায়াগনস্টিক টেস্টে পান নিশ্চিত <span className="text-amber-300 font-black">৩০% ফ্ল্যাট ডিসকাউন্ট</span> এবং ফ্রি অনলাইন স্পেশালিস্ট ডাক্তার কনসালটেশনের বিশেষ সুবিধা!
+            একবার রেজিস্ট্রেশন করে ৩ বছর বা ৫ বছরের জন্য সাবস্ক্রিপশন গ্রহণ করুন। সকল প্যাথলজিক্যাল ও ডায়াগনস্টিক টেস্টে পান নিশ্চিত <span className="text-amber-300 font-black">২০% ফ্ল্যাট ডিসকাউন্ট</span> এবং ফ্রি অনলাইন স্পেশালিস্ট ডাক্তার কনসালটেশনের বিশেষ সুবিধা!
           </p>
 
           {/* If user already has an active subscription, display their digital card */}
@@ -590,7 +590,7 @@ export const SubscriptionSection: React.FC<SubscriptionSectionProps> = ({
                   <p className="text-xs font-bold text-emerald-300">
                     {userSubscription.valid_until ? new Date(userSubscription.valid_until).toLocaleDateString('bn-BD') : `${userSubscription.duration_years} বছর`}
                   </p>
-                  <p className="text-[10px] text-amber-200 font-sans mt-0.5">৩০% টেস্ট ছাড় সক্রিয়</p>
+                  <p className="text-[10px] text-amber-200 font-sans mt-0.5">২০% টেস্ট ছাড় সক্রিয়</p>
                 </div>
               </div>
             </div>

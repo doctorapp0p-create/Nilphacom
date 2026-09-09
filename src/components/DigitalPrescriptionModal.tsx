@@ -303,7 +303,7 @@ export const DigitalPrescriptionModal: React.FC<DigitalPrescriptionModalProps> =
     existingPrescription?.has_discount_badge
   );
   const subscriptionCard = activePatient?.subscriptionCard || existingPrescription?.subscription_card_number;
-  const subscriptionPlan = activePatient?.subscriptionPlan || existingPrescription?.subscription_plan_name || 'জেবি হেলথকেয়ার ৩০% টেস্ট ডিসকাউন্ট কার্ড';
+  const subscriptionPlan = activePatient?.subscriptionPlan || existingPrescription?.subscription_plan_name || 'জেবি হেলথকেয়ার ২০% টেস্ট ডিসকাউন্ট কার্ড';
 
   // Add Medicine
   const handleAddMedicine = () => {
@@ -398,7 +398,7 @@ export const DigitalPrescriptionModal: React.FC<DigitalPrescriptionModalProps> =
     
     if (hasSubscription) {
       text += `💳 *মেম্বারশিপ সুবিধা:* ${subscriptionPlan} (কার্ড: ${subscriptionCard || 'Active'})\n`;
-      text += `✨ সকল ল্যাব টেস্টে ৩০% বিশেষ ছাড় প্রযোজ্য\n`;
+      text += `✨ সকল ল্যাব টেস্টে ২০% বিশেষ ছাড় প্রযোজ্য\n`;
     }
     
     text += `------------------------------------\n`;
@@ -414,7 +414,7 @@ export const DigitalPrescriptionModal: React.FC<DigitalPrescriptionModalProps> =
       text += `------------------------------------\n`;
       text += `🔬 *প্রয়োজনীয় পরীক্ষা-নিরীক্ষা (Tests):*\n`;
       selectedTests.forEach((t, idx) => {
-        text += `${idx + 1}. ${t.name}${hasSubscription ? ' (৩০% ডিসকাউন্ট প্রযোজ্য)' : ''}\n`;
+        text += `${idx + 1}. ${t.name}${hasSubscription ? ' (২০% ডিসকাউন্ট প্রযোজ্য)' : ''}\n`;
       });
     }
 
@@ -666,7 +666,7 @@ export const DigitalPrescriptionModal: React.FC<DigitalPrescriptionModalProps> =
 
           ${hasSubscription ? `
             <div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 12px; margin-bottom: 12px; border-radius: 4px; font-size: 9.5pt; color: #065f46; font-weight: bold;">
-              ⭐ ${subscriptionPlan} (কার্ড: ${subscriptionCard || 'Active'}) — সকল টেস্টে ৩০% বিশেষ ছাড় প্রযোজ্য।
+              ⭐ ${subscriptionPlan} (কার্ড: ${subscriptionCard || 'Active'}) — সকল টেস্টে ২০% বিশেষ ছাড় প্রযোজ্য।
             </div>
           ` : ''}
 
@@ -688,7 +688,7 @@ export const DigitalPrescriptionModal: React.FC<DigitalPrescriptionModalProps> =
                 ${selectedTests.length > 0 ? `
                   <div class="section-title">INVESTIGATIONS (ল্যাব টেস্ট)</div>
                   <ol style="margin: 4px 0 12px 18px; padding: 0; font-size: 9.5pt; font-weight: bold; color: #334155;">
-                    ${selectedTests.map(t => `<li>${t.name} ${hasSubscription ? '<span style="color:#059669; font-size:8pt;">(৩০% ছাড়)</span>' : ''}</li>`).join('')}
+                    ${selectedTests.map(t => `<li>${t.name} ${hasSubscription ? '<span style="color:#059669; font-size:8pt;">(২০% ছাড়)</span>' : ''}</li>`).join('')}
                   </ol>
                 ` : ''}
 
@@ -1333,7 +1333,7 @@ export const DigitalPrescriptionModal: React.FC<DigitalPrescriptionModalProps> =
                             <span>{t.name}</span>
                             {hasSubscription && (
                               <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-1.5 py-0.5 rounded">
-                                ৩০% ছাড়
+                                ২০% ছাড়
                               </span>
                             )}
                           </div>
@@ -1471,7 +1471,7 @@ export const DigitalPrescriptionModal: React.FC<DigitalPrescriptionModalProps> =
                 {hasSubscription && (
                   <div className="relative z-10 bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 flex items-center justify-between text-xs">
                     <span className="font-black text-emerald-800 flex items-center gap-1.5">
-                      ⭐ ৩০% ল্যাব টেস্ট ডিসকাউন্ট সাবস্ক্রিপশন কার্ডধারী
+                      ⭐ ২০% ল্যাব টেস্ট ডিসকাউন্ট সাবস্ক্রিপশন কার্ডধারী
                     </span>
                     <span className="font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded font-mono">
                       কার্ড: {subscriptionCard || 'Active Membership'}
@@ -1509,7 +1509,7 @@ export const DigitalPrescriptionModal: React.FC<DigitalPrescriptionModalProps> =
                       <div className="space-y-2">
                         <h4 className="text-[11px] font-black text-purple-900 uppercase tracking-wider flex items-center justify-between">
                           <span>Investigations:</span>
-                          {hasSubscription && <span className="text-[9px] text-emerald-600 font-bold">৩০% ছাড়</span>}
+                          {hasSubscription && <span className="text-[9px] text-emerald-600 font-bold">২০% ছাড়</span>}
                         </h4>
                         <ul className="space-y-1.5 text-xs font-bold text-slate-700">
                           {selectedTests.map((t, idx) => (

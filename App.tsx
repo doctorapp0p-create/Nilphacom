@@ -7,7 +7,7 @@ import { DOCTORS, CLINICS, MEDICINES, EMERGENCY_SERVICES, DISTRICTS, LAB_TESTS, 
 import { slugify, toVirtualEmail, normalizePhoneNumber, normalizeDigits, getLoginCandidateEmails } from './utils';
 import { ALL_DISTRICTS_DATA } from './src/data/addressData';
 import { gemini } from './services/geminiService';
-import { auth, db } from './services/firebase';
+import { auth, db, ensureFirebaseAuthSession } from './services/firebase';
 import { 
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
@@ -44,7 +44,7 @@ import { AdminLabBillBuilder } from './src/components/AdminLabBillBuilder';
 import { AuthModal } from './src/components/AuthModal';
 import { BuyMedicineSection } from './src/components/BuyMedicineSection';
 import { AdminDataModal } from './src/components/AdminDataModal';
-import { DoctorPhotoModal } from './src/components/DoctorPhotoModal';
+import { DoctorPhotoModal, compressDoctorImage } from './src/components/DoctorPhotoModal';
 import { LevelUpRewardSection } from './src/components/LevelUpRewardSection';
 import { AmbulanceCalculator } from './src/components/AmbulanceCalculator';
 const doctorSponsorBanner = '/src/assets/images/doctor_sponsor_banner_1785435948836.jpg';
@@ -1357,7 +1357,7 @@ const AdminDashboard: React.FC<{
           { id: 'withdrawals', label: 'Withdrawal Req', icon: <Wallet size={14} className="text-pink-500" /> },
           { id: 'free_doctors', label: '🎁 Free Tokens & Sponsor', icon: <Gift size={14} className="text-amber-500 animate-bounce" /> },
           { id: 'maternity_donation', label: '🤰 Maternity Donation (৳2000)', icon: <Baby size={14} className="text-rose-500 animate-pulse" /> },
-          { id: 'subscriptions', label: '💳 Subscriptions (30% Discount)', icon: <CreditCard size={14} className="text-indigo-500" /> },
+          { id: 'subscriptions', label: '💳 Subscriptions (20% Discount)', icon: <CreditCard size={14} className="text-indigo-500" /> },
           { id: 'doctor_portal', label: '👨‍⚕️ ডক্টর পোর্টাল ও একাউন্ট', icon: <Stethoscope size={14} className="text-teal-500" /> }
         ].map(tab => (
           <button 
@@ -2287,21 +2287,21 @@ const AdminDashboard: React.FC<{
                         </div>
                       </div>
 
-                      {/* 30% Test Discount Subscriber Info & Hospital Notification Banner */}
+                      {/* 20% Test Discount Subscriber Info & Hospital Notification Banner */}
                       <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 p-3.5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <div>
                           <span className="bg-indigo-600 text-white text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1 w-fit mb-1 shadow-sm">
-                            <CreditCard size={11} /> ৩০% টেস্ট ডিসকাউন্ট সাবস্ক্রাইবার যাচাই
+                            <CreditCard size={11} /> ২০% টেস্ট ডিসকাউন্ট সাবস্ক্রাইবার যাচাই
                           </span>
                           <p className="text-xs font-black text-indigo-950">
                             {order.subscription_plan_name ? `প্যাকেজ: ${order.subscription_plan_name}` : 'অনলাইন সাবস্ক্রাইবার বা প্যাকেজ গ্রহণকারী'}
                           </p>
                           <p className="text-[10px] text-indigo-700 font-bold mt-0.5">
-                            ⚠️ অ্যাডমিন করণীয়: এই টেস্ট অর্ডারের ক্ষেত্রে সংশ্লিষ্ট হাসপাতাল/ল্যাব কর্তৃপক্ষকে ৩০% ডিসকাউন্ট প্রযোজ্য রাখার জন্য অবগত করুন।
+                            ⚠️ অ্যাডমিন করণীয়: এই টেস্ট অর্ডারের ক্ষেত্রে সংশ্লিষ্ট হাসপাতাল/ল্যাব কর্তৃপক্ষকে ২০% ডিসকাউন্ট প্রযোজ্য রাখার জন্য অবগত করুন।
                           </p>
                         </div>
                         <a
-                          href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`[হাসপাতাল নোটিশ] রোগী: ${order.patient_name || order.sender_name}, ফোন: ${order.sender_contact} আমাদের ৩০% ডিসকাউন্ট সাবস্ক্রিপশনধারী গ্রাহক। টেস্ট: ${order.item_name} (হাসপাতাল: ${order.hospital_name || 'ল্যাব'}) এর জন্য ৩০% ডিসকাউন্ট প্রযোজ্য করতে অনুরোধ করা হচ্ছে।`)}`}
+                          href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`[হাসপাতাল নোটিশ] রোগী: ${order.patient_name || order.sender_name}, ফোন: ${order.sender_contact} আমাদের ২০% ডিসকাউন্ট সাবস্ক্রিপশনধারী গ্রাহক। টেস্ট: ${order.item_name} (হাসপাতাল: ${order.hospital_name || 'ল্যাব'}) এর জন্য ২০% ডিসকাউন্ট প্রযোজ্য করতে অনুরোধ করা হচ্ছে।`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black px-3 py-2 rounded-xl flex items-center gap-1.5 shadow-sm shrink-0 active:scale-95 transition-all"
@@ -4573,20 +4573,21 @@ export default function App() {
         });
       }
 
-      // Auto-sync updated target doctors in DB if user is admin/moderator
+      // Auto-sync missing target doctors in DB only if they DO NOT exist yet in DB and user is admin/moderator
       if (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
-        import('firebase/firestore').then(({ doc, setDoc }) => {
+        ensureFirebaseAuthSession().then(() => {
           const targetDoctorSyncIds = [
             'dr-ar-hasina-banu', 'dr-ar-shamsur', 'dr-ar-mahbubul',
             'eb-saiful-card', 'j-rikkon', 'j-shaheen-gyn', 'j-al-amin', 'pacific-shahjada',
             'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
             'ev-asad', 'ev-nripen', 'ek-gyn1'
           ];
-          const targetDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id));
-          targetDocs.forEach(tDoc => {
-            setDoc(doc(db, 'doctors', tDoc.id), tDoc, { merge: true }).catch(e => console.warn(`Auto-syncing ${tDoc.id} in DB:`, e));
+          // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
+          const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
+          missingDocs.forEach(tDoc => {
+            setDoc(doc(db, 'doctors', tDoc.id), tDoc, { merge: true }).catch(e => console.warn(`Auto-syncing missing ${tDoc.id} in DB:`, e));
           });
-        });
+        }).catch(() => {});
       }
 
       const dbHospitals = hospRes.docs.map(h => ({ id: h.id, ...h.data() } as Clinic));
@@ -4603,7 +4604,8 @@ export default function App() {
             ...dbDoctors.map(dbD => {
               if (updatedDoctorTargetIds.includes(dbD.id)) {
                 const freshDoc = DOCTORS.find(d => d.id === dbD.id);
-                return freshDoc ? { ...freshDoc, ...dbD } : dbD;
+                // Ensure custom/uploaded image from dbD is never overwritten by freshDoc
+                return freshDoc ? { ...freshDoc, ...dbD, image: dbD.image || freshDoc.image } : dbD;
               }
               return dbD;
             }),
@@ -6142,7 +6144,7 @@ export default function App() {
       coupon_code: appliedCoupon ? appliedCoupon.code : undefined,
       coupon_discount_percent: appliedCoupon ? appliedCoupon.discount_percent : undefined,
       coupon_discount_amount: couponDiscAmt > 0 ? couponDiscAmt : undefined,
-      subscription_plan_name: profile?.active_subscription?.plan_name || (profile?.active_subscription ? `${profile.active_subscription.package_type === 'test_discount_only' ? 'Package 1 (Test 30% Discount)' : 'Package 2 (Test 30% + Free Doctor Consultation)'} - ${profile.active_subscription.years} Years` : ''),
+      subscription_plan_name: profile?.active_subscription?.plan_name || (profile?.active_subscription ? `${profile.active_subscription.package_type === 'test_discount_only' ? 'Package 1 (Test 20% Discount)' : 'Package 2 (Test 20% + Free Doctor Consultation)'} - ${profile.active_subscription.years} Years` : ''),
       referred_by_code: profile?.referred_by_code || profile?.referral_code || localStorage.getItem('prefilled_referral_code') || '',
       status: 'pending'
     };
@@ -6642,17 +6644,15 @@ export default function App() {
       }
 
       // 2. Ensure Firebase Auth session if not active
-      if (!auth.currentUser) {
-        try {
-          await signInAnonymously(auth);
-        } catch (authErr) {
-          console.warn("Firebase Auth notice:", authErr);
-        }
-      }
+      await ensureFirebaseAuthSession();
+
+      const cleanItem = Object.fromEntries(
+        Object.entries(item).filter(([_, v]) => v !== undefined)
+      );
 
       const collectionName = type === 'doctor' ? 'doctors' : type === 'hospital' ? 'hospitals' : 'lab_tests';
       try {
-        await setDoc(doc(db, collectionName, item.id), item, { merge: true });
+        await setDoc(doc(db, collectionName, item.id), cleanItem, { merge: true });
       } catch (dbErr: any) {
         console.warn("Firestore save notice (saved in app session & storage):", dbErr);
       }
@@ -6724,11 +6724,7 @@ export default function App() {
         setLabTests(prev => prev.filter(t => t.id !== id));
       }
 
-      if (!auth.currentUser) {
-        try {
-          await signInAnonymously(auth);
-        } catch {}
-      }
+      await ensureFirebaseAuthSession();
 
       const collectionName = type === 'doctor' ? 'doctors' : type === 'hospital' ? 'hospitals' : 'lab_tests';
       try {
@@ -6746,14 +6742,19 @@ export default function App() {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setTempImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressed = await compressDoctorImage(file, 500, 600, 0.82);
+        setTempImage(compressed);
+      } catch {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setTempImage(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
 
@@ -6762,44 +6763,50 @@ export default function App() {
       alert("ছবি পরিবর্তন করার জন্য অ্যাডমিন এক্সেস প্রয়োজন।");
       return;
     }
+    const cleanImageUrl = (newImageUrl || '').trim();
+    if (!cleanImageUrl) {
+      alert("অনুগ্রহ করে একটি ছবি নির্বাচন বা প্রদান করুন।");
+      return;
+    }
     try {
       setIsProcessing(true);
-      // 1. Immediately store photo override in localStorage so it is never lost
+      // 1. Immediately store photo override in localStorage so it is never lost across reloads/sessions
       try {
         const savedPhotos = JSON.parse(localStorage.getItem('jb_doctor_photo_overrides') || '{}');
-        savedPhotos[doctorId] = newImageUrl;
+        savedPhotos[doctorId] = cleanImageUrl;
         localStorage.setItem('jb_doctor_photo_overrides', JSON.stringify(savedPhotos));
+
+        const localCustomDocs = JSON.parse(localStorage.getItem('jb_custom_doctors_override') || '{}');
+        if (localCustomDocs[doctorId]) {
+          localCustomDocs[doctorId].image = cleanImageUrl;
+          localStorage.setItem('jb_custom_doctors_override', JSON.stringify(localCustomDocs));
+        }
       } catch (storageErr) {
         console.warn("Local storage photo write notice:", storageErr);
       }
 
       // 2. Optimistically update local doctor list state
-      setDoctors(prev => prev.map(d => d.id === doctorId ? { ...d, image: newImageUrl } : d));
+      setDoctors(prev => prev.map(d => d.id === doctorId ? { ...d, image: cleanImageUrl } : d));
 
-      // 3. Find full doctor object to ensure all fields are persisted
+      // 3. Find full doctor object to ensure all fields are persisted in Firestore
       const existingDoc = doctors.find(d => d.id === doctorId) || DOCTORS.find(d => d.id === doctorId);
-      const updatePayload = existingDoc ? { ...existingDoc, image: newImageUrl } : { image: newImageUrl };
+      const updatePayload = existingDoc ? { ...existingDoc, image: cleanImageUrl } : { id: doctorId, image: cleanImageUrl };
+      const cleanPayload = Object.fromEntries(
+        Object.entries(updatePayload).filter(([_, v]) => v !== undefined)
+      );
 
-      // 4. Ensure Firebase Auth session
-      if (!auth.currentUser) {
-        try {
-          await signInAnonymously(auth);
-        } catch (authErr) {
-          console.warn("Auth notice:", authErr);
-        }
-      }
+      // 4. Ensure authenticated Firebase Auth session with full permissions
+      await ensureFirebaseAuthSession();
 
-      try {
-        await setDoc(doc(db, 'doctors', doctorId), updatePayload, { merge: true });
-      } catch (dbErr: any) {
-        console.warn("Firestore doctor photo sync notice (cached locally in app):", dbErr);
-      }
+      // 5. Write to Firestore 'doctors' collection
+      await setDoc(doc(db, 'doctors', doctorId), cleanPayload, { merge: true });
 
       alert("ডাক্তারের প্রোফাইল ছবি সফলভাবে আপডেট ও সেভ হয়েছে!");
       await fetchData();
     } catch (err: any) {
       console.error("Error updating doctor photo:", err);
       alert("ছবি আপডেট করতে সমস্যা হয়েছে: " + (err?.message || err));
+      throw err;
     } finally {
       setIsProcessing(false);
     }
@@ -6935,10 +6942,10 @@ export default function App() {
 
       <Routes>
         {/* Dynamic Landing Pages */}
-        <Route path="/doctors/:slug" element={<DoctorProfilePage />} />
-        <Route path="/hospitals/:slug" element={<ClinicLandingPage />} />
-        <Route path="/specialists/:slug" element={<SpecialistLandingPage />} />
-        <Route path="/districts/:slug" element={<DistrictLandingPage />} />
+        <Route path="/doctors/:slug" element={<DoctorProfilePage doctorsList={doctors} clinicsList={hospitals} />} />
+        <Route path="/hospitals/:slug" element={<ClinicLandingPage doctorsList={doctors} clinicsList={hospitals} />} />
+        <Route path="/specialists/:slug" element={<SpecialistLandingPage doctorsList={doctors} />} />
+        <Route path="/districts/:slug" element={<DistrictLandingPage doctorsList={doctors} />} />
         <Route path="/doctor-portal" element={<DoctorPortal currentProfile={profile || { id: 'guest', full_name: 'Doctor', role: UserRole.DOCTOR, phone: '' }} doctorsList={doctors} labTestsList={labTests} onLogout={logout} />} />
         <Route path="/doctor" element={<DoctorPortal currentProfile={profile || { id: 'guest', full_name: 'Doctor', role: UserRole.DOCTOR, phone: '' }} doctorsList={doctors} labTestsList={labTests} onLogout={logout} />} />
 
@@ -7518,7 +7525,7 @@ export default function App() {
                                     <span>⭐</span> সাবস্ক্রিপশন কার্ডধারী সুবিধা:
                                   </div>
                                   <p className="text-lg font-black text-emerald-300">১০০% ফ্রি (৳০ ভিজিট চার্জ)</p>
-                                  <p className="text-[10px] text-emerald-100 font-bold">সাবস্ক্রিপশন থাকলে কোনো ফি দেখাবে না, আনলিমিটেড ফ্রি ডাক্তার + ৩০% ল্যাব টেস্ট ডিসকাউন্ট!</p>
+                                  <p className="text-[10px] text-emerald-100 font-bold">সাবস্ক্রিপশন থাকলে কোনো ফি দেখাবে না, আনলিমিটেড ফ্রি ডাক্তার + ২০% ল্যাব টেস্ট ডিসকাউন্ট!</p>
                                 </div>
                               </div>
 
@@ -8350,7 +8357,7 @@ export default function App() {
                        </div>
                     </Card>
 
-                    {/* Subscription (30% Test Discount & Free Doctor Card) in User Profile */}
+                    {/* Subscription (20% Test Discount & Free Doctor Card) in User Profile */}
                     <div id="subscription-section" className="scroll-mt-20">
                       <SubscriptionSection 
                         profile={profile} 
