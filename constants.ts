@@ -451,6 +451,20 @@ export const CLINICS: Clinic[] = [
       "dr-gaosul-alam-mostakin"
     ],
     "image": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-padma-domar",
+    "name": "ডোমার পদ্মা ক্লিনিক এন্ড ডায়াগনস্টিক সেন্টার",
+    "district": "Nilphamari",
+    "address": "উপজেলার সামনে, রেজিস্ট্রি অফিস সংলগ্ন, ডোমার, নীলফামারী।",
+    "doctors": [
+      "dr-drishti-saha",
+      "dr-kallol-kumar-kundu",
+      "dr-paramita-roy",
+      "dr-md-abu-taher-gyn",
+      "dr-aleya-khatun-gyn"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   }
 ];
 
@@ -2481,9 +2495,10 @@ export const DOCTORS: Doctor[] = [
       "ডোমার"
     ],
     "clinics": [
-      "c-seven-star-domar"
+      "c-seven-star-domar",
+      "c-padma-domar"
     ],
-    "schedule": "প্রতিদিন দুপুর ৩টা থেকে রাত ৯টা পর্যন্ত",
+    "schedule": "সেভেন স্টার: দুপুর ৩টা - রাত ৯টা | পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ৮টা",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
@@ -2664,6 +2679,84 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.7,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 400
+  },
+  {
+    "id": "dr-kallol-kumar-kundu",
+    "name": "ডাঃ কল্লোল কুমার কুন্ডু",
+    "degree": "এমবিবিএস, পিজিটি (নেফ্রোলজি), ফেলোশিপ ইন ডায়ালাইসিস (ভারত), ট্রেনিং ইন ক্লিনিক্যাল নেফ্রোলজি এন্ড ডায়ালাইসিস (ভারত), ট্রেনিং ইন আইসিইউ | ন্যাশনাল হার্ট ফাউন্ডেশন হাসপাতাল, মিরপুর, ঢাকা | মেডিসিন, কিডনি ও বাত-ব্যথা বিশেষ প্রশিক্ষণপ্রাপ্ত",
+    "specialty": "Nephrology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-padma-domar"
+    ],
+    "schedule": "প্রতি শনি ও রবিবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত।",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-paramita-roy",
+    "name": "ডাঃ পারমিতা রায়",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), পিজিটি (গাইনি এন্ড অবস), ডিএমইউ (আল্ট্রাসোনোগ্রাম) | পদবি: মেডিকেল অফিসার, ডোমার উপজেলা স্বাস্থ্য কমপ্লেক্স, ডোমার, নীলফামারী | গাইনি, প্রসূতি, বন্ধ্যাত্ব ও স্ত্রী রোগ চিকিৎসক",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার"
+    ],
+    "clinics": [
+      "c-padma-domar"
+    ],
+    "schedule": "প্রতিদিন দুপুর ২:৩০টা থেকে রাত ৯টা পর্যন্ত।",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-md-abu-taher-gyn",
+    "name": "ডাঃ মোঃ আবু তাহের",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমএস (গাইনি) | ইনডোর মেডিকেল অফিসার (গাইনি বিভাগ), রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর | স্ত্রী ও প্রসূতি রোগ বিশেষজ্ঞ ও সার্জন",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-padma-domar"
+    ],
+    "schedule": "প্রতিদিন দুপুর ২:৩০টা থেকে রাত ১০টা পর্যন্ত।",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-aleya-khatun-gyn",
+    "name": "ডাঃ আলেয়া খাতুন",
+    "degree": "এমবিবিএস (রাজশাহী), এমপিএইচ, পিজিটি (গাইনি এন্ড অবস), ডিএমইউ, সিএমইউ (আল্ট্রা) | গাইনি ও প্রসূতি রোগ বিশেষজ্ঞ ও সার্জন",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Domar",
+      "ডোমার"
+    ],
+    "clinics": [
+      "c-padma-domar"
+    ],
+    "schedule": "প্রতি শনি ও রবিবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত।",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
   },
   {
     "id": "dr-habibur-rahman-dental",

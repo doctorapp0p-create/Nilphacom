@@ -4586,13 +4586,24 @@ export default function App() {
             'dr-tahsin-md-jabir', 'dr-partha-pratim-pramanik', 'dr-sharmin-sultana-sathi',
             'dr-drishti-saha', 'dr-rashedul-islam-ent', 'dr-ma-sujon', 'dr-sumon-hoque',
             'dr-mominur-rahman-sonet', 'dr-abdul-awal-pediatrics', 'dr-nahid-sultana-laboni',
-            'dr-mahmudul-hasan-domar', 'dr-nihar-ranjan-saha', 'dr-gaosul-alam-mostakin'
+            'dr-mahmudul-hasan-domar', 'dr-nihar-ranjan-saha', 'dr-gaosul-alam-mostakin',
+            'dr-kallol-kumar-kundu', 'dr-paramita-roy', 'dr-md-abu-taher-gyn', 'dr-aleya-khatun-gyn'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
           missingDocs.forEach(tDoc => {
             setDoc(doc(db, 'doctors', tDoc.id), tDoc, { merge: true }).catch(e => console.warn(`Auto-syncing missing ${tDoc.id} in DB:`, e));
           });
+
+          // Sync dr-drishti-saha new clinic in DB if missing
+          const drishtiDoc = docRes.docs.find(docD => docD.id === 'dr-drishti-saha');
+          if (drishtiDoc && !drishtiDoc.data()?.clinics?.includes('c-padma-domar')) {
+            const updatedClinics = Array.from(new Set([...(drishtiDoc.data()?.clinics || []), 'c-padma-domar']));
+            setDoc(doc(db, 'doctors', 'dr-drishti-saha'), { 
+              clinics: updatedClinics, 
+              schedule: "সেভেন স্টার: দুপুর ৩টা - রাত ৯টা | পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ৮টা" 
+            }, { merge: true }).catch(e => console.warn(`Updating dr-drishti-saha clinics in DB:`, e));
+          }
 
           // Also auto-sync or update hospital in DB
           const siddhikaDoc = hospRes.docs.find(docH => docH.id === 'c-siddhika-domar');
@@ -4614,6 +4625,16 @@ export default function App() {
               setDoc(doc(db, 'hospitals', sevenStarHosp.id), { name: sevenStarHosp.name }, { merge: true }).catch(e => console.warn(`Updating c-seven-star-domar name:`, e));
             }
           }
+
+          const padmaDoc = hospRes.docs.find(docH => docH.id === 'c-padma-domar');
+          const padmaHosp = CLINICS.find(c => c.id === 'c-padma-domar');
+          if (padmaHosp) {
+            if (!padmaDoc) {
+              setDoc(doc(db, 'hospitals', padmaHosp.id), padmaHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-padma-domar in DB:`, e));
+            } else if (padmaDoc.data()?.name !== padmaHosp.name) {
+              setDoc(doc(db, 'hospitals', padmaHosp.id), { name: padmaHosp.name }, { merge: true }).catch(e => console.warn(`Updating c-padma-domar name:`, e));
+            }
+          }
         }).catch(() => {});
       }
 
@@ -4633,6 +4654,13 @@ export default function App() {
                 const freshDoc = DOCTORS.find(d => d.id === dbD.id);
                 // Ensure custom/uploaded image from dbD is never overwritten by freshDoc
                 return freshDoc ? { ...freshDoc, ...dbD, image: dbD.image || freshDoc.image } : dbD;
+              }
+              if (dbD.id === 'dr-drishti-saha') {
+                return {
+                  ...dbD,
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-padma-domar'])),
+                  schedule: "সেভেন স্টার: দুপুর ৩টা - রাত ৯টা | পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ৮টা"
+                };
               }
               return dbD;
             }),
