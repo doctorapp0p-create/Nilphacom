@@ -62,6 +62,8 @@ import { BloodDonationSection } from './src/components/BloodDonationSection';
 import { CouponManager } from './src/components/CouponManager';
 import { fetchCoupons, validateCoupon } from './src/services/couponService';
 import { Coupon } from './types';
+import { AdminEmployeeManager } from './src/components/AdminEmployeeManager';
+import { EmployeePortal } from './src/components/EmployeePortal';
 import { Share2, Bot, Video, Microscope, Ambulance, Star, ShieldCheck, Zap, MessageSquare, ArrowRight, X, Download, Smartphone, Stethoscope, Percent, MapPin, Calendar, Clock, Phone, BadgeCheck, Search, ChevronRight, FileText, Youtube, User, HelpCircle, Wallet, LogOut, Gift, Building, HeartHandshake, Baby, Heart, CreditCard, Plus, CheckCircle2, AlertCircle, RefreshCw, Tag, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -787,7 +789,7 @@ const AdminDashboard: React.FC<{
   onCouponsUpdated?: () => void,
   onChangeDoctorPhoto?: (doctor: Doctor) => void,
 }> = ({ profile, onLogout, ticker, setTicker, onUpdateTicker, doctors, hospitals, labTests, orders, profiles, appointments, onAdd, onEdit, onDelete, onRefreshAdminData, onUpdateAppointmentStatus, onUpdateOrderStatus, quizzes = [], submissions = [], withdrawals = [], onAddQuiz, onUpdateSubmissionStatus, onUpdateWithdrawalStatus, isLabTestsServiceEnabled = true, onToggleGlobalLabTestsService, onToggleTestActive, onToggleAllTests, onCouponsUpdated, onChangeDoctorPhoto }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'today_apps' | 'overview' | 'doctors' | 'orders' | 'hospitals' | 'labtests' | 'coupons' | 'billing' | 'referrals' | 'patients' | 'quizzes' | 'withdrawals' | 'free_doctors' | 'maternity_donation' | 'subscriptions' | 'doctor_portal'>('today_apps');
+  const [activeSubTab, setActiveSubTab] = useState<'today_apps' | 'overview' | 'doctors' | 'orders' | 'hospitals' | 'labtests' | 'coupons' | 'billing' | 'referrals' | 'patients' | 'quizzes' | 'withdrawals' | 'free_doctors' | 'maternity_donation' | 'subscriptions' | 'doctor_portal' | 'employees'>('today_apps');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedDocId, setExpandedDocId] = useState<string | null>(null);
 
@@ -1358,7 +1360,8 @@ const AdminDashboard: React.FC<{
           { id: 'free_doctors', label: '🎁 Free Tokens & Sponsor', icon: <Gift size={14} className="text-amber-500 animate-bounce" /> },
           { id: 'maternity_donation', label: '🤰 Maternity Donation (৳2000)', icon: <Baby size={14} className="text-rose-500 animate-pulse" /> },
           { id: 'subscriptions', label: '💳 Subscriptions (20% Discount)', icon: <CreditCard size={14} className="text-indigo-500" /> },
-          { id: 'doctor_portal', label: '👨‍⚕️ ডক্টর পোর্টাল ও একাউন্ট', icon: <Stethoscope size={14} className="text-teal-500" /> }
+          { id: 'doctor_portal', label: '👨‍⚕️ ডক্টর পোর্টাল ও একাউন্ট', icon: <Stethoscope size={14} className="text-teal-500" /> },
+          { id: 'employees', label: '👥 কর্মচারী ও পারমিশন (Staff & Access)', icon: <ShieldCheck size={14} className="text-violet-600 animate-pulse" /> }
         ].map(tab => (
           <button 
             key={tab.id}
@@ -3641,6 +3644,14 @@ const AdminDashboard: React.FC<{
             </div>
           </div>
         )}
+
+        {activeSubTab === 'employees' && (
+          <AdminEmployeeManager
+            profiles={profiles}
+            currentAdminProfile={profile}
+            onRefreshData={onRefreshAdminData}
+          />
+        )}
       </div>
     </div>
   );
@@ -5795,6 +5806,9 @@ export default function App() {
 
             setUser(activeUser as any);
             setProfile(matchedProfile);
+            if (matchedProfile.role === UserRole.EMPLOYEE) {
+              setActiveTab('staff_portal');
+            }
             localStorage.setItem('jb_custom_session', JSON.stringify({
               uid: matchedProfile.id,
               email: activeUser.email,
@@ -5833,6 +5847,9 @@ export default function App() {
 
               setUser(firebaseUser);
               setProfile(matchedProfile);
+              if (matchedProfile.role === UserRole.EMPLOYEE) {
+                setActiveTab('staff_portal');
+              }
               localStorage.setItem('jb_custom_session', JSON.stringify({
                 uid: matchedProfile.id,
                 email: firebaseUser.email,
@@ -6479,8 +6496,53 @@ export default function App() {
       list = list.filter(d => (d.clinics || []).includes(selectedHospitalId));
     }
     
+    // Comprehensive specialty keyword associations for robust search and filtering
+    const specialtyKeywordsMap: Record<string, string[]> = {
+      orthopedics: ['ortho', 'orthopedic', 'orthopaedic', 'orthopedics', 'অর্থোপেডিক', 'অর্থোপেডিক্স', 'অর্থোপেডিকস', 'অর্থপেডিক', 'অর্থপেডিক্স', 'হাড়', 'হাড়', 'পঙ্গু', 'ট্রমা', 'bone'],
+      medicine: ['medicine', 'মেডিসিন', 'মেডিসন', 'মেডেসিন', 'এমেডিসিন', 'internal medicine'],
+      cardiology: ['cardio', 'কার্ডিওলজি', 'কার্ডিও', 'হৃদরোগ', 'হার্ট', 'heart'],
+      neuromedicine: ['neuro', 'নিউরো', 'নিউরোলজি', 'নিউরোমেডিসিন', 'মস্তিষ্ক', 'স্ট্রোক', 'brain'],
+      gynecology: ['gyn', 'গাইনী', 'গাইনি', 'গাইনোকোলজি', 'গর্ভবতী', 'গর্ভ', 'প্রসূতি', 'obstetrics', 'obs', 'স্ত্রী রোগ', 'স্ত্রীরোগ'],
+      pediatrics: ['pediatr', 'pediatric', 'শিশু', 'নবজাতক', 'কিশোর', 'child', 'baby', 'neonat'],
+      surgery: ['surgeon', 'সার্জারি', 'সার্জারী', 'অপারেশন', 'surgery', 'ল্যাপারোস্কোপিক'],
+      urology: ['uro', 'urology', 'ইউরোলজি', 'ইউরোলজিস্ট', 'মূত্র', 'bladder'],
+      endocrinology: ['endocrine', 'endocrinology', 'ডায়াবেটিস', 'ডায়াবেটিস', 'হরমোন', 'diabetes', 'hormone', 'থাইরয়েড', 'thyroid'],
+      ent: ['ent', 'নাক', 'কান', 'গলা', 'nose', 'ear', 'throat', 'হেড নেক', 'head neck'],
+      dermatology: ['derm', 'dermatology', 'চর্ম', 'যৌন', 'স্কিন', 'skin', 'এলার্জি'],
+      ophthalmology: ['eye', 'চোখ', 'চক্ষু', 'দৃষ্টি', 'ophthal', 'অপথালমোলজি'],
+      psychiatry: ['psych', 'psychiatry', 'মানসিক', 'মন', 'পাগল', 'বিষন্নতা', 'mental'],
+      dentistry: ['dent', 'dental', 'দাঁত', 'দন্ত', 'ডেন্টাল', 'tooth', 'teeth'],
+      gastroenterology: ['gastro', 'gastrology', 'গ্যাস্ট্রো', 'গ্যাস্ট্রোলজি', 'গ্যাস্ট্রোএন্টারোলজি', 'লিভার', 'পরিপাকতন্ত্র', 'গ্যাস্ট্রিক', 'পেট', 'liver', 'stomach'],
+      nephrology: ['nephro', 'nephrology', 'কিডনি', 'নেফ্রোলজি', 'renal', 'kidney'],
+      pulmonology: ['pulmon', 'pulmonology', 'বক্ষব্যাধি', 'ফুসফুস', 'অ্যাজমা', 'হাঁপানি', 'টিবি', 'যক্ষ্মা', 'chest', 'respiratory', 'asthma'],
+      neurosurgery: ['neuro surgery', 'neurosurgery', 'নিউরো সার্জারি', 'নিউরোসার্জারি', 'ব্রেন সার্জারি'],
+      oncology: ['onco', 'oncology', 'ক্যান্সার', 'টিউমার', 'cancer', 'tumor'],
+      hematology: ['hemato', 'hematology', 'রক্তরোগ', 'রক্ত', 'blood'],
+      rheumatology: ['rheumat', 'rheumatology', 'রিউমাটোলজি', 'বাত', 'বাত-ব্যথা'],
+      plastic_surgery: ['plastic', 'প্লাস্টিক সার্জারি', 'কসমেটিক', 'বার্ন', 'cosmetic'],
+      vascular_surgery: ['vascular', 'ভাসকুলার', 'রক্তনালী'],
+      neonatology: ['neonat', 'neonatology', 'নবজাতক'],
+      nutrition: ['nutrit', 'nutrition', 'diet', 'dietetics', 'পুষ্টি', 'ডায়েট', 'খাদ্য'],
+      physiotherapy: ['physio', 'physiotherapy', 'ফিজিওথেরাপি', 'থেরাপিস্ট'],
+      physical_medicine: ['physical', 'ফিজিকেল', 'ব্যায়াম', 'থেরাপি', 'ফিজিওথেরাপি', 'physio', 'বাত', 'বাত-ব্যথা', 'প্যারালাইসিস', 'স্পোর্টস', 'রিহ্যাবিলিটেশন']
+    };
+
     if (selectedSpecialty) {
-      list = list.filter(d => d.specialty.toLowerCase() === selectedSpecialty.toLowerCase());
+      list = list.filter(d => {
+        const docSpec = (d.specialty || '').toLowerCase().trim();
+        const selSpec = selectedSpecialty.toLowerCase().trim();
+        if (docSpec === selSpec) return true;
+
+        const matchedSpec = SPECIALTIES.find(s => s.name.toLowerCase() === selSpec || s.id.toLowerCase() === selSpec);
+        if (matchedSpec) {
+          if (docSpec === matchedSpec.id.toLowerCase() || docSpec === matchedSpec.bnName.toLowerCase()) return true;
+          const keywords = specialtyKeywordsMap[matchedSpec.id] || [];
+          if (keywords.some(k => docSpec.includes(k.toLowerCase()) || (d.degree || '').toLowerCase().includes(k.toLowerCase()))) {
+            return true;
+          }
+        }
+        return false;
+      });
     }
     
     if (selectedDay) {
@@ -6507,32 +6569,7 @@ export default function App() {
         // Match by specialty synonyms and Bengali names (e.g. matching "অর্থোপেডিক", "অর্থপেডিক", "ortho" as Orthopedics)
         const specialtyObj = SPECIALTIES.find(spec => spec.name.toLowerCase() === docSpecialty || spec.id === docSpecialty);
         
-        // Define specialty keyword associations for robust search (bidirectional matching)
-        const specialtyKeywordsMap: Record<string, string[]> = {
-          orthopedics: ['ortho', 'orthopedics', 'অর্থোপেডিক', 'অর্থোপেডিক্স', 'অর্থোপেডিকস', 'অর্থপেডিক', 'অর্থপেডিক্স', 'অর্থপেডিকস', 'হাড়', 'হাড়', 'পঙ্গু'],
-          medicine: ['medicine', 'মেডিসিন', 'মেডিসন', 'মেডেসিন', 'এমেডিসিন'],
-          cardiology: ['cardio', 'কার্ডিওলজি', 'কার্ডিও', 'হৃদরোগ', 'হার্ট', 'heart'],
-          neuromedicine: ['neuro', 'নিউরো', 'নিউরোলজি', 'মস্তিষ্ক', 'স্ট্রোক', 'brain'],
-          gynecology: ['gyn', 'গাইনী', 'গাইনি', 'গাইনোকোলজি', 'গর্ভবতী', 'গর্ভ', 'প্রসূতি', 'obstetrics', 'obs', 'স্ত্রী রোগ', 'স্ত্রীরোগ'],
-          pediatrics: ['pediatr', 'শিশু', 'নবজাতক', 'কিশোর', 'child', 'baby'],
-          surgery: ['surgeon', 'সার্জারি', 'সার্জারী', 'অপারেশন', 'surgery'],
-          urology: ['uro', 'ইউরোলজি', 'ইউরোলজিস্ট', 'মূত্র', 'bladder'],
-          endocrinology: ['endocrine', 'ডায়াবেটিস', 'হরমোন', 'diabetes', 'hormone'],
-          ent: ['ent', 'নাক', 'কান', 'গলা', 'nose', 'ear', 'throat', 'হেড নেক', 'head neck'],
-          dermatology: ['derm', 'চর্ম', 'যৌন', 'স্কিন', 'skin', 'এলার্জি'],
-          ophthalmology: ['eye', 'চোখ', 'চক্ষু', 'দৃষ্টি', 'ophthal'],
-          psychiatry: ['psych', 'মানসিক', 'মন', 'পাগল', 'বিষন্নতা'],
-          dentistry: ['dent', 'দাঁত', 'দন্ত', 'ডেন্টাল', 'tooth', 'teeth'],
-          gastroenterology: ['gastro', 'লিভার', 'পরিপাকতন্ত্র', 'গ্যাস্ট্রিক', 'পেট', 'liver', 'stomach'],
-          nephrology: ['nephro', 'কিডনি', 'নেফ্রোলজি', 'renal', 'kidney'],
-          oncology: ['onco', 'ক্যান্সার', 'টিউমার', 'cancer', 'tumor'],
-          hematology: ['hemato', 'রক্তরোগ', 'রক্ত', 'blood'],
-          'physical-medicine': ['physical', 'ফিজিকেল', 'ব্যায়াম', 'থেরাপি', 'ফিজিওথেরাপি', 'physio', 'বাত', 'বাত-ব্যথা', 'প্যারালাইসিস', 'স্পোর্টস', 'রিহ্যাবিলিটেশন'],
-          'physical medicine': ['physical', 'ফিজিকেল', 'ব্যায়াম', 'থেরাপি', 'ফিজিওথেরাপি', 'physio', 'বাত', 'বাত-ব্যথা', 'প্যারালাইসিস', 'স্পোর্টস', 'রিহ্যাবিলিটেশন'],
-          physical_medicine: ['physical', 'ফিজিকেল', 'ব্যায়াম', 'থেরাপি', 'ফিজিওথেরাপি', 'physio', 'বাত', 'বাত-ব্যথা', 'প্যারালাইসিস', 'স্পোর্টস', 'রিহ্যাবিলিটেশন']
-        };
-
-        const listKeywords = specialtyKeywordsMap[docSpecialty] || [];
+        const listKeywords = specialtyKeywordsMap[specialtyObj?.id || docSpecialty] || [];
         const specialtyMatch = (specialtyObj && (
           specialtyObj.name.toLowerCase().includes(search) ||
           specialtyObj.bnName.toLowerCase().includes(search)
@@ -7069,6 +7106,9 @@ export default function App() {
         <Route path="/districts/:slug" element={<DistrictLandingPage doctorsList={doctors} />} />
         <Route path="/doctor-portal" element={<DoctorPortal currentProfile={profile || { id: 'guest', full_name: 'Doctor', role: UserRole.DOCTOR, phone: '' }} doctorsList={doctors} labTestsList={labTests} onLogout={logout} />} />
         <Route path="/doctor" element={<DoctorPortal currentProfile={profile || { id: 'guest', full_name: 'Doctor', role: UserRole.DOCTOR, phone: '' }} doctorsList={doctors} labTestsList={labTests} onLogout={logout} />} />
+        <Route path="/employee-portal" element={<EmployeePortal currentProfile={profile || { id: 'guest', full_name: 'Staff', role: UserRole.EMPLOYEE, phone: '' }} profiles={allProfiles} labTests={labTests} orders={allOrders} doctors={doctors} hospitals={hospitals} appointments={allAppointments} onLogout={logout} onRefreshData={fetchAdminData} onNavigateHome={() => navigate('/')} />} />
+        <Route path="/employee" element={<EmployeePortal currentProfile={profile || { id: 'guest', full_name: 'Staff', role: UserRole.EMPLOYEE, phone: '' }} profiles={allProfiles} labTests={labTests} orders={allOrders} doctors={doctors} hospitals={hospitals} appointments={allAppointments} onLogout={logout} onRefreshData={fetchAdminData} onNavigateHome={() => navigate('/')} />} />
+        <Route path="/staff" element={<EmployeePortal currentProfile={profile || { id: 'guest', full_name: 'Staff', role: UserRole.EMPLOYEE, phone: '' }} profiles={allProfiles} labTests={labTests} orders={allOrders} doctors={doctors} hospitals={hospitals} appointments={allAppointments} onLogout={logout} onRefreshData={fetchAdminData} onNavigateHome={() => navigate('/')} />} />
 
         {/* Main App Experience */}
         <Route path="*" element={
@@ -7158,6 +7198,27 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Employee Notification Banner */}
+              {profile?.role === UserRole.EMPLOYEE && (
+                <div className="bg-gradient-to-r from-violet-950 via-indigo-900 to-slate-900 text-white px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow-md border-b border-violet-700/50">
+                  <div className="flex items-center gap-2 text-xs font-bold">
+                    <span className="p-1 rounded-lg bg-violet-600/60 text-violet-200">
+                      <ShieldCheck size={14} />
+                    </span>
+                    <span>
+                      আপনি স্টাফ হিসেবে লগইন আছেন: <strong className="text-white">{profile.full_name}</strong> ({profile.designation || 'স্টাফ'}) | কোড: <strong className="font-mono text-violet-300">{profile.referral_code}</strong>
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab(activeTab === 'staff_portal' ? 'home' : 'staff_portal')}
+                    className="bg-violet-600 hover:bg-violet-700 text-white text-xs font-black px-3.5 py-1.5 rounded-xl shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    {activeTab === 'staff_portal' ? '🌐 মূল ওয়েবসাইট' : '💼 স্টাফ ওয়ার্কস্পেস ও পোর্টাল'}
+                    <ArrowRight size={12} />
+                  </button>
+                </div>
+              )}
+
               <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md px-6 py-4 border-b flex justify-between items-center shadow-sm">
                 <h1 className="text-xl font-black text-slate-800 tracking-tight cursor-pointer" onClick={() => { setActiveTab('home'); setHomeSubCategory('doctors'); setSelectedHospitalId(null); setSelectedSpecialty(null); navigate('/'); }}>
                   <span className="text-blue-600">Nil</span>pha
@@ -7199,6 +7260,21 @@ export default function App() {
               </header>
 
               <main className="flex-1 p-6 mobile-p-safe space-y-8 overflow-y-auto no-scrollbar pb-32">
+                {activeTab === 'staff_portal' && profile && (
+                  <EmployeePortal 
+                    currentProfile={profile} 
+                    profiles={allProfiles} 
+                    labTests={labTests} 
+                    orders={allOrders} 
+                    doctors={doctors} 
+                    hospitals={hospitals} 
+                    appointments={allAppointments} 
+                    onLogout={logout} 
+                    onRefreshData={fetchAdminData} 
+                    onNavigateHome={() => setActiveTab('home')} 
+                  />
+                )}
+
                 {activeTab === 'home' && (
                   <div className="space-y-6 animate-in fade-in">
                     {/* Top Hero Section: Sponsor Banner at the very top + 4 Compact Action Buttons */}
@@ -7484,21 +7560,23 @@ export default function App() {
                                             className={`flex flex-col items-center gap-2 min-w-[75px] transition-all duration-300 ${selectedSpecialty === spec.name ? 'scale-110 active:scale-100' : 'opacity-40 hover:opacity-100'}`}
                                         >
                                             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl shadow-xl transition-all border-2 ${selectedSpecialty === spec.name ? 'bg-blue-600 text-white border-blue-400' : 'bg-white border-slate-100'}`}>
-                                              {spec.id === 'dentistry' || spec.icon === '🦷' ? '🦷' : (
-                                                spec.icon === 'Stethoscope' ? '🩺' :
-                                                spec.icon === 'Activity' ? '⚡' :
-                                                spec.icon === 'User' ? '👩‍⚕️' :
-                                                spec.icon === 'Heart' ? '👶' :
-                                                spec.icon === 'HeartPulse' ? '❤️' :
-                                                spec.icon === 'Bone' ? '🦴' :
-                                                spec.icon === 'Shield' ? '🧴' :
-                                                spec.icon === 'Ear' ? '👂' :
-                                                spec.icon === 'Eye' ? '👁️' :
-                                                spec.icon === 'Brain' ? '🧠' :
-                                                spec.icon === 'Smile' ? '😊' :
-                                                spec.icon === 'ShieldAlert' ? '💧' :
-                                                spec.icon === 'Thermometer' ? '🧪' :
-                                                spec.icon === 'Zap' ? '🎗️' : (spec.icon || '🩺')
+                                              {(spec as any).emoji || (
+                                                spec.id === 'dentistry' || spec.icon === '🦷' ? '🦷' : (
+                                                  spec.icon === 'Stethoscope' ? '🩺' :
+                                                  spec.icon === 'Activity' ? '⚡' :
+                                                  spec.icon === 'User' ? '👩‍⚕️' :
+                                                  spec.icon === 'Heart' ? '👶' :
+                                                  spec.icon === 'HeartPulse' ? '❤️' :
+                                                  spec.icon === 'Bone' ? '🦴' :
+                                                  spec.icon === 'Shield' ? '🧴' :
+                                                  spec.icon === 'Ear' ? '👂' :
+                                                  spec.icon === 'Eye' ? '👁️' :
+                                                  spec.icon === 'Brain' ? '🧠' :
+                                                  spec.icon === 'Smile' ? '😊' :
+                                                  spec.icon === 'ShieldAlert' ? '💧' :
+                                                  spec.icon === 'Thermometer' ? '🧪' :
+                                                  spec.icon === 'Zap' ? '🎗️' : (spec.icon || '🩺')
+                                                )
                                               )}
                                             </div>
                                             <div className="flex flex-col items-center">
@@ -8489,11 +8567,28 @@ export default function App() {
                             </div>
                           </div>
                           <p className="text-[10px] text-blue-600 uppercase font-black tracking-widest opacity-70">
-                            {profile?.role === UserRole.RURAL_DOCTOR ? 'পল্লী চিকিৎসক (Rural Doctor)' : profile?.role || 'পেশেন্ট'}
+                            {profile?.role === UserRole.EMPLOYEE ? `কর্মচারী / স্টাফ (${profile.designation || 'মেডিকেল এসিস্ট্যান্ট'}) • কোড: ${profile.referral_code || ''}` : profile?.role === UserRole.RURAL_DOCTOR ? 'পল্লী চিকিৎসক (Rural Doctor)' : profile?.role || 'পেশেন্ট'}
                           </p>
                           {profile?.phone && <p className="text-[11px] text-slate-500 font-bold mt-0.5">📱 {profile.phone}</p>}
                        </div>
                     </Card>
+
+                    {/* Employee Portal Access Card */}
+                    {profile?.role === UserRole.EMPLOYEE && (
+                      <div className="bg-gradient-to-r from-violet-900 to-indigo-900 text-white p-5 rounded-[28px] shadow-lg flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                          <span className="text-[10px] font-black text-violet-300 uppercase tracking-wider block">স্টাফ অ্যাক্সেস ড্যাশবোর্ড</span>
+                          <h4 className="text-base font-black">💼 স্টাফ ওয়ার্কস্পেস ও পোর্টাল</h4>
+                          <p className="text-xs text-violet-200 mt-0.5">এডমিন কর্তৃক নির্ধারিত অনুমোদিত সুবিধাসমূহ পরিচালনা করতে পোর্টাল খুলুন</p>
+                        </div>
+                        <button
+                          onClick={() => setActiveTab('staff_portal')}
+                          className="bg-white text-violet-900 hover:bg-violet-50 font-black text-xs px-4 py-2.5 rounded-2xl shadow-md transition-all active:scale-95 cursor-pointer whitespace-nowrap"
+                        >
+                          পোর্টালে যান →
+                        </button>
+                      </div>
+                    )}
 
                     {/* Subscription (20% Test Discount & Free Doctor Card) in User Profile */}
                     <div id="subscription-section" className="scroll-mt-20">
@@ -9073,6 +9168,12 @@ export default function App() {
                     <span className="text-2xl">📜</span>
                     <span className="text-[8px] font-black uppercase tracking-[0.2em]">Orders</span>
                   </button>
+                  {profile?.role === UserRole.EMPLOYEE && (
+                    <button onClick={() => { setActiveTab('staff_portal'); navigate('/'); }} className={`flex flex-col items-center gap-1 transition-all duration-300 ${activeTab === 'staff_portal' ? 'text-violet-400 scale-125' : 'text-slate-500 opacity-60'}`}>
+                      <span className="text-2xl">💼</span>
+                      <span className="text-[8px] font-black uppercase tracking-[0.2em]">স্টাফ</span>
+                    </button>
+                  )}
                   <button onClick={() => { setActiveTab('profile'); navigate('/'); }} className={`flex flex-col items-center gap-1 transition-all duration-300 ${activeTab === 'profile' ? 'text-fuchsia-400 scale-125' : 'text-slate-500 opacity-60'}`}>
                     <span className="text-2xl">👤</span>
                     <span className="text-[8px] font-black uppercase tracking-[0.2em]">Profile</span>

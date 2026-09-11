@@ -28,103 +28,190 @@ export const SPECIALTIES = [
     "id": "medicine",
     "name": "Medicine",
     "bnName": "মেডিসিন",
-    "icon": "Stethoscope"
-  },
-  {
-    "id": "surgery",
-    "name": "Surgery",
-    "bnName": "সার্জারি",
-    "icon": "Activity"
-  },
-  {
-    "id": "gynecology",
-    "name": "Gynecology",
-    "bnName": "গাইনী ও প্রসূতী",
-    "icon": "User"
-  },
-  {
-    "id": "pediatrics",
-    "name": "Pediatrics",
-    "bnName": "শিশু রোগ",
-    "icon": "Heart"
-  },
-  {
-    "id": "cardiology",
-    "name": "Cardiology",
-    "bnName": "হৃদরোগ",
-    "icon": "HeartPulse"
+    "icon": "Stethoscope",
+    "emoji": "🩺"
   },
   {
     "id": "orthopedics",
     "name": "Orthopedics",
     "bnName": "অর্থোপেডিকস",
-    "icon": "Bone"
+    "icon": "Bone",
+    "emoji": "🦴"
   },
   {
-    "id": "dermatology",
-    "name": "Dermatology",
-    "bnName": "চর্ম ও যৌন",
-    "icon": "Shield"
+    "id": "gynecology",
+    "name": "Gynecology",
+    "bnName": "গাইনী ও প্রসূতী",
+    "icon": "User",
+    "emoji": "👩‍⚕️"
   },
   {
-    "id": "ent",
-    "name": "ENT",
-    "bnName": "নাক, কান ও গলা",
-    "icon": "Ear"
-  },
-  {
-    "id": "ophthalmology",
-    "name": "Ophthalmology",
-    "bnName": "চক্ষু রোগ",
-    "icon": "Eye"
+    "id": "cardiology",
+    "name": "Cardiology",
+    "bnName": "হৃদরোগ (কার্ডিওলজি)",
+    "icon": "HeartPulse",
+    "emoji": "❤️"
   },
   {
     "id": "neuromedicine",
     "name": "Neuromedicine",
     "bnName": "নিউরোমেডিসিন",
-    "icon": "Brain"
+    "icon": "Brain",
+    "emoji": "🧠"
   },
   {
-    "id": "psychiatry",
-    "name": "Psychiatry",
-    "bnName": "মানসিক রোগ",
-    "icon": "Smile"
+    "id": "dermatology",
+    "name": "Dermatology",
+    "bnName": "চর্ম ও যৌন",
+    "icon": "Shield",
+    "emoji": "🧴"
   },
   {
-    "id": "nephrology",
-    "name": "Nephrology",
-    "bnName": "কিডনি রোগ",
-    "icon": "Activity"
+    "id": "ent",
+    "name": "ENT",
+    "bnName": "নাক, কান ও গলা",
+    "icon": "Ear",
+    "emoji": "👂"
   },
   {
     "id": "urology",
     "name": "Urology",
     "bnName": "ইউরোলজি",
-    "icon": "ShieldAlert"
+    "icon": "ShieldAlert",
+    "emoji": "💧"
   },
   {
     "id": "gastroenterology",
     "name": "Gastroenterology",
-    "bnName": "গ্যাস্ট্রোএন্টারোলজি",
-    "icon": "Thermometer"
+    "bnName": "গ্যাস্ট্রোলজি ও লিভার",
+    "icon": "Thermometer",
+    "emoji": "🧪"
+  },
+  {
+    "id": "endocrinology",
+    "name": "Endocrinology",
+    "bnName": "ডায়াবেটিস ও হরমোন",
+    "icon": "Activity",
+    "emoji": "🩸"
+  },
+  {
+    "id": "pediatrics",
+    "name": "Pediatrics",
+    "bnName": "শিশু রোগ",
+    "icon": "Heart",
+    "emoji": "👶"
+  },
+  {
+    "id": "surgery",
+    "name": "Surgery",
+    "bnName": "জেনারেল সার্জারি",
+    "icon": "Activity",
+    "emoji": "⚡"
+  },
+  {
+    "id": "nephrology",
+    "name": "Nephrology",
+    "bnName": "কিডনি রোগ",
+    "icon": "Activity",
+    "emoji": "🫘"
+  },
+  {
+    "id": "ophthalmology",
+    "name": "Ophthalmology",
+    "bnName": "চক্ষু রোগ",
+    "icon": "Eye",
+    "emoji": "👁️"
+  },
+  {
+    "id": "pulmonology",
+    "name": "Pulmonology",
+    "bnName": "বক্ষব্যাধি ও অ্যাজমা",
+    "icon": "Activity",
+    "emoji": "🫁"
+  },
+  {
+    "id": "neurosurgery",
+    "name": "Neurosurgery",
+    "bnName": "নিউরোসার্জারি",
+    "icon": "Brain",
+    "emoji": "🔬"
   },
   {
     "id": "oncology",
     "name": "Oncology",
     "bnName": "ক্যান্সার রোগ",
-    "icon": "Zap"
+    "icon": "Zap",
+    "emoji": "🎗️"
+  },
+  {
+    "id": "psychiatry",
+    "name": "Psychiatry",
+    "bnName": "মানসিক রোগ",
+    "icon": "Smile",
+    "emoji": "😊"
   },
   {
     "id": "dentistry",
     "name": "Dentistry",
     "bnName": "মুখ ও দন্তরোগ",
-    "icon": "🦷"
+    "icon": "🦷",
+    "emoji": "🦷"
   },
   {
     "id": "physical_medicine",
     "name": "Physical Medicine",
     "bnName": "বাত-ব্যথা ও ফিজিক্যাল মেডিসিন",
-    "icon": "Activity"
+    "icon": "Activity",
+    "emoji": "🏃"
+  },
+  {
+    "id": "rheumatology",
+    "name": "Rheumatology",
+    "bnName": "রিউমাটোলজি ও বাত-ব্যথা",
+    "icon": "Activity",
+    "emoji": "🩹"
+  },
+  {
+    "id": "hematology",
+    "name": "Hematology",
+    "bnName": "রক্তরোগ ও রক্ত ক্যান্সার",
+    "icon": "Activity",
+    "emoji": "🩸"
+  },
+  {
+    "id": "plastic_surgery",
+    "name": "Plastic Surgery",
+    "bnName": "প্লাস্টিক ও কসমেটিক সার্জারি",
+    "icon": "Zap",
+    "emoji": "✨"
+  },
+  {
+    "id": "vascular_surgery",
+    "name": "Vascular Surgery",
+    "bnName": "ভাসকুলার সার্জারি",
+    "icon": "HeartPulse",
+    "emoji": "❤️‍🩹"
+  },
+  {
+    "id": "neonatology",
+    "name": "Neonatology",
+    "bnName": "নবজাতক ও শিশু বিশেষজ্ঞ",
+    "icon": "Heart",
+    "emoji": "🍼"
+  },
+  {
+    "id": "nutrition",
+    "name": "Nutrition & Dietetics",
+    "bnName": "পুষ্টি ও ডায়েট বিশেষজ্ঞ",
+    "icon": "Smile",
+    "emoji": "🥗"
+  },
+  {
+    "id": "physiotherapy",
+    "name": "Physiotherapy",
+    "bnName": "ফিজিওথেরাপি",
+    "icon": "Activity",
+    "emoji": "🧘"
   }
 ];
 

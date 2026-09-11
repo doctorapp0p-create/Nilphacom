@@ -183,7 +183,7 @@ export const DoctorProfilePage: React.FC<{ doctorsList?: Doctor[]; clinicsList?:
   if (!doctor) return <div className="p-20 text-center font-black uppercase text-slate-400">Doctor Not Found</div>;
 
   const clinic = allClinics.find(c => c.id === doctor.clinics[0]);
-  const specialty = SPECIALTIES.find(s => s.id === doctor.specialty.toLowerCase());
+  const specialty = SPECIALTIES.find(s => s.id === doctor.specialty.toLowerCase() || s.name.toLowerCase() === doctor.specialty.toLowerCase());
   const doctorSlug = slugify(doctor.name);
 
   // Clean doctor name without title for keyword variations

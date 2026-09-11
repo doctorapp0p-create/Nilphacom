@@ -4,7 +4,21 @@ export enum UserRole {
   DOCTOR = 'DOCTOR',
   ADMIN = 'ADMIN',
   MODERATOR = 'MODERATOR',
-  RURAL_DOCTOR = 'RURAL_DOCTOR'
+  RURAL_DOCTOR = 'RURAL_DOCTOR',
+  EMPLOYEE = 'EMPLOYEE'
+}
+
+export interface EmployeePermissions {
+  manage_lab_tests?: boolean; // all test check and order
+  free_doctor_consultation?: boolean; // free doctor consultation
+  create_user_with_code?: boolean; // nijer code dia user Der account create kore duia
+  view_my_referred_users?: boolean; // nijer codes AR user Der list Dekha
+  view_user_passwords?: boolean; // user Der password Dekha
+  manage_appointments?: boolean; // ডক্টর সিরিয়াল ও অ্যাপয়েন্টমেন্ট
+  manage_medicine_orders?: boolean; // ঔষধ ও সামগ্রী অর্ডার
+  manage_blood_donors?: boolean; // রক্তদাতা ডিরেক্টরি
+  manage_ambulance_emergency?: boolean; // অ্যাম্বুলেন্স ও জরুরি সেবা
+  manage_donations?: boolean; // অনুদান ও সিজার ফান্ড
 }
 
 export interface Profile {
@@ -25,6 +39,10 @@ export interface Profile {
   union?: string;
   village?: string;
   referral_10_bonus_credited?: boolean;
+  designation?: string;
+  permissions?: EmployeePermissions;
+  created_by?: string;
+  created_at?: string;
 }
 
 export interface AppSetting {

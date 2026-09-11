@@ -1076,21 +1076,21 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
       {/* ========================================================================= */}
       <AnimatePresence>
         {showRegModal && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/75 backdrop-blur-md overflow-hidden">
+          <div className="fixed inset-0 z-[1000] overflow-y-auto flex min-h-full items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/80 backdrop-blur-sm">
             {/* Backdrop click dismiss */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowRegModal(false)}
-              className="absolute inset-0 cursor-pointer"
+              className="fixed inset-0 cursor-pointer"
             />
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="bg-white rounded-3xl max-w-xl w-full max-h-[92dvh] sm:max-h-[88vh] shadow-2xl border border-slate-100 flex flex-col overflow-hidden text-left relative z-10"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 30 }}
+              className="bg-white rounded-t-[28px] sm:rounded-3xl max-w-xl w-full max-h-[92vh] sm:max-h-[88vh] shadow-2xl border border-slate-100 flex flex-col overflow-hidden text-left relative z-10 my-auto"
             >
               {/* Pinned / Fixed Header */}
               <div className="flex items-center justify-between border-b border-slate-100 p-4 sm:p-6 bg-white shrink-0">
@@ -1251,19 +1251,19 @@ export const BloodDonationSection: React.FC<BloodDonationSectionProps> = ({
                   </p>
                 </div>
 
-                {/* Pinned Action Footer - Always visible and accessible on mobile screen */}
-                <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/95 backdrop-blur-sm flex items-center justify-end gap-3 shrink-0 z-10">
+                {/* Pinned Action Footer - Always visible and accessible on all mobile screens */}
+                <div className="p-3.5 sm:p-5 border-t border-slate-200 bg-white sticky bottom-0 flex items-center justify-between gap-3 shrink-0 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
                   <button
                     type="button"
                     onClick={() => setShowRegModal(false)}
-                    className="px-4 py-3 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all cursor-pointer"
+                    className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all cursor-pointer"
                   >
                     বাতিল
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmittingReg}
-                    className="flex-1 sm:flex-none px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-xs sm:text-sm font-black rounded-xl shadow-lg shadow-red-200 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="flex-1 sm:flex-none px-6 py-3.5 bg-red-600 hover:bg-red-700 active:scale-95 disabled:opacity-50 text-white text-xs sm:text-sm font-black rounded-xl shadow-lg shadow-red-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer touch-manipulation"
                   >
                     {isSubmittingReg ? <RefreshCw size={16} className="animate-spin" /> : <Check size={16} />}
                     <span>নিবন্ধন কনফার্ম করুন</span>
