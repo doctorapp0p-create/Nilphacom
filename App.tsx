@@ -4606,7 +4606,12 @@ export default function App() {
         ensureFirebaseAuthSession().then(() => {
           const targetDoctorSyncIds = [
             'dr-ar-hasina-banu', 'dr-ar-shamsur', 'dr-ar-mahbubul',
-            'eb-saiful-card', 'j-rikkon', 'j-shaheen-gyn', 'j-al-amin', 'pacific-shahjada',
+            'eb-roni-ortho', 'eb-murad-med', 'eb-mostafa-med', 'eb-saiful-card', 'eb-sabur-nephro',
+            'eb-firoz-ent', 'eb-nasera-gyn', 'eb-shakera-gyn', 'eb-munira', 'eb-narayan-neuro',
+            'eb-resaul-med', 'eb-mahabub-med', 'eb-kaushik-ped', 'eb-sohel-ortho', 'eb-rasedul-ent',
+            'eb-mezbah-uro', 'eb-tanvir-psych', 'eb-sohrab-surg', 'eb-pavel-surg',
+            'pacific-ali', 'pacific-altaf', 'pacific-hafiz', 'pacific-sabuj', 'pacific-shahjada', 'pacific-alamin', 'pacific-robiul', 'pacific-sarwar', 'pacific-kayes',
+            'j-rikkon', 'j-shaheen-gyn', 'j-al-amin',
             'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
             'ev-asad', 'ev-nripen', 'ek-gyn1',
             'dr-shariful-islam-ratan', 'dr-soheli-binte-mostafa', 'dr-gopal-chandra-roy',
@@ -4622,6 +4627,15 @@ export default function App() {
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
           missingDocs.forEach(tDoc => {
             setDoc(doc(db, 'doctors', tDoc.id), tDoc, { merge: true }).catch(e => console.warn(`Auto-syncing missing ${tDoc.id} in DB:`, e));
+          });
+
+          // Clean up doctors no longer practicing at Pacific Labzone from Firestore
+          ['pacific-ayesha', 'pacific-selim'].forEach(oldId => {
+            if (docRes.docs.some(docD => docD.id === oldId)) {
+              import('firebase/firestore').then(({ doc, deleteDoc }) => {
+                deleteDoc(doc(db, 'doctors', oldId)).catch(e => console.warn(`Auto-deleting ${oldId} from DB: `, e));
+              });
+            }
           });
 
           // Sync dr-drishti-saha new clinic in DB if missing
@@ -4703,7 +4717,12 @@ export default function App() {
 
       // Merge DB data with local constants: DB version has precedence, but newly updated verified doctor records and local entries not in DB take precedence
       const updatedDoctorTargetIds = [
-        'eb-saiful-card', 'j-rikkon', 'j-shaheen-gyn', 'j-al-amin', 'pacific-shahjada',
+        'eb-roni-ortho', 'eb-murad-med', 'eb-mostafa-med', 'eb-saiful-card', 'eb-sabur-nephro',
+        'eb-firoz-ent', 'eb-nasera-gyn', 'eb-shakera-gyn', 'eb-munira', 'eb-narayan-neuro',
+        'eb-resaul-med', 'eb-mahabub-med', 'eb-kaushik-ped', 'eb-sohel-ortho', 'eb-rasedul-ent',
+        'eb-mezbah-uro', 'eb-tanvir-psych', 'eb-sohrab-surg', 'eb-pavel-surg',
+        'pacific-ali', 'pacific-altaf', 'pacific-hafiz', 'pacific-sabuj', 'pacific-shahjada', 'pacific-alamin', 'pacific-robiul', 'pacific-sarwar', 'pacific-kayes',
+        'j-rikkon', 'j-shaheen-gyn', 'j-al-amin',
         'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
         'ev-asad', 'ev-nripen', 'ek-gyn1'
       ];
@@ -4712,8 +4731,14 @@ export default function App() {
             ...dbDoctors.map(dbD => {
               if (updatedDoctorTargetIds.includes(dbD.id)) {
                 const freshDoc = DOCTORS.find(d => d.id === dbD.id);
-                // Ensure custom/uploaded image from dbD is never overwritten by freshDoc
-                return freshDoc ? { ...freshDoc, ...dbD, image: dbD.image || freshDoc.image } : dbD;
+                // Ensure updated verified details (names, degrees, schedule) are applied while preserving custom photo if set
+                return freshDoc ? { ...freshDoc, ...dbD, name: freshDoc.name, degree: freshDoc.degree, specialty: freshDoc.specialty, schedule: freshDoc.schedule, clinics: freshDoc.clinics, image: dbD.image || freshDoc.image } : dbD;
+              }
+              if (dbD.id === 'pacific-ayesha' || dbD.id === 'pacific-selim') {
+                return {
+                  ...dbD,
+                  clinics: (dbD.clinics || []).filter((c: string) => c !== 'c-pacific')
+                };
               }
               if (dbD.id === 'dr-drishti-saha') {
                 return {
@@ -4791,7 +4816,7 @@ export default function App() {
         ? dbHospitals.map(dbH => {
             const localC = CLINICS.find(c => c.id === dbH.id);
             if (localC) {
-              const combinedDoctors = dbH.id === 'c-ar'
+              const combinedDoctors = (dbH.id === 'c-ar' || dbH.id === 'c-ebadot' || dbH.id === 'c-pacific')
                 ? (localC.doctors || [])
                 : Array.from(new Set([...(dbH.doctors || []), ...(localC.doctors || [])]))
                     .filter(id => id !== 'moun-biplab' && !(dbH.id === 'c-greensign' && id === 'pacific-shahjada'));
@@ -4822,6 +4847,36 @@ export default function App() {
                     doctors: combinedDoctors
                   }).catch(e => console.warn("Auto-syncing c-greensign in DB: ", e));
                 });
+              }
+
+              // Auto-sync c-ebadot (ইবাদত হাসপাতাল) hospital details in DB if user is admin/moderator
+              if (dbH.id === 'c-ebadot') {
+                const ebadotDocs = localC.doctors || [];
+                if (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
+                  import('firebase/firestore').then(({ doc, updateDoc }) => {
+                    updateDoc(doc(db, 'hospitals', 'c-ebadot'), {
+                      name: localC.name,
+                      address: localC.address,
+                      doctors: ebadotDocs
+                    }).catch(e => console.warn("Auto-syncing c-ebadot in DB: ", e));
+                  });
+                }
+                return { ...dbH, ...localC, doctors: ebadotDocs };
+              }
+
+              // Auto-sync c-pacific (প্যাসিফিক ল্যাবজোন) hospital details in DB if user is admin/moderator
+              if (dbH.id === 'c-pacific') {
+                const pacificDocs = localC.doctors || [];
+                if (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
+                  import('firebase/firestore').then(({ doc, updateDoc }) => {
+                    updateDoc(doc(db, 'hospitals', 'c-pacific'), {
+                      name: localC.name,
+                      address: localC.address,
+                      doctors: pacificDocs
+                    }).catch(e => console.warn("Auto-syncing c-pacific in DB: ", e));
+                  });
+                }
+                return { ...dbH, ...localC, doctors: pacificDocs };
               }
 
               return { ...dbH, ...localC, doctors: combinedDoctors };

@@ -300,17 +300,25 @@ export const CLINICS: Clinic[] = [
     "district": "Nilphamari",
     "address": "পুরাতন স্টেশন সড়ক, নীলফামারী",
     "doctors": [
-      "eb-firoz-ent",
+      "eb-roni-ortho",
       "eb-murad-med",
-      "eb-shakera-gyn",
-      "eb-resaul-med",
-      "eb-rasedul-ent",
-      "eb-tanvir-psych",
-      "eb-pavel-surg",
-      "eb-munira",
+      "eb-mostafa-med",
       "eb-saiful-card",
+      "eb-sabur-nephro",
+      "eb-firoz-ent",
+      "eb-nasera-gyn",
+      "eb-shakera-gyn",
+      "eb-munira",
+      "eb-narayan-neuro",
+      "eb-resaul-med",
+      "eb-mahabub-med",
+      "eb-kaushik-ped",
       "eb-sohel-ortho",
-      "eb-roni-ortho"
+      "eb-rasedul-ent",
+      "eb-mezbah-uro",
+      "eb-tanvir-psych",
+      "eb-sohrab-surg",
+      "eb-pavel-surg"
     ],
     "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   },
@@ -331,19 +339,17 @@ export const CLINICS: Clinic[] = [
     "id": "c-pacific",
     "name": "প্যাসিফিক ল্যাবজোন",
     "district": "Nilphamari",
-    "address": "পুরাতন বাসস্ট্যান্ড, স্টাফ কোয়ার্টার সংলগ্ন, নীলফামারী।",
+    "address": "পুরাতন বাস স্ট্যান্ড, স্টাফ কোয়ার্টার সংলগ্ন, সৈয়দপুর সড়ক, নীলফামারী।",
     "doctors": [
-      "pacific-hafiz",
       "pacific-ali",
+      "pacific-altaf",
+      "pacific-hafiz",
+      "pacific-sabuj",
       "pacific-shahjada",
       "pacific-alamin",
-      "pacific-sabuj",
-      "pacific-sarwar",
       "pacific-robiul",
-      "pacific-altaf",
-      "pacific-kayes",
-      "pacific-ayesha",
-      "pacific-selim"
+      "pacific-sarwar",
+      "pacific-kayes"
     ],
     "image": "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&q=80&w=800"
   },
@@ -897,43 +903,117 @@ export const DOCTORS: Doctor[] = [
     "consultationFee": 700
   },
   {
-    "id": "eb-firoz-ent",
-    "name": "Dr. Md. Firoz Hosen",
-    "degree": "MBBS (রংপুর মেডিকেল কলেজ), DLO (BSMMU), FACS (আমেরিকা), PGT (সার্জারী) | সহযোগী অধ্যাপক ও বিভাগীয় প্রধান, নাক-কান-গলা ও হেড নেক সার্জারি বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল | নাক কান গলা ও ঘাড় মাথা রোগ বিশেষজ্ঞ সার্জন",
-    "specialty": "ENT",
+    "id": "eb-roni-ortho",
+    "name": "ডাঃ মোঃ জিলুর হাসান রনি",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এম.এস (অর্থোপেডিক্স) পঙ্গু হাসপাতাল, এফ.এ.সি.এস (আমেরিকা), এও (নিউ দিল্লী), এও এ্যাডভান্স (পুনে), এ্যাডভান্স ট্রেনিং ইন ম্যানেজমেন্ট (ভারত), ফেলোশীপ ইন জয়েন্ট রিপ্লেসমেন্ট (কলকাতা) | কনসালটেন্ট, জাতীয় অর্থোপেডিক্স ও পূর্ণবাসন প্রতিষ্ঠান নিটোর (পঙ্গু হাসপাতাল), শেরে বাংলা নগর, ঢাকা-১২০৭ | বিএমডিসি রেজিঃ নং এ-৫৩১৬৮ | বাত-ব্যথা, হাড়-জোড়া ভাঙ্গা বিশেষজ্ঞ ও সার্জন",
+    "specialty": "Orthopedics",
     "districts": [
-      "Nilphamari"
+      "Nilphamari",
+      "Dhaka"
     ],
     "clinics": [
       "c-ebadot"
     ],
-    "schedule": "প্রতি শুক্রবার সকাল ১০টা - বিকাল ৫ টা পর্যন্ত।",
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা হতে সন্ধ্যা ৭টা পর্যন্ত",
     "availableToday": false,
     "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 600
-  },
-  {
-    "id": "eb-murad-med",
-    "name": "Dr. Md. Murad Hosen",
-    "degree": "MBBS (ঢাকা মেডিকেল কলেজ), BCS (স্বাস্থ্য), FCPS (মেডিসিন), FACP (আমেরিকা), FRCP (ইডিনবার্গ) | সহযোগী অধ্যাপক (মেডিসিন বিভাগ), নীলফামারী মেডিকেল কলেজ | (প্রাক্তন) সহযোগী অধ্যাপক (মেডিসিন বিভাগ), ঢাকা মেডিকেল কলেজ | মেডিসিন, গ্যাস্ট্রোলিভার, বাতজ্বর ও বাতব্যাথা ডায়াবেটিস, হরমোন, বক্ষব্যাধি, এলার্জি বিশেষজ্ঞ",
-    "specialty": "Medicine",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-ebadot"
-    ],
-    "schedule": "প্রতি রবিবার দুপুর ২ টা - রাত ১০ টা পর্যন্ত।",
-    "availableToday": false,
-    "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 800
   },
   {
-    "id": "eb-shakera-gyn",
-    "name": "Dr. Mst. Shakera Akter",
-    "degree": "MBBS, BCS (স্বাস্থ্য), FCPS (গাইনী এন্ড অবস্) | প্রসূতি, স্ত্রী রোগ বিশেষজ্ঞ এবং সার্জন, মুগদা মেডিকেল কলেজ হাসপাতাল, ঢাকা | BMDC Reg: A-61632 | প্রসূতি, স্ত্রীরোগ ও বন্ধ্যাত্ব বিশেষজ্ঞ ও সার্জন",
+    "id": "eb-murad-med",
+    "name": "ডাঃ মোহাম্মদ মুরাদ হোসেন",
+    "degree": "এমবিবিএস (ঢাকা মেডিকেল কলেজ), বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন), এফএসিপি (আমেরিকা), এফআরসিপি (ইডিনবার্গ) | সহযোগী অধ্যাপক (মেডিসিন বিভাগ), নীলফামারী মেডিকেল কলেজ, নীলফামারী | (প্রাক্তন) সহযোগী অধ্যাপক (মেডিসিন বিভাগ), ঢাকা মেডিকেল কলেজ | মেডিসিন, গ্যাস্ট্রোলিভার, বাতজ্বর ও বাতব্যাথা ডায়াবেটিস, হরমোন, বক্ষব্যাধি, এলার্জি বিশেষজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতি রবিবার দুপুর ২টা থেকে রাত ১০টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 800
+  },
+  {
+    "id": "eb-mostafa-med",
+    "name": "ডাঃ মোস্তফা কামাল (রউফ)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন), পোষ্ট গ্রাজুয়েট ট্রেনিং ইন নিউরোলজি (থাইলেন্ড), হৃদরোগে উচ্চতর প্রশিক্ষণপ্রাপ্ত (ফোটিস এসকর্টস কার্ডিয়াক সেন্টার নয়াদিল্লী ভারত) | মেডিসিন, ডায়াবেটিস ও নিউরোলজি বিশেষজ্ঞ, নীলফামারী মেডিকেল কলেজ, নীলফামারী | সহযোগী অধ্যাপক মেডিসিন (প্রাক্তন), শহীদ সোহরাওয়ার্দী মেডিকেল কলেজ ও হাসপাতাল, শেরে বাংলা নগর, ঢাকা | বিএমডিসি রেজিঃ নং এ-৩৬১১৪",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতি মঙ্গলবার ও বুধবার, দুপুর ২টা হতে রাত ৮টা",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "eb-saiful-card",
+    "name": "ডাঃ মোঃ সাইফুল ইসলাম",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (কার্ডিওলজী) জাতীয় হৃদরোগ ইনস্টিটিউট, এফসিপিএস (মেডিসিন-এফ পি), পিজিটি (নিউরো মেডিসিন) | হৃদরোগ ও মেডিসিন বিশেষজ্ঞ, জাতীয় হৃদরোগ ইনস্টিটিউট ও হাসপাতাল, শের-এ বাংলা নগর, ঢাকা",
+    "specialty": "Cardiology",
+    "districts": [
+      "Nilphamari",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতি বৃহস্পতিবার বিকাল ৩টা থেকে রাত ৯টা",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "eb-sabur-nephro",
+    "name": "ডাঃ মোঃ আব্দুস সবুর খান",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), সিসিডি (ডায়াবেটিস) বারডেম, এমএসিপি (আমেরিকা), এমডি নেফ্রোলজি কিডনী বিভাগ, রংপুর মেডিকেল কলেজ হাসপাতাল | কিডনী রোগ, ডায়াবেটিস ও মেডিসিন বিশেষজ্ঞ",
+    "specialty": "Nephrology",
+    "districts": [
+      "Nilphamari",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে সন্ধ্যা ৬টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "eb-firoz-ent",
+    "name": "ডাঃ মোঃ ফিরোজ হোসেন",
+    "degree": "এমবিবিএস (রংপুর মেডিকেল কলেজ), ডিএলও (বিএসএমএমইউ), এফএসিএস (আমেরিকা), পিজিটি (সার্জারী) | সহযোগী অধ্যাপক ও বিভাগীয় প্রধান, নাক-কান-গলা ও হেড নেক সার্জারি বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল, রংপুর | নাক কান গলা ও ঘাড় মাথা রোগ বিশেষজ্ঞ সার্জন",
+    "specialty": "ENT",
+    "districts": [
+      "Nilphamari",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে বিকাল ৫টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "eb-nasera-gyn",
+    "name": "ডাঃ সুলতানা নাসেরা তুলি",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (গাইনী এন্ড অবস্) | রেজিষ্ট্রার, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | স্ত্রী রোগ ও প্রসূতিবিদ্যা বিশেষজ্ঞ ও সার্জন",
     "specialty": "Gynecology",
     "districts": [
       "Nilphamari"
@@ -941,16 +1021,70 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ebadot"
     ],
-    "schedule": "প্রতি শুক্রবার দুপুর ১২টা থেকে রাত ১০টা",
-    "availableToday": false,
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=200",
+    "schedule": "প্রতি শনি থেকে বৃহস্পতিবার দুপুর ২টা থেকে রাত ১০টা",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
   },
   {
+    "id": "eb-shakera-gyn",
+    "name": "ডাঃ সাকেরা আকতার",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (গাইনী এন্ড অবস্) | প্রসূতি, স্ত্রী রোগ বিশেষজ্ঞ এবং সার্জন, মুগদা মেডিকেল কলেজ হাসপাতাল, ঢাকা | বিএমডিসি রেজি নং এ-৬১৬৩২ | প্রসূতি, স্ত্রীরোগ ও বন্ধ্যাত্ব বিশেষজ্ঞ ও সার্জন",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতি শুক্রবার দুপুর ১২টা থেকে রাত ১০টা",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "eb-munira",
+    "name": "ডা. মুনিরা ফেরদৌস",
+    "degree": "এমবিবিএস, ডিডিভি, বাংলাদেশ মেডিকেল বিশ্ববিদ্যালয় (সাবেক পিজি হাসপাতাল), ঢাকা, সিসিডি (বারডেম), ফেলোশীপ ডার্মাটোসার্জারী (ডিএবি), ফেলোশীপ ইন্টারভেনশনাল এন্ড অ্যাসথেটিক ডার্মাটোলজি (ইন্ডিয়া) | রেজি নং- A76212 | চর্ম, যৌন, অ্যালার্জি রোগ বিশেষজ্ঞ ও কসমেটিক সার্জন",
+    "specialty": "Dermatology",
+    "districts": [
+      "Nilphamari",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে বিকাল ৪টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "eb-narayan-neuro",
+    "name": "ডাঃ নারায়ন চন্দ্র রায় (জয়)",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এফসিপিএস-শেষ পর্ব (নিউরো সার্জারী) | সহকারী রেজিষ্ট্রার, নিউরো সার্জারী বিভাগ, ঢাকা মেডিকেল কলেজ, ঢাকা | বিএমডিসি রেজিঃ নং-এ-৬৯৮১১ | নিউরো সার্জারী (ব্রেইন ও মেরুদন্ড এবং নার্ভ) চিকিৎসায় অভিজ্ঞ",
+    "specialty": "Neurosurgery",
+    "districts": [
+      "Nilphamari",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতি বৃহস্পতিবার দুপুর ২টা থেকে রাত ১০টা",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
     "id": "eb-resaul-med",
-    "name": "Dr. Md. Resaul Hoque",
-    "degree": "MBBS (রংপুর মেডিকেল কলেজ) | মেডিসিন ও ডায়াবেটিস রোগ বিষয়ে অভিজ্ঞ | BMDC Reg: A-34957",
+    "name": "ডাঃ রেজাউল হক",
+    "degree": "এমবিবিএস (রংপুর মেডিকেল কলেজ) | মেডিসিন ও ডায়াবেটিস রোগ বিষয়ে অভিজ্ঞ | বিএমডিসি রেজিঃ নং এ-৩৪৯৫৭",
     "specialty": "Medicine",
     "districts": [
       "Nilphamari"
@@ -961,47 +1095,119 @@ export const DOCTORS: Doctor[] = [
     "schedule": "প্রতি বুধবার দুপুর ১টা থেকে রাত ১০টা পর্যন্ত, বৃহস্পতিবার সকাল ১০টা থেকে রাত ১০টা পর্যন্ত, শুক্রবার সকাল ১০টা থেকে সন্ধ্যা ৭টা",
     "availableToday": false,
     "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "eb-mahabub-med",
+    "name": "ডাঃ মোঃ মাহাবুব-উল-আলম",
+    "degree": "এম.বি.বি.এস, বি.সি.এস (স্বাস্থ্য), পি.জি.টি (মেডিসিন), সি.সি.ডি (বারডেম), মেম্বার অব আমেরিকান ডায়াবেটিস এ্যাসোসিয়েশন | প্রভাষক কমিউনিটি মেডিসিন, নীলফামারী মেডিকেল কলেজ, নীলফামারী | বিএমডিসি রেজিঃ নং-এ-৬০৪১৯ | মেডিসিন, বক্ষব্যাধি, বাত-ব্যাথা, ডায়াবেটিস ও চর্ম-যৌন রোগ অভিজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতি শনি থেকে বুধবার দুপুর ২টা থেকে রাত ৯টা",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "eb-kaushik-ped",
+    "name": "ডাঃ কৌশিক রায়",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), ডিসিএইচ (শিশু) বিএসএমএমইউ | নবজাতক ও শিশু কিশোর রোগ বিশেষজ্ঞ, অটিজম (শিশু প্রতিবন্ধী বিশেষ অভিজ্ঞ) | এক্স কনসালটেন্ট (শিশু বিকাশ কেন্দ্র), ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী",
+    "specialty": "Pediatrics",
+    "districts": [
+      "Nilphamari"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতি শনি থেকে বৃহস্পতিবার বিকাল ৪ টা থেকে রাত ৮টা ও শুক্রবার সকাল ১০টা থেকে রাত ১০টা",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "eb-sohel-ortho",
+    "name": "ডাঃ মোঃ সোহেলুর রহমান সোহেল",
+    "degree": "এম.বি.বি.এস (রংপুর মেডিকেল কলেজ), ডি-অর্থো (অর্থো-সার্জারী), স্পেশাল ট্রেনিং ইন পি.আর.পি থেরাপি, ফেলোশিপ ইন ইলিজারভ সার্জারী ও ডিফরমিটি কারেকশন, মেম্বার অব এশিয়া প্যাসিফিক অর্থোপেডিক্স এসোসিয়েশন (APOA) | পিজি হাসপাতাল, ঢাকা | কনসালটেন্ট, অর্থোপেডিক্স এন্ড ট্রমাটোলজি",
+    "specialty": "Orthopedics",
+    "districts": [
+      "Nilphamari",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতিদিন দুপুর ২টা থেকে রাত ৯টা (শুক্রবার বন্ধ)",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
   },
   {
     "id": "eb-rasedul-ent",
-    "name": "Dr. Md. Rasedul Islam ( Rased )",
-    "degree": "MBBS, DLO (BSMMU) PG হাসপাতাল, ঢাকা | নাক, কান, গলা, ঘাড়, থাইরয়েড রোগ বিশেষজ্ঞ ও হেড নেক সার্জন",
+    "name": "ডাঃ মোঃ রাশেদুল ইসলাম (রাশেদ)",
+    "degree": "এমবিবিএস, ডিএলও (বিএসএমএমইউ), পিজি হাসপাতাল, ঢাকা | নাক, কান, গলা, ঘাড়, থাইরয়েড রোগ বিশেষজ্ঞ ও হেড নেক সার্জন",
     "specialty": "ENT",
     "districts": [
-      "Nilphamari"
+      "Nilphamari",
+      "Dhaka"
     ],
     "clinics": [
       "c-ebadot"
     ],
-    "schedule": "প্রতি শনি, রবি, বুধ ও বৃহস্পতিবার দুপুর ২টা থেকে রাত ৮টা; সোমবার সকাল ১০টা থেকে দুপুর ১টা পর্যন্ত",
-    "availableToday": false,
+    "schedule": "প্রতি শনি, রবি, বুধ ও বৃহস্পতিবার দুপুর ২টা থেকে রাত ৮টা, সোমবার সকাল ১০টা থেকে দুপুর ১টা পর্যন্ত",
+    "availableToday": true,
     "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
   },
   {
-    "id": "eb-tanvir-psych",
-    "name": "Dr. Md. Tanvir Rahman Shah ( Tamal )",
-    "degree": "MBBS, BCS (স্বাস্থ্য), MD (সাইকিয়াট্রি) | সহযোগী অধ্যাপক, মনোরোগ বিদ্যা বিভাগ, রংপুর মেডিকেল কলেজ ও হাসপাতাল | ব্রেইন, সেক্স, মানসিক ও মাদকাসক্তি রোগ বিশেষজ্ঞ",
-    "specialty": "Psychiatry",
+    "id": "eb-mezbah-uro",
+    "name": "ডাঃ মেজবাহুল মোকাররাবীন (মেজবা)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমএস (ইউরোলজি), এ্যাডভান্সড ট্রেনিং ইন ইউরোলজি (অস্ট্রেলিয়া) | কনসালটেন্ট (ইউরোলজি বিভাগ), রংপুর মেডিকেল কলেজ হাসপাতাল | ইউরোলজি বিশেষজ্ঞ এবং কিডনি সার্জন",
+    "specialty": "Urology",
     "districts": [
-      "Nilphamari"
+      "Nilphamari",
+      "Rangpur"
     ],
     "clinics": [
       "c-ebadot"
     ],
-    "schedule": "প্রতি মাসে ২য় ও ৪র্থ রবিবার দুপুর ২ টা - রাত ৮ টা পর্যন্ত।",
+    "schedule": "প্রতি শুক্রবার বিকাল ৪টা থেকে রাত ১০টা",
     "availableToday": false,
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 700
   },
   {
-    "id": "eb-pavel-surg",
-    "name": "Dr. Md. Abu Hanif Pavel",
-    "degree": "MBBS, MS (সার্জারি) | সার্জারি বিশেষজ্ঞ (জেনারেল ও ল্যাপারোস্কপিক) | সহযোগী অধ্যাপক, সার্জারি বিভাগ (প্রাক্তন), রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর | BMDC Reg: A-31357",
+    "id": "eb-tanvir-psych",
+    "name": "ডাঃ মোঃ তানভীর রহমান শাহ্ (তমাল)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (সাইকিয়াট্রি) | সহযোগী অধ্যাপক, মনোরোগ বিদ্যা বিভাগ, রংপুর মেডিকেল কলেজ ও হাসপাতাল | ব্রেইন, সেক্স, মানসিক ও মাদকাসক্তি রোগ বিশেষজ্ঞ",
+    "specialty": "Psychiatry",
+    "districts": [
+      "Nilphamari",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-ebadot"
+    ],
+    "schedule": "প্রতি মাসের ২য় ও ৪র্থ রবিবার বিকেল ৩টা থেকে রাত ৯টা",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "eb-sohrab-surg",
+    "name": "ডাঃ মোঃ সোহরাব হোসেন",
+    "degree": "এমবিবিএস, এফসিপিএস (সার্জারী) | সহযোগী অধ্যাপক, নীলফামারী মেডিকেল কলেজ ও হাসপাতাল, নীলফামারী | জেনারেল ও ল্যাপারোস্কপিক সার্জন",
     "specialty": "Surgery",
     "districts": [
       "Nilphamari"
@@ -1009,44 +1215,28 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ebadot"
     ],
-    "schedule": "প্রতি রবি,মঙ্গল ও বৃহস্পতিবার দুপুর ২ টা - রাত ৮ টা পর্যন্ত।",
+    "schedule": "প্রতি শনি, রবি ও সোমবার দুপুর ২টা থেকে রাত ৮টা",
     "availableToday": true,
     "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 700
   },
   {
-    "id": "eb-munira",
-    "name": "Dr. Munira Ferdous",
-    "degree": "MBBS, DDV, CCD (BIRDEM), Fellowship in Dermatosurgery (DFB), Fellowship in Interventional & Aesthetic Dermatology (India) | চর্ম ও যৌনরোগ বিশেষজ্ঞ | BMDC Reg: A-76212",
-    "specialty": "Dermatology",
+    "id": "eb-pavel-surg",
+    "name": "ডাঃ মোঃ আবু হানিফ পাভেল",
+    "degree": "এমবিবিএস, এমএস (সার্জারি) | সার্জারি বিশেষজ্ঞ (জেনারেল ও ল্যাপারোস্কপিক) | সহযোগী অধ্যাপক, সার্জারি বিভাগ (প্রাক্তন), রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর | বিএমডিসি রেজিঃ নং: এ-৩১৩৫৭",
+    "specialty": "Surgery",
     "districts": [
-      "Nilphamari"
+      "Nilphamari",
+      "Rangpur"
     ],
     "clinics": [
       "c-ebadot"
     ],
-    "schedule": "প্রতি শুক্রবার সকাল ১০টা – বিকাল ৪টা পর্যন্ত",
-    "availableToday": false,
+    "schedule": "প্রতি রবি, মঙ্গল ও বৃহস্পতিবার, দুপুর ২টা থেকে রাত ৮টা",
+    "availableToday": true,
     "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 500
-  },
-  {
-    "id": "eb-saiful-card",
-    "name": "Dr. Md. Saiful Islam",
-    "degree": "MBBS, BCS (Health), MD (Cardiology), FCPS (Medicine-FP), PGT (Neuro Medicine) | হৃদরোগ ও মেডিসিন বিশেষজ্ঞ, রংপুর মেডিকেল কলেজ ও হাসপাতাল",
-    "specialty": "Cardiology",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-ebadot"
-    ],
-    "schedule": "প্রতি বৃহঃপতিবার বিকাল ৩ টা - রাত ৯ টা",
-    "availableToday": false,
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 700
   },
   {
@@ -1137,131 +1327,31 @@ export const DOCTORS: Doctor[] = [
     "consultationFee": 700
   },
   {
-    "id": "pacific-hafiz",
-    "name": "Dr. Md. Hafizul Islam",
-    "degree": "MBBS (RU), BCS (Health), FCPS-Gastroenterology (FP), FCPS-Medicine (FP), CCD (BIRDEM) | রেজিস্ট্রার, মেডিসিন বিভাগ, রংপুর মেডিকেল কলেজ হাসপাতাল",
-    "specialty": "Gastroenterology",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-pacific"
-    ],
-    "schedule": "প্রতি বৃহস্পতিবার বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত",
-    "availableToday": false,
-    "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 600
-  },
-  {
     "id": "pacific-ali",
-    "name": "Dr. Saiyod Hasan Ali",
-    "degree": "MBBS (DJMC), D-Ortho (পঙ্গু হাসপাতাল, ঢাকা) | হাড়-জোড়া, বাত-ব্যথা অর্থোপেডিক বিশেষজ্ঞ ও ট্রমা সার্জন | বাংলাদেশ স্পেশালাইজড হাসপাতাল, শ্যামলী, ঢাকা",
+    "name": "ডাঃ সৈয়দ হাসান আলী",
+    "degree": "এমবিবিএস (ডি,জে,এম, সি), ডি-অর্থো (পঙ্গু হাসপাতাল, ঢাকা), আর্থ্রোস্কোপি (লিগামেন্ট রিকনস্ট্রকশন সার্জরী) ও আর্থ্রোপ্লাস্টি (জয়েন্ট প্রতিস্থাপন)-এ বিশেষ প্রশিক্ষণপ্রাপ্ত | মেম্বার, বাংলাদেশ অর্থোপেডিক সোসাইটি | বাংলাদেশ স্পেশালাইজড হসপিটাল, শ্যামলী, ঢাকা | কনসালটেন্ট, প্যাসিফিক ল্যাবজোন, নীলফামারী | আর্থ্রোস্কোপি, আর্থ্রোপ্লাস্টি, অর্থোপেডিক বিশেষজ্ঞ ও ট্রমা সার্জন",
     "specialty": "Orthopedics",
     "districts": [
-      "Nilphamari"
+      "Nilphamari",
+      "Dhaka"
     ],
     "clinics": [
       "c-pacific"
     ],
-    "schedule": "প্রতি বৃহস্পতিবার রাত ৯ টা - রাত ১২ টা এবং প্রতি শুক্রবার সকাল ১১ টা - সন্ধ্যা ৭ টা পর্যন্ত।",
+    "schedule": "প্রতি দুপুর ২.০০ টা থেকে রাত ০৮ টা পর্যন্ত ও প্রতি শুক্রবার সকাল ১১টা থেকে রাত ৮.০০ টা পর্যন্ত",
     "availableToday": false,
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 600
-  },
-  {
-    "id": "pacific-shahjada",
-    "name": "Dr. Md. Shahjada Mia",
-    "degree": "MBBS, BCS (Health), MCPS (Medicine), MD ফেজ-বি (মেডিসিন) | রংপুর মেডিকেল কলেজ হাসপাতাল",
-    "specialty": "Medicine",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-pacific"
-    ],
-    "schedule": "প্রতি শুক্রবার বিকাল ৩ টা - রাত ৯ টা",
-    "availableToday": true,
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 600
-  },
-  {
-    "id": "pacific-alamin",
-    "name": "Dr. Al-Amin Hossain",
-    "degree": "MBBS, সিএমইউ (আল্ট্রা), FCPS (ইন্টারনাল মেডিসিন) শেষ পর্ব, এইচএমও (মেডিসিন) | রংপুর মেডিকেল কলেজ ও হাসপাতাল",
-    "specialty": "Medicine",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-pacific"
-    ],
-    "schedule": "প্রতি সোমবার ও বৃহস্পতিবার সকাল ১০টা – বিকাল ৪টা",
-    "availableToday": true,
-    "rating": 4.7,
-    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 500
-  },
-  {
-    "id": "pacific-sabuj",
-    "name": "Dr. Md. Abu Taher Sabuj",
-    "degree": "MBBS (DJMC) | মেডিসিন, ডায়াবেটিস এন্ড জেনারেল প্রাকটিশনার",
-    "specialty": "Medicine",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-pacific"
-    ],
-    "schedule": "প্রতি শনিবার সকাল ৯:৩০ – বিকাল ৫টা এবং প্রতি মঙ্গলবার বিকাল ৫টা – রাত ৮টা",
-    "availableToday": false,
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 500
-  },
-  {
-    "id": "pacific-sarwar",
-    "name": "Dr. Md. Sarwar Hossain",
-    "degree": "MBBS, BCS (Health) | মেডিকেল অফিসার, সদর, নীলফামারী",
-    "specialty": "Orthopedics",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-pacific"
-    ],
-    "schedule": "প্রতিদিন দুপুর ২টা থেকে রাত ৯টা পর্যন্ত",
-    "availableToday": true,
     "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 500
-  },
-  {
-    "id": "pacific-robiul",
-    "name": "Dr. Md. Robiul Islam",
-    "degree": "MBBS, MD (Medicine) | সহকারী অধ্যাপক, মেডিসিন বিভাগ, প্রাইম মেডিকেল কলেজ ও হাসপাতাল",
-    "specialty": "Medicine",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-pacific"
-    ],
-    "schedule": "প্রতি বুধবার দুপুর ২টা থেকে রাত ৮টা পর্যন্ত",
-    "availableToday": false,
-    "rating": 4.7,
-    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 600
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
   },
   {
     "id": "pacific-altaf",
-    "name": "Dr. Md. Altaf Hossain Sarker",
-    "degree": "MBBS, MCPM, DPM | অধ্যাপক, মানসিক ব্যাধি বিভাগ, নর্দান প্রাইভেট মেডিকেল কলেজ",
+    "name": "অধ্যাপক ডাঃ মোঃ আলতাফ হোসেন সরকার",
+    "degree": "এমবিবিএস, এমসিপিএম, ডিপিএম | অধ্যাপক, মানসিক ব্যাধি বিভাগ, নর্দান প্রাইভেট মেডিকেল কলেজ | মানসিক রোগ, স্নায়ুরোগ, মাদকাশক্তি মৃগীরোগ ও মানসিক যৌনরোগ বিশেষজ্ঞ",
     "specialty": "Psychiatry",
     "districts": [
-      "Nilphamari"
+      "Nilphamari",
+      "Rangpur"
     ],
     "clinics": [
       "c-pacific"
@@ -1269,13 +1359,102 @@ export const DOCTORS: Doctor[] = [
     "schedule": "বৃহস্পতিবার সকাল ১০টা থেকে বিকাল ৩টা পর্যন্ত",
     "availableToday": false,
     "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 800
   },
   {
-    "id": "pacific-kayes",
-    "name": "Dr. Md. Imrul Kayes",
-    "degree": "MBBS (RMU), PGT (Orthopedic & Traumatology) | মেডিকেল অফিসার, রুটস্ হাসপাতাল ও ডায়াগনস্টিক সেন্টার, নীলফামারী",
+    "id": "pacific-hafiz",
+    "name": "ডাঃ মোঃ হাফিজুল ইসলাম",
+    "degree": "এমবিবিএস (আর.ইউ.), বিসিএস (স্বাস্থ্য), এফসিপিএস-গ্যাস্ট্রোএন্টারোলজি (এফপি), এফসিপিএস-মেডিসিন (এফপি), সিসিডি (বারডেম), আইসিইউ ও ক্রিটিক্যাল কেয়ার মেডিসিন অভিজ্ঞ | রেজিস্টার, মেডিসিন বিভাগ, রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর | বিএমডিসি রেজিঃ এ-৮৮৮৭৬ | গ্যাস্ট্রোলিভার, মেডিসিন ও ডায়াবেটিস",
+    "specialty": "Gastroenterology",
+    "districts": [
+      "Nilphamari",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-pacific"
+    ],
+    "schedule": "প্রতি বৃহস্পতিবার দুপুর ২টা থেকে রাত ৮টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "pacific-sabuj",
+    "name": "ডাঃ মোঃ আবু তাহের সবুজ",
+    "degree": "এমবিবিএস, সিসিডি (বারডেম) | মেডিসিন, ডায়াবেটিস, মা ও শিশু রোগে অভিজ্ঞ এবং জেনারেল প্রাকটিশনার",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari"
+    ],
+    "clinics": [
+      "c-pacific"
+    ],
+    "schedule": "শনিবার সকাল ১০:০০ থেকে রাত ৮.০০ টা পর্যন্ত, প্রতি রবিবার বিকাল ৫.০০ থেকে রাত ৮.০০ টা পর্যন্ত, প্রতি মঙ্গলবার বিকাল ৫.০০ টা থেকে রাত ৮.০০ টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "pacific-shahjada",
+    "name": "ডাঃ মোঃ শাহজাদা মিয়া",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমসিপিএস (মেডিসিন), এফসিপিএস-এফপি (এন্ডোক্রাইনোলজি), এমডি ফেজ-বি (মেডিসিন), রংপুর মেডিকেল কলেজ হাসপাতাল | ডায়াবেটিস ও মেডিসিন বিশেষজ্ঞ",
+    "specialty": "Endocrinology",
+    "districts": [
+      "Nilphamari",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-pacific"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে রাত ৮টা",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "pacific-alamin",
+    "name": "ডাঃ আল-আমিন হোসেন",
+    "degree": "এম.বি.বি.এস, সি,এম,ইউ (আল্ট্রা), এফসিপিএস (ইন্টারনাল মেডিসিন) শেষ পর্ব, এইচ,এম,ও (মেডিসিন), রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | মেডিসিন, নিউরোমেডিসিন, ডায়াবেটিস, বাত-ব্যথা, বক্ষব্যাধি, হৃদরোগ, পেটের অসুখ রোগের অভিজ্ঞ চিকিৎসক",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-pacific"
+    ],
+    "schedule": "প্রতি সোমবার দুপুর ২.০০ থেকে সন্ধ্যা ৭.০০ টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "pacific-robiul",
+    "name": "ডাঃ মোঃ রবিউল ইসলাম",
+    "degree": "এমবিবিএস, এমডি (মেডিসিন) (রংপুর মেডিকেল কলেজ হাসপাতাল) | সহকারী অধ্যাপক, মেডিসিন বিভাগ, প্রাইম মেডিকেল কলেজ ও হাসপাতাল | মেডিসিন, নিউরোমেডিসিন ও বক্ষব্যাধি বিশেষজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-pacific"
+    ],
+    "schedule": "প্রতি বুধবার দুপুর ২টা থেকে রাত ৮টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "pacific-sarwar",
+    "name": "ডাঃ মোঃ সারোয়ার হোসেন",
+    "degree": "এমবিবিএস (আরপিএমসি), বিসিএস (স্বাস্থ্য), পিজিটি (অর্থোপেডিক্স এন্ড ট্রমাটোলজি), হাড়-জোড়, বাত-ব্যথা রোগে বিশেষ প্রশিক্ষণপ্রাপ্ত | মেডিকেল অফিসার, সদর, নীলফামারী | হাড়-জোড়, বাত-ব্যথা, অর্থোপেডিক্স ও ট্রমা চিকিৎসক",
     "specialty": "Orthopedics",
     "districts": [
       "Nilphamari"
@@ -1283,45 +1462,28 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-pacific"
     ],
-    "schedule": "প্রতি সোমবার ও বৃহস্পতিবার সকাল ১০টা – বিকাল ৪টা",
-    "availableToday": false,
-    "rating": 4.6,
-    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 400
-  },
-  {
-    "id": "pacific-ayesha",
-    "name": "Dr. Ayesha Siddika",
-    "degree": "MBBS (RMU), DMU (Ultra), প্রাক্তন এইচ এম ও (রেডিওলজি এন্ড ইমেজিং) | মেডিকেল অফিসার, আস্থা কেয়ার, নীলফামারী",
-    "specialty": "Gynecology",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-pacific"
-    ],
-    "schedule": "শনিবার সকাল ৯:৩০ – বিকাল ৫টা এবং প্রতি বুধবার বিকাল ৫টা – রাত ৮টা",
-    "availableToday": false,
-    "rating": 4.5,
-    "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=200",
+    "schedule": "প্রতিদিন দুপুর ২.৩০টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 500
   },
   {
-    "id": "pacific-selim",
-    "name": "Dr. Md. Salimuzzaman",
-    "degree": "MBBS, BCS (Health), MCPS (Medicine), FCPS Final Part (Medicine), MRCP UK (Paces), MD Resident (Cardiology) | National Institute of Cardiovascular Diseases",
-    "specialty": "Cardiology",
+    "id": "pacific-kayes",
+    "name": "ডাঃ মোঃ ইমরুল কায়েস",
+    "degree": "এমবিবিএস (আরএমইউ), পিজিটি (অর্থোপেডিক ও ট্রমাটোলজি) | প্রাক্তন এইচএমও, জেনারেল হাসপাতাল, নীলফামারী | মেডিকেল অফিসার | অর্থোপেডিক্স, স্পোর্টস এবং ট্রমা বিষয়ে অভিজ্ঞ চিকিৎসক",
+    "specialty": "Orthopedics",
     "districts": [
       "Nilphamari"
     ],
     "clinics": [
       "c-pacific"
     ],
-    "schedule": "বৃহস্পতিবার বিকাল ৫টা – রাত ৯টা এবংশুক্রবার সকাল ৯টা – রাত ৮টা",
-    "availableToday": false,
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 800
+    "schedule": "প্রতিদিন সকাল ১০টা থেকে বিকাল ৪টা",
+    "availableToday": true,
+    "rating": 4.7,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
   },
   {
     "id": "gs-obayda",
@@ -2290,40 +2452,6 @@ export const DOCTORS: Doctor[] = [
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 700
-  },
-  {
-    "id": "eb-sohel-ortho",
-    "name": "Dr. Md. Sohelur Rahman (Sohel)",
-    "degree": "MBBS (রংপুর মেডিকেল), D-Ortho Surgery, PRP Therapy & Ilizarov Fellowship, AO Trauma & APOA Member | অর্থোপেডিক ও ট্রমা সার্জন (হাড় ভাঙা, বাত ও জয়েন্টের ব্যথা, হাড়ের ডিফর্মিটি সংশোধন)",
-    "specialty": "Orthopedics",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-ebadot"
-    ],
-    "schedule": "প্রতিদিন দুপুর ২:০০টা – রাত ৯:০০টা (শুক্রবার বন্ধ)",
-    "availableToday": true,
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 600
-  },
-  {
-    "id": "eb-roni-ortho",
-    "name": "Dr. Md. Zillur Hasan (Roni)",
-    "degree": "MBBS, BCS (স্বাস্থ্য), MS (ORTHOPEDICS) – পঙ্গু হাসপাতাল, FACS (USA), AO (New Delhi) | জাতীয় অর্থোপেডিক্স হাসপাতাল ও পুনর্বাসন প্রতিষ্ঠান (নিটোর), ঢাকা (BMDC Reg: 344) | অর্থোপেডিক ও ট্রমা সার্জন",
-    "specialty": "Orthopedics",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-ebadot"
-    ],
-    "schedule": "প্রতি শুক্রবার সকাল ১০:০০টা – সন্ধ্যা ৭:০০টা",
-    "availableToday": false,
-    "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 700
   },
   {
