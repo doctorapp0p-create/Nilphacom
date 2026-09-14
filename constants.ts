@@ -1170,7 +1170,7 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "eb-mezbah-uro",
-    "name": "ডাঃ মেজবাহুল মোকাররাবীন (মেজবা)",
+    "name": "ডাঃ মেজবাউল মোকাররম বিন মেজবা",
     "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমএস (ইউরোলজি), এ্যাডভান্সড ট্রেনিং ইন ইউরোলজি (অস্ট্রেলিয়া) | কনসালটেন্ট (ইউরোলজি বিভাগ), রংপুর মেডিকেল কলেজ হাসপাতাল | ইউরোলজি বিশেষজ্ঞ এবং কিডনি সার্জন",
     "specialty": "Urology",
     "districts": [
@@ -1180,7 +1180,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ebadot"
     ],
-    "schedule": "প্রতি শুক্রবার বিকাল ৪টা থেকে রাত ১০টা",
+    "schedule": "প্রতি মঙ্গলবার বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত",
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",

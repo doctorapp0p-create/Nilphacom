@@ -160,6 +160,12 @@ service cloud.firestore {
       allow create: if true;
       allow update, delete: if true;
     }
+
+    // --- চিকিৎসা পত্র ও মেডিকেল রেকর্ডস রুলস ---
+    match /medical_records/{recordId} {
+      allow read, list: if true;
+      allow create, update, delete: if true;
+    }
   }
 }
 

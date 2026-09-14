@@ -557,3 +557,29 @@ export interface BloodDonor {
   verified?: boolean;
 }
 
+export type MedicalRecordType = 'prescription' | 'lab_report' | 'discharge_letter' | 'investigation' | 'other';
+
+export interface MedicalRecordFile {
+  name: string;
+  url: string; // base64 data url or preview link
+  type?: string;
+  size?: number;
+}
+
+export interface MedicalRecord {
+  id: string;
+  patientPhone: string;
+  patientName?: string;
+  doctorName?: string;
+  doctorSpecialty?: string;
+  hospitalName?: string;
+  visitDate: string; // YYYY-MM-DD
+  recordType: MedicalRecordType;
+  diagnosis?: string;
+  notes?: string;
+  files: MedicalRecordFile[];
+  createdAt: string;
+  userId?: string;
+  followUpDate?: string;
+}
+

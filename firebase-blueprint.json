@@ -381,9 +381,34 @@
         "created_at": { "type": "string" }
       },
       "required": ["id", "code", "discount_percent", "is_active"]
+    },
+    "MedicalRecord": {
+      "title": "MedicalRecord",
+      "description": "Patient medical records, prescriptions, and test reports uploaded by patients",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "patientPhone": { "type": "string" },
+        "patientName": { "type": "string" },
+        "doctorName": { "type": "string" },
+        "hospitalName": { "type": "string" },
+        "visitDate": { "type": "string" },
+        "recordType": { "type": "string", "enum": ["prescription", "lab_report", "discharge_letter", "other"] },
+        "diagnosis": { "type": "string" },
+        "notes": { "type": "string" },
+        "fileUrls": { "type": "array", "items": { "type": "string" } },
+        "fileNames": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string" },
+        "userId": { "type": "string" }
+      },
+      "required": ["id", "patientPhone", "visitDate"]
     }
   },
   "firestore": {
+    "/medical_records/{recordId}": {
+      "schema": "MedicalRecord",
+      "description": "Patient medical records, prescriptions and lab reports"
+    },
     "/coupons/{couponId}": {
       "schema": "Coupon",
       "description": "Discount coupon codes managed by admin"

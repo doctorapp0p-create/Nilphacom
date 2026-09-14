@@ -43,6 +43,7 @@ import { SecurityGuard, sanitizeInput } from './src/components/SecurityGuard';
 import { AdminLabBillBuilder } from './src/components/AdminLabBillBuilder';
 import { AuthModal } from './src/components/AuthModal';
 import { BuyMedicineSection } from './src/components/BuyMedicineSection';
+import { MedicalRecordsSection } from './src/components/MedicalRecordsSection';
 import { AdminDataModal } from './src/components/AdminDataModal';
 import { DoctorPhotoModal, compressDoctorImage } from './src/components/DoctorPhotoModal';
 import { LevelUpRewardSection } from './src/components/LevelUpRewardSection';
@@ -3930,13 +3931,14 @@ const HOME_SERVICES_CATEGORIES = [
   { id: 'labtests', icon: '🧪', label: 'ল্যাব ও টেস্ট' },
   { id: 'emergency', icon: '🆘', label: 'SOS সেবা' },
   { id: 'buy_medicine', icon: '💊', label: 'ঔষধ পণ্য' },
-  { id: 'medical_accessories', icon: '🩺', label: 'মেডিকেল এক্সেসরিজ' }
+  { id: 'medical_accessories', icon: '🩺', label: 'মেডিকেল এক্সেসরিজ' },
+  { id: 'medical_records', icon: '📁', label: 'চিকিৎসা পত্র জমা করুন' }
 ] as const;
 
 export default function App() {
   const [showLanding, setShowLanding] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
-  const [homeSubCategory, setHomeSubCategory] = useState<'doctors' | 'live_doctor' | 'govt_health' | 'blood_donation' | 'hospitals' | 'dental' | 'labtests' | 'emergency' | 'buy_medicine' | 'medical_accessories' | 'free_doctors' | 'maternity_donation' | 'donation' | 'subscriptions'>('doctors');
+  const [homeSubCategory, setHomeSubCategory] = useState<'doctors' | 'live_doctor' | 'govt_health' | 'blood_donation' | 'hospitals' | 'dental' | 'labtests' | 'emergency' | 'buy_medicine' | 'medical_accessories' | 'medical_records' | 'free_doctors' | 'maternity_donation' | 'donation' | 'subscriptions'>('doctors');
   const [showLiveDoctorModal, setShowLiveDoctorModal] = useState(false);
   const [liveDoctorSelectedDoc, setLiveDoctorSelectedDoc] = useState<Doctor | null>(null);
   const [user, setUser] = useState<any>(null);
@@ -4669,6 +4671,15 @@ export default function App() {
             }, { merge: true }).catch(e => console.warn(`Updating dr-gaosul-alam-mostakin clinics in DB:`, e));
           }
 
+          // Sync eb-mezbah-uro name and schedule in DB
+          const mezbahDoc = docRes.docs.find(docD => docD.id === 'eb-mezbah-uro');
+          if (mezbahDoc && (mezbahDoc.data()?.schedule !== "প্রতি মঙ্গলবার বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত" || mezbahDoc.data()?.name !== "ডাঃ মেজবাউল মোকাররম বিন মেজবা")) {
+            setDoc(doc(db, 'doctors', 'eb-mezbah-uro'), { 
+              name: "ডাঃ মেজবাউল মোকাররম বিন মেজবা",
+              schedule: "প্রতি মঙ্গলবার বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত" 
+            }, { merge: true }).catch(e => console.warn(`Updating eb-mezbah-uro schedule in DB:`, e));
+          }
+
           // Also auto-sync or update hospital in DB
           const siddhikaDoc = hospRes.docs.find(docH => docH.id === 'c-siddhika-domar');
           const siddhikaHosp = CLINICS.find(c => c.id === 'c-siddhika-domar');
@@ -4760,6 +4771,13 @@ export default function App() {
                   name: "ডাঃ মোঃ গাওসুল আলম মোস্তাকিন (ইয়েন)",
                   clinics: Array.from(new Set([...(dbD.clinics || []), 'c-al-madina-domar'])),
                   schedule: "প্রতিদিন সকাল ১০টা থেকে বিকাল ৫টা পর্যন্ত"
+                };
+              }
+              if (dbD.id === 'eb-mezbah-uro') {
+                return {
+                  ...dbD,
+                  name: "ডাঃ মেজবাউল মোকাররম বিন মেজবা",
+                  schedule: "প্রতি মঙ্গলবার বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত"
                 };
               }
               return dbD;
@@ -6505,99 +6523,136 @@ export default function App() {
         availableToday: checkDay(d.schedule, todayBn)
       }));
 
-    // Apply strict filters
+    // Area and Clinic ID constants for accurate location filtering
+    const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar'];
+    const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
+    const RANGPUR_CLINIC_IDS = ['c-popular-rangpur'];
+
+    const normalizeSpecialtyId = (specStr: string): string => {
+      if (!specStr) return '';
+      const s = specStr.trim().toLowerCase();
+      
+      if (s === 'neurosurgery' || s.includes('নিউরোসার্জারি') || s.includes('নিউরো সার্জারি') || s.includes('ব্রেন সার্জারি')) return 'neurosurgery';
+      if (s === 'neuromedicine' || s === 'neurology' || s.includes('নিউরোমেডিসিন') || s.includes('নিউরোলজি') || s.includes('স্নায়ুরোগ') || s.includes('মস্তিষ্ক ও স্নায়ু')) return 'neuromedicine';
+      if (s === 'urology' || s.includes('ইউরোলজি') || s.includes('ইউরোলজিস্ট') || s.includes('মূত্র') || s.includes('প্রোস্টেট')) return 'urology';
+      if (s === 'gastroenterology' || s === 'gastrology' || s.includes('গ্যাস্ট্রো') || s.includes('গ্যাস্ট্রোলজি') || s.includes('হেপাটোলজি') || s.includes('লিভার বিশেষজ্ঞ') || s.includes('লিভার')) return 'gastroenterology';
+      if (s === 'endocrinology' || s.includes('ডায়াবেটিস') || s.includes('ডায়াবেটিস') || s.includes('হরমোন') || s.includes('endocrine') || s.includes('থাইরয়েড')) return 'endocrinology';
+      if (s === 'orthopedics' || s === 'orthopaedic' || s === 'orthopedic' || s.includes('অর্থোপেডিক') || s.includes('অর্থপেডিক') || s.includes('হাড়') || s.includes('হাড়') || s.includes('পঙ্গু') || s.includes('ট্রমা') || s.includes('আর্থ্রোস্কোপি') || s.includes('আর্থ্রোপ্লাস্টি')) return 'orthopedics';
+      if (s === 'gynecology' || s === 'gynae' || s === 'obs' || s === 'obstetrics' || s.includes('গাইনী') || s.includes('গাইনি') || s.includes('স্ত্রী রোগ') || s.includes('স্ত্রীরোগ') || s.includes('প্রসূতি') || s.includes('প্রসূতী') || s.includes('বন্ধ্যাত্ব')) return 'gynecology';
+      if (s === 'cardiology' || s.includes('কার্ডিওলজি') || s.includes('কার্ডিও') || s.includes('হৃদরোগ') || s.includes('হার্ট')) return 'cardiology';
+      if (s === 'pediatrics' || s.includes('শিশু রোগ') || s.includes('নবজাতক ও শিশু') || s.includes('শিশু বিশেষজ্ঞ') || s === 'pediatric' || s === 'pediatrics') return 'pediatrics';
+      if (s === 'ent' || s.includes('নাক, কান') || s.includes('নাক কান গলা') || s.includes('ইএনটি') || s.includes('হেড নেক') || s === 'ear, nose & throat') return 'ent';
+      if (s === 'dermatology' || s.includes('চর্ম ও যৌন') || s.includes('ডার্মাটোলজি') || s.includes('চর্ম') || s.includes('যৌন') || s.includes('এলার্জি ও চর্ম')) return 'dermatology';
+      if (s === 'nephrology' || s.includes('নেফ্রোলজি') || s.includes('কিডনি রোগ') || s.includes('কিডনি বিশেষজ্ঞ') || s === 'kidney') return 'nephrology';
+      if (s === 'ophthalmology' || s.includes('চক্ষু রোগ') || s.includes('চক্ষু বিশেষজ্ঞ') || s.includes('অপথালমোলজি') || s.includes('চক্ষু') || s === 'eye') return 'ophthalmology';
+      if (s === 'pulmonology' || s.includes('বক্ষব্যাধি') || s.includes('পালমোনোলজি') || s.includes('ফুসফুস ও বক্ষব্যাধি') || s.includes('pulmonolog')) return 'pulmonology';
+      if (s === 'oncology' || s.includes('ক্যান্সার') || s.includes('অনকোলজি')) return 'oncology';
+      if (s === 'psychiatry' || s.includes('মানসিক রোগ') || s.includes('সাইকিয়াট্রি') || s.includes('মনোরোগ') || s.includes('মস্তিষ্ক ও মানসিক')) return 'psychiatry';
+      if (s === 'dentistry' || s.includes('দন্তরোগ') || s.includes('ডেন্টাল') || s.includes('দাঁত') || s.includes('dentist')) return 'dentistry';
+      if (s === 'physical medicine' || s === 'physical_medicine' || s.includes('ফিজিক্যাল মেডিসিন') || s.includes('বাত-ব্যথা ও ফিজিক্যাল')) return 'physical_medicine';
+      if (s === 'rheumatology' || s.includes('রিউমাটোলজি')) return 'rheumatology';
+      if (s === 'hematology' || s.includes('হেমাটোলজি') || s.includes('রক্তরোগ')) return 'hematology';
+      if (s === 'plastic surgery' || s === 'plastic_surgery' || s.includes('প্লাস্টিক সার্জারি')) return 'plastic_surgery';
+      if (s === 'vascular surgery' || s === 'vascular_surgery' || s.includes('ভাসকুলার সার্জারি')) return 'vascular_surgery';
+      if (s === 'surgery' || s.includes('সার্জারি') || s.includes('সার্জন') || s.includes('অপারেশন')) return 'surgery';
+      if (s === 'medicine' || s.includes('মেডিসিন') || s.includes('ইন্টারনাল মেডিসিন') || s.includes('internal medicine')) return 'medicine';
+      
+      return s;
+    };
+
+    const isDoctorMatchSpecialty = (d: any, selectedSpecialty: string | null): boolean => {
+      if (!selectedSpecialty) return true;
+      const targetId = normalizeSpecialtyId(selectedSpecialty);
+      const docSpecId = normalizeSpecialtyId(d.specialty);
+      
+      if (docSpecId === targetId) return true;
+
+      // Specific check for Pulmonology doctors who have degree in chest diseases
+      if (targetId === 'pulmonology') {
+        const deg = (d.degree || '').toLowerCase();
+        return deg.includes('বক্ষব্যাধি বিশেষজ্ঞ') || deg.includes('pulmonolog') || deg.includes('md (chest');
+      }
+
+      // Neurology general: if someone searches or selects "নিউরোলজি" or "neurology", match both neuromedicine and neurosurgery
+      if (targetId === 'neuromedicine' && (selectedSpecialty.toLowerCase().includes('নিউরোলজি') || selectedSpecialty.toLowerCase().includes('neurology'))) {
+        return docSpecId === 'neuromedicine' || docSpecId === 'neurosurgery';
+      }
+
+      return false;
+    };
+
+    const isDoctorInLocation = (d: any, loc: string | null): boolean => {
+      if (!loc || loc === 'all' || loc === 'সকল এলাকা') return true;
+      const l = loc.toLowerCase().trim();
+      const dClinics = d.clinics || [];
+      const dDistricts = (d.districts || []).map((x: string) => x.toLowerCase());
+      const dAddr = (d.address || '').toLowerCase();
+      const dDeg = (d.degree || '').toLowerCase();
+
+      if (l.includes('domar') || l.includes('ডোমার')) {
+        return dClinics.some((c: string) => DOMAR_CLINIC_IDS.includes(c)) ||
+               dDistricts.includes('domar') || dDistricts.includes('ডোমার') ||
+               dAddr.includes('ডোমার');
+      }
+
+      if (l.includes('নীলফামারী') || l.includes('nilphamari')) {
+        // Nilphamari Sadar: Doctors practicing in Sadar clinics or Sadar chambers, excluding doctors who only practice in Domar
+        const hasDomarOnly = dClinics.length > 0 && dClinics.every((c: string) => DOMAR_CLINIC_IDS.includes(c));
+        if (hasDomarOnly) return false;
+        
+        return dClinics.some((c: string) => SADAR_CLINIC_IDS.includes(c)) ||
+               dAddr.includes('নীলফামারী সদর') ||
+               dDistricts.includes('nilphamari') ||
+               dDistricts.includes('নীলফামারী');
+      }
+
+      if (l.includes('rangpur') || l.includes('রংপুর')) {
+        return dClinics.some((c: string) => RANGPUR_CLINIC_IDS.includes(c)) ||
+               dDistricts.includes('rangpur') || dDistricts.includes('রংপুর') ||
+               dAddr.includes('রংপুর') ||
+               dDeg.includes('রংপুর');
+      }
+
+      if (l.includes('syedpur') || l.includes('sayedpur') || l.includes('saidpur') || l.includes('সৈয়দপুর') || l.includes('সৈয়দপুর')) {
+        return dDistricts.includes('syedpur') || dDistricts.includes('সৈয়দপুর') || dDistricts.includes('সৈয়দপুর') ||
+               dAddr.includes('সৈয়দপুর') || dAddr.includes('সৈয়দপুর') ||
+               dDeg.includes('সৈয়দপুর') || dDeg.includes('সৈয়দপুর');
+      }
+
+      if (l.includes('dimla') || l.includes('ডিমলা')) {
+        return dDistricts.includes('dimla') || dDistricts.includes('ডিমলা') ||
+               dDeg.includes('ডিমলা') || dAddr.includes('ডিমলা');
+      }
+
+      if (l.includes('jaldhaka') || l.includes('জলঢাকা')) {
+        return dDistricts.includes('jaldhaka') || dDistricts.includes('জলঢাকা') ||
+               dDeg.includes('জলঢাকা') || dAddr.includes('জলঢাকা');
+      }
+
+      if (l.includes('kishoreganj') || l.includes('kishorganj') || l.includes('কিশোরগঞ্জ')) {
+        return dDistricts.includes('kishoreganj') || dDistricts.includes('কিশোরগঞ্জ') ||
+               dDeg.includes('কিশোরগঞ্জ') || dAddr.includes('কিশোরগঞ্জ');
+      }
+
+      if (l.includes('debiganj') || l.includes('দেবিগঞ্জ')) {
+        return dDistricts.includes('debiganj') || dDistricts.includes('দেবিগঞ্জ') ||
+               dDeg.includes('দেবিগঞ্জ') || dAddr.includes('দেবিগঞ্জ');
+      }
+
+      return true;
+    };
+
+    // Apply strict location filter
     if (selectedLocation) {
-      const loc = selectedLocation.toLowerCase().trim();
-      const locEnMap: Record<string, string[]> = {
-        'রংপুর': ['rangpur', 'রংপুর'],
-        'নীলফামারী': ['nilphamari', 'নীলফামারী'],
-        'সৈয়দপুর': ['syedpur', 'sayedpur', 'saidpur', 'সৈয়দপুর', 'সৈয়দপুর'],
-        'ডোমার': ['domar', 'ডোমার'],
-        'ডিমলা': ['dimla', 'ডিমলা'],
-        'জলঢাকা': ['jaldhaka', 'জলঢাকা'],
-        'কিশোরগঞ্জ': ['kishoreganj', 'kishorganj', 'কিশোরগঞ্জ'],
-        'দেবিগঞ্জ': ['debiganj', 'দেবিগঞ্জ'],
-      };
-      const keywords = locEnMap[loc] || [loc];
-      list = list.filter(d => {
-        const docAddr = (d.address || '').toLowerCase();
-        const docDist = (d.district || '').toLowerCase();
-        const docDistricts = (d.districts || []).map(x => x.toLowerCase());
-
-        const directMatch = keywords.some(kw => 
-          docAddr.includes(kw) || 
-          docDist.includes(kw) || 
-          docDistricts.some(dist => dist.includes(kw))
-        );
-
-        if (directMatch) return true;
-
-        // Check associated clinics/hospitals
-        const docClinics = d.clinics || [];
-        const hospitalMatch = hospitals.some(h => 
-          docClinics.includes(h.id) && 
-          keywords.some(kw => 
-            h.name.toLowerCase().includes(kw) || 
-            (h.address || '').toLowerCase().includes(kw) || 
-            (h.district || '').toLowerCase().includes(kw)
-          )
-        );
-
-        return hospitalMatch;
-      });
+      list = list.filter(d => isDoctorInLocation(d, selectedLocation));
     }
 
     if (selectedHospitalId) {
       list = list.filter(d => (d.clinics || []).includes(selectedHospitalId));
     }
-    
-    // Comprehensive specialty keyword associations for robust search and filtering
-    const specialtyKeywordsMap: Record<string, string[]> = {
-      orthopedics: ['ortho', 'orthopedic', 'orthopaedic', 'orthopedics', 'অর্থোপেডিক', 'অর্থোপেডিক্স', 'অর্থোপেডিকস', 'অর্থপেডিক', 'অর্থপেডিক্স', 'হাড়', 'হাড়', 'পঙ্গু', 'ট্রমা', 'bone'],
-      medicine: ['medicine', 'মেডিসিন', 'মেডিসন', 'মেডেসিন', 'এমেডিসিন', 'internal medicine'],
-      cardiology: ['cardio', 'কার্ডিওলজি', 'কার্ডিও', 'হৃদরোগ', 'হার্ট', 'heart'],
-      neuromedicine: ['neuro', 'নিউরো', 'নিউরোলজি', 'নিউরোমেডিসিন', 'মস্তিষ্ক', 'স্ট্রোক', 'brain'],
-      gynecology: ['gyn', 'গাইনী', 'গাইনি', 'গাইনোকোলজি', 'গর্ভবতী', 'গর্ভ', 'প্রসূতি', 'obstetrics', 'obs', 'স্ত্রী রোগ', 'স্ত্রীরোগ'],
-      pediatrics: ['pediatr', 'pediatric', 'শিশু', 'নবজাতক', 'কিশোর', 'child', 'baby', 'neonat'],
-      surgery: ['surgeon', 'সার্জারি', 'সার্জারী', 'অপারেশন', 'surgery', 'ল্যাপারোস্কোপিক'],
-      urology: ['uro', 'urology', 'ইউরোলজি', 'ইউরোলজিস্ট', 'মূত্র', 'bladder'],
-      endocrinology: ['endocrine', 'endocrinology', 'ডায়াবেটিস', 'ডায়াবেটিস', 'হরমোন', 'diabetes', 'hormone', 'থাইরয়েড', 'thyroid'],
-      ent: ['ent', 'নাক', 'কান', 'গলা', 'nose', 'ear', 'throat', 'হেড নেক', 'head neck'],
-      dermatology: ['derm', 'dermatology', 'চর্ম', 'যৌন', 'স্কিন', 'skin', 'এলার্জি'],
-      ophthalmology: ['eye', 'চোখ', 'চক্ষু', 'দৃষ্টি', 'ophthal', 'অপথালমোলজি'],
-      psychiatry: ['psych', 'psychiatry', 'মানসিক', 'মন', 'পাগল', 'বিষন্নতা', 'mental'],
-      dentistry: ['dent', 'dental', 'দাঁত', 'দন্ত', 'ডেন্টাল', 'tooth', 'teeth'],
-      gastroenterology: ['gastro', 'gastrology', 'গ্যাস্ট্রো', 'গ্যাস্ট্রোলজি', 'গ্যাস্ট্রোএন্টারোলজি', 'লিভার', 'পরিপাকতন্ত্র', 'গ্যাস্ট্রিক', 'পেট', 'liver', 'stomach'],
-      nephrology: ['nephro', 'nephrology', 'কিডনি', 'নেফ্রোলজি', 'renal', 'kidney'],
-      pulmonology: ['pulmon', 'pulmonology', 'বক্ষব্যাধি', 'ফুসফুস', 'অ্যাজমা', 'হাঁপানি', 'টিবি', 'যক্ষ্মা', 'chest', 'respiratory', 'asthma'],
-      neurosurgery: ['neuro surgery', 'neurosurgery', 'নিউরো সার্জারি', 'নিউরোসার্জারি', 'ব্রেন সার্জারি'],
-      oncology: ['onco', 'oncology', 'ক্যান্সার', 'টিউমার', 'cancer', 'tumor'],
-      hematology: ['hemato', 'hematology', 'রক্তরোগ', 'রক্ত', 'blood'],
-      rheumatology: ['rheumat', 'rheumatology', 'রিউমাটোলজি', 'বাত', 'বাত-ব্যথা'],
-      plastic_surgery: ['plastic', 'প্লাস্টিক সার্জারি', 'কসমেটিক', 'বার্ন', 'cosmetic'],
-      vascular_surgery: ['vascular', 'ভাসকুলার', 'রক্তনালী'],
-      neonatology: ['neonat', 'neonatology', 'নবজাতক'],
-      nutrition: ['nutrit', 'nutrition', 'diet', 'dietetics', 'পুষ্টি', 'ডায়েট', 'খাদ্য'],
-      physiotherapy: ['physio', 'physiotherapy', 'ফিজিওথেরাপি', 'থেরাপিস্ট'],
-      physical_medicine: ['physical', 'ফিজিকেল', 'ব্যায়াম', 'থেরাপি', 'ফিজিওথেরাপি', 'physio', 'বাত', 'বাত-ব্যথা', 'প্যারালাইসিস', 'স্পোর্টস', 'রিহ্যাবিলিটেশন']
-    };
 
     if (selectedSpecialty) {
-      list = list.filter(d => {
-        const docSpec = (d.specialty || '').toLowerCase().trim();
-        const selSpec = selectedSpecialty.toLowerCase().trim();
-        if (docSpec === selSpec) return true;
-
-        const matchedSpec = SPECIALTIES.find(s => s.name.toLowerCase() === selSpec || s.id.toLowerCase() === selSpec);
-        if (matchedSpec) {
-          if (docSpec === matchedSpec.id.toLowerCase() || docSpec === matchedSpec.bnName.toLowerCase()) return true;
-          const keywords = specialtyKeywordsMap[matchedSpec.id] || [];
-          if (keywords.some(k => docSpec.includes(k.toLowerCase()) || (d.degree || '').toLowerCase().includes(k.toLowerCase()))) {
-            return true;
-          }
-        }
-        return false;
-      });
+      list = list.filter(d => isDoctorMatchSpecialty(d, selectedSpecialty));
     }
     
     if (selectedDay) {
@@ -6614,6 +6669,8 @@ export default function App() {
 
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase().trim();
+      const searchSpecId = normalizeSpecialtyId(search);
+
       list = list.filter(d => {
         const docName = d.name.toLowerCase();
         const docSpecialty = d.specialty.toLowerCase();
@@ -6621,20 +6678,14 @@ export default function App() {
         const docClinics = d.clinics || [];
         const hospitalMatch = hospitals.some(h => docClinics.includes(h.id) && h.name.toLowerCase().includes(search));
         
-        // Match by specialty synonyms and Bengali names (e.g. matching "অর্থোপেডিক", "অর্থপেডিক", "ortho" as Orthopedics)
-        const specialtyObj = SPECIALTIES.find(spec => spec.name.toLowerCase() === docSpecialty || spec.id === docSpecialty);
-        
-        const listKeywords = specialtyKeywordsMap[specialtyObj?.id || docSpecialty] || [];
-        const specialtyMatch = (specialtyObj && (
-          specialtyObj.name.toLowerCase().includes(search) ||
-          specialtyObj.bnName.toLowerCase().includes(search)
-        )) || listKeywords.some(kw => search.includes(kw) || kw.includes(search));
+        // Match by normalized specialty
+        const specMatch = searchSpecId ? normalizeSpecialtyId(d.specialty) === searchSpecId : false;
         
         return docName.includes(search) || 
                docSpecialty.includes(search) || 
                docDegree.includes(search) || 
                hospitalMatch || 
-               specialtyMatch;
+               specMatch;
       });
     }
 
@@ -6667,22 +6718,38 @@ export default function App() {
     let list = hospitals;
     if (selectedLocation) {
       const loc = selectedLocation.toLowerCase().trim();
-      const locEnMap: Record<string, string[]> = {
-        'রংপুর': ['rangpur', 'রংপুর'],
-        'নীলফামারী': ['nilphamari', 'নীলফামারী'],
-        'সৈয়দপুর': ['syedpur', 'sayedpur', 'saidpur', 'সৈয়দপুর', 'সৈয়দপুর'],
-        'ডোমার': ['domar', 'ডোমার'],
-        'ডিমলা': ['dimla', 'ডিমলা'],
-        'জলঢাকা': ['jaldhaka', 'জলঢাকা'],
-        'কিশোরগঞ্জ': ['kishoreganj', 'kishorganj', 'কিশোরগঞ্জ'],
-        'দেবিগঞ্জ': ['debiganj', 'দেবিগঞ্জ'],
-      };
-      const keywords = locEnMap[loc] || [loc];
+      const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar'];
+      const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
+      const RANGPUR_CLINIC_IDS = ['c-popular-rangpur'];
+
       list = list.filter(h => {
-        const name = h.name.toLowerCase();
         const addr = (h.address || '').toLowerCase();
-        const dist = (h.district || '').toLowerCase();
-        return keywords.some(kw => name.includes(kw) || addr.includes(kw) || dist.includes(kw));
+        const name = h.name.toLowerCase();
+
+        if (loc.includes('domar') || loc.includes('ডোমার')) {
+          return DOMAR_CLINIC_IDS.includes(h.id) || addr.includes('ডোমার') || name.includes('ডোমার');
+        }
+        if (loc.includes('নীলফামারী') || loc.includes('nilphamari')) {
+          return SADAR_CLINIC_IDS.includes(h.id) || (
+            !DOMAR_CLINIC_IDS.includes(h.id) && 
+            !RANGPUR_CLINIC_IDS.includes(h.id) && 
+            h.id !== 'c-prava-dhaka' &&
+            !addr.includes('ডোমার') && 
+            !addr.includes('রংপুর') && 
+            !addr.includes('ঢাকা')
+          );
+        }
+        if (loc.includes('rangpur') || loc.includes('রংপুর')) {
+          return RANGPUR_CLINIC_IDS.includes(h.id) || addr.includes('রংপুর') || name.includes('রংপুর');
+        }
+        if (loc.includes('syedpur') || loc.includes('sayedpur') || loc.includes('saidpur') || loc.includes('সৈয়দপুর') || loc.includes('সৈয়দপুর')) {
+          return (addr.includes('সৈয়দপুর') || addr.includes('সৈয়দপুর')) && !addr.includes('সৈয়দপুর সড়ক, নীলফামারী') && !addr.includes('সৈয়দপুর সড়ক, নীলফামারী');
+        }
+        if (loc.includes('dimla') || loc.includes('ডিমলা')) return addr.includes('ডিমলা');
+        if (loc.includes('jaldhaka') || loc.includes('জলঢাকা')) return addr.includes('জলঢাকা');
+        if (loc.includes('kishoreganj') || loc.includes('kishorganj') || loc.includes('কিশোরগঞ্জ')) return addr.includes('কিশোরগঞ্জ');
+        if (loc.includes('debiganj') || loc.includes('দেবিগঞ্জ')) return addr.includes('দেবিগঞ্জ');
+        return true;
       });
     }
     if (searchTerm.trim()) {
@@ -7427,7 +7494,7 @@ export default function App() {
                               ? (selectedHospitalId 
                                   ? hospitals.find(h => h.id === selectedHospitalId)?.name 
                                   : 'বিশেষজ্ঞ ডক্টর') 
-                              : (homeSubCategory === 'blood_donation' ? '🩸 ব্লাড ডোনেট ও জরুরি রক্তদাতা ডিরেক্টরি' : homeSubCategory === 'live_doctor' ? '🔴 লাইভ ডক্টর — ভিডিও কল কনসালটেশন' : homeSubCategory === 'govt_health' ? '🏛️ সরকারি হাসপাতাল স্বাস্থ্যসেবা ও ই-টিকিট পোর্টাল (আমার স্বাস্থ্য)' : homeSubCategory === 'free_doctors' ? '🎁 আজকের ফ্রি ডাক্তার সেবা ও ডিসকাউন্ট' : homeSubCategory === 'maternity_donation' ? '🤰 গরিব গর্ভবতী মায়েদের সিজার ডেলিভারি অনুদান (৳২,০০০)' : homeSubCategory === 'donation' ? '🤲 মানবতার কল্যাণে ডোনেশন ফান্ড ও ডোনার পোর্টাল' : homeSubCategory === 'hospitals' ? 'হাসপাতাল লিস্ট' : homeSubCategory === 'dental' ? 'ডেন্টাল চেম্বার ও দন্তরোগ সেবা' : homeSubCategory === 'labtests' ? 'ল্যাব টেস্ট' : homeSubCategory === 'buy_medicine' ? 'ঔষধ পণ্য' : homeSubCategory === 'medical_accessories' ? 'মেডিকেল এক্সেসরিজ' : 'জরুরি SOS সেবা')}
+                              : (homeSubCategory === 'blood_donation' ? '🩸 ব্লাড ডোনেট ও জরুরি রক্তদাতা ডিরেক্টরি' : homeSubCategory === 'live_doctor' ? '🔴 লাইভ ডক্টর — ভিডিও কল কনসালটেশন' : homeSubCategory === 'govt_health' ? '🏛️ সরকারি হাসপাতাল স্বাস্থ্যসেবা ও ই-টিকিট পোর্টাল (আমার স্বাস্থ্য)' : homeSubCategory === 'free_doctors' ? '🎁 আজকের ফ্রি ডাক্তার সেবা ও ডিসকাউন্ট' : homeSubCategory === 'maternity_donation' ? '🤰 গরিব গর্ভবতী মায়েদের সিজার ডেলিভারি অনুদান (৳২,০০০)' : homeSubCategory === 'donation' ? '🤲 মানবতার কল্যাণে ডোনেশন ফান্ড ও ডোনার পোর্টাল' : homeSubCategory === 'hospitals' ? 'হাসপাতাল লিস্ট' : homeSubCategory === 'dental' ? 'ডেন্টাল চেম্বার ও দন্তরোগ সেবা' : homeSubCategory === 'labtests' ? 'ল্যাব টেস্ট' : homeSubCategory === 'buy_medicine' ? 'ঔষধ পণ্য' : homeSubCategory === 'medical_accessories' ? 'মেডিকেল এক্সেসরিজ' : homeSubCategory === 'medical_records' ? '📁 চিকিৎসা পত্র জমা করুন (ডিজিটাল প্রেসক্রিপশন ভল্ট)' : 'জরুরি SOS সেবা')}
                           </h2>
                           <div className="relative">
                             <input 
@@ -7524,7 +7591,7 @@ export default function App() {
                                  {selectedLocation && (
                                    <button 
                                      onClick={() => setSelectedLocation(null)} 
-                                     className="text-blue-600 hover:underline text-[9px] font-bold"
+                                     className="text-emerald-600 hover:underline text-[9px] font-bold"
                                    >
                                      সকল এলাকা দেখুন
                                    </button>
@@ -7533,10 +7600,10 @@ export default function App() {
                                <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
                                    {[
                                      { id: 'all', label: 'সকল এলাকা' },
-                                     { id: 'রংপুর', label: 'রংপুর' },
-                                     { id: 'নীলফামারী', label: 'নীলফামারী' },
-                                     { id: 'সৈয়দপুর', label: 'সৈয়দপুর' },
+                                     { id: 'নীলফামারী', label: 'নীলফামারী সদর' },
                                      { id: 'ডোমার', label: 'ডোমার' },
+                                     { id: 'রংপুর', label: 'রংপুর' },
+                                     { id: 'সৈয়দপুর', label: 'সৈয়দপুর' },
                                      { id: 'ডিমলা', label: 'ডিমলা' },
                                      { id: 'জলঢাকা', label: 'জলঢাকা' },
                                      { id: 'কিশোরগঞ্জ', label: 'কিশোরগঞ্জ' },
@@ -7608,13 +7675,15 @@ export default function App() {
                                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl shadow-xl transition-all border-2 ${selectedSpecialty === null ? 'bg-blue-600 text-white border-blue-400' : 'bg-white border-slate-100'}`}>✨</div>
                                         <span className={`text-[9px] font-black uppercase tracking-tighter text-center ${selectedSpecialty === null ? 'text-blue-600' : 'text-slate-400'}`}>All Docs</span>
                                     </button>
-                                    {SPECIALTIES.map(spec => (
+                                    {SPECIALTIES.map(spec => {
+                                      const isSpecSelected = selectedSpecialty?.toLowerCase() === spec.name.toLowerCase() || selectedSpecialty?.toLowerCase() === spec.id.toLowerCase() || selectedSpecialty?.toLowerCase() === spec.bnName.toLowerCase();
+                                      return (
                                         <button 
                                             key={spec.id}
-                                            onClick={() => setSelectedSpecialty(spec.name)}
-                                            className={`flex flex-col items-center gap-2 min-w-[75px] transition-all duration-300 ${selectedSpecialty === spec.name ? 'scale-110 active:scale-100' : 'opacity-40 hover:opacity-100'}`}
+                                            onClick={() => setSelectedSpecialty(isSpecSelected ? null : spec.name)}
+                                            className={`flex flex-col items-center gap-2 min-w-[75px] transition-all duration-300 ${isSpecSelected ? 'scale-110 active:scale-100' : 'opacity-40 hover:opacity-100'}`}
                                         >
-                                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl shadow-xl transition-all border-2 ${selectedSpecialty === spec.name ? 'bg-blue-600 text-white border-blue-400' : 'bg-white border-slate-100'}`}>
+                                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl shadow-xl transition-all border-2 ${isSpecSelected ? 'bg-blue-600 text-white border-blue-400 shadow-blue-200' : 'bg-white border-slate-100'}`}>
                                               {(spec as any).emoji || (
                                                 spec.id === 'dentistry' || spec.icon === '🦷' ? '🦷' : (
                                                   spec.icon === 'Stethoscope' ? '🩺' :
@@ -7635,20 +7704,61 @@ export default function App() {
                                               )}
                                             </div>
                                             <div className="flex flex-col items-center">
-                                              <span className={`text-[11px] font-black uppercase tracking-tight text-center leading-none ${selectedSpecialty === spec.name ? 'text-blue-600' : 'text-slate-900 border-b-2 border-transparent'}`}>{spec.name}</span>
-                                              <span className={`text-[10px] font-black text-center leading-none mt-2 ${selectedSpecialty === spec.name ? 'text-blue-500' : 'text-slate-700'}`}>{spec.bnName}</span>
+                                              <span className={`text-[11px] font-black uppercase tracking-tight text-center leading-none ${isSpecSelected ? 'text-blue-600' : 'text-slate-900 border-b-2 border-transparent'}`}>{spec.name}</span>
+                                              <span className={`text-[10px] font-black text-center leading-none mt-2 ${isSpecSelected ? 'text-blue-500' : 'text-slate-700'}`}>{spec.bnName}</span>
                                             </div>
                                         </button>
-                                    ))}
+                                      );
+                                    })}
                                 </div>
                                 <div className="absolute top-0 right-0 h-14 w-12 bg-gradient-to-l from-slate-50 to-transparent pointer-events-none group-hover:opacity-0 transition-opacity"></div>
                             </div>
 
                             <div className="space-y-4">
-                               <div className="flex justify-between items-center bg-white p-3.5 rounded-2xl border border-slate-100 shadow-2xs">
-                                 <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
-                                   🩺 বিশেষজ্ঞ ডাক্তার তালিকা ({filteredDoctors.length} জন)
-                                 </span>
+                               <div className="flex justify-between items-center bg-white p-3.5 rounded-2xl border border-slate-100 shadow-2xs gap-2 flex-wrap">
+                                 <div className="flex items-center gap-2 flex-wrap">
+                                   <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                                     🩺 {selectedSpecialty ? `${SPECIALTIES.find(s => s.name.toLowerCase() === selectedSpecialty.toLowerCase() || s.id.toLowerCase() === selectedSpecialty.toLowerCase() || s.bnName.toLowerCase() === selectedSpecialty.toLowerCase())?.bnName || selectedSpecialty} বিশেষজ্ঞ তালিকা` : 'সকল বিশেষজ্ঞ ডাক্তার তালিকা'} ({filteredDoctors.length} জন)
+                                   </span>
+                                   {selectedLocation && (
+                                     <span className="text-[10px] font-black bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200 inline-flex items-center gap-1">
+                                       📍 {selectedLocation === 'নীলফামারী' ? 'নীলফামারী সদর' : selectedLocation}
+                                       <button 
+                                         type="button" 
+                                         onClick={() => setSelectedLocation(null)} 
+                                         className="hover:text-emerald-900 ml-0.5"
+                                         title="এলাকা ফিল্টার সরান"
+                                       >
+                                         ✕
+                                       </button>
+                                     </span>
+                                   )}
+                                   {selectedSpecialty && (
+                                     <span className="text-[10px] font-black bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full border border-blue-200 inline-flex items-center gap-1">
+                                       🩺 {SPECIALTIES.find(s => s.name.toLowerCase() === selectedSpecialty.toLowerCase() || s.id.toLowerCase() === selectedSpecialty.toLowerCase() || s.bnName.toLowerCase() === selectedSpecialty.toLowerCase())?.bnName || selectedSpecialty}
+                                       <button
+                                         type="button"
+                                         onClick={() => setSelectedSpecialty(null)}
+                                         className="hover:text-blue-900 ml-0.5"
+                                         title="বিশেষজ্ঞ ফিল্টার সরান"
+                                       >
+                                         ✕
+                                       </button>
+                                     </span>
+                                   )}
+                                   {(selectedSpecialty || selectedLocation) && (
+                                     <button
+                                       type="button"
+                                       onClick={() => {
+                                         setSelectedSpecialty(null);
+                                         setSelectedLocation(null);
+                                       }}
+                                       className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline ml-1"
+                                     >
+                                       সব মুছুন
+                                     </button>
+                                   )}
+                                 </div>
                                  <button
                                    type="button"
                                    onClick={() => downloadDoctorsCSV(filteredDoctors, hospitals)}
@@ -7659,9 +7769,33 @@ export default function App() {
                                </div>
 
                                {filteredDoctors.length === 0 ? (
-                                 <Card className="p-8 text-center text-slate-400 font-bold text-xs space-y-2">
-                                   <div className="text-2xl">👨‍⚕️</div>
-                                   <p>এই এলাকায় বা ফিল্টারে কোনো ডক্টর পাওয়া যায়নি।</p>
+                                 <Card className="p-8 text-center text-slate-400 font-bold text-xs space-y-3">
+                                   <div className="text-3xl">👨‍⚕️</div>
+                                   <p>
+                                     {selectedLocation && selectedSpecialty 
+                                       ? `${selectedLocation === 'নীলফামারী' ? 'নীলফামারী সদর' : selectedLocation}-এ কোনো ${selectedSpecialty} বিশেষজ্ঞ ডক্টর পাওয়া যায়নি।` 
+                                       : 'এই এলাকায় বা ফিল্টারে কোনো ডক্টর পাওয়া যায়নি।'}
+                                   </p>
+                                   <div className="flex gap-2 justify-center flex-wrap pt-2">
+                                     {selectedLocation && (
+                                       <button
+                                         type="button"
+                                         onClick={() => setSelectedLocation(null)}
+                                         className="inline-flex items-center gap-1 bg-emerald-600 text-white text-[11px] font-black px-3.5 py-2 rounded-xl shadow hover:bg-emerald-700 transition-all"
+                                       >
+                                         📍 সব এলাকার ডাক্তার দেখুন
+                                       </button>
+                                     )}
+                                     {selectedSpecialty && (
+                                       <button
+                                         type="button"
+                                         onClick={() => setSelectedSpecialty(null)}
+                                         className="inline-flex items-center gap-1 bg-blue-600 text-white text-[11px] font-black px-3.5 py-2 rounded-xl shadow hover:bg-blue-700 transition-all"
+                                       >
+                                         🩺 সব বিশেষজ্ঞ ডাক্তার দেখুন
+                                       </button>
+                                     )}
+                                   </div>
                                  </Card>
                                ) : (
                                  filteredDoctors.map(d => (
@@ -8135,7 +8269,7 @@ export default function App() {
                              whatsappNumber={WHATSAPP_NUMBER}
                              onOpenDoctorBooking={() => {
                                setHomeSubCategory('doctors');
-                               setSelectedSpecialty('Gynae & Obs');
+                               setSelectedSpecialty('Gynecology');
                              }}
                              onNavigateToDonation={() => setHomeSubCategory('donation')}
                            />
@@ -8175,6 +8309,14 @@ export default function App() {
                          />
                        )}
 
+                       {homeSubCategory === 'medical_records' && (
+                         <MedicalRecordsSection 
+                           user={user}
+                           profile={profile}
+                           onOpenAuth={() => setShowAuthModal(true)}
+                         />
+                       )}
+
                        {homeSubCategory === 'hospitals' && (
                          <div className="space-y-4">
                             {/* Location Filter Bar for Hospitals */}
@@ -8186,7 +8328,7 @@ export default function App() {
                                  {selectedLocation && (
                                    <button 
                                      onClick={() => setSelectedLocation(null)} 
-                                     className="text-blue-600 hover:underline text-[9px] font-bold"
+                                     className="text-emerald-600 hover:underline text-[9px] font-bold"
                                    >
                                      সকল এলাকা দেখুন
                                    </button>
@@ -8195,10 +8337,10 @@ export default function App() {
                                <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
                                    {[
                                      { id: 'all', label: 'সকল এলাকা' },
-                                     { id: 'রংপুর', label: 'রংপুর' },
-                                     { id: 'নীলফামারী', label: 'নীলফামারী' },
-                                     { id: 'সৈয়দপুর', label: 'সৈয়দপুর' },
+                                     { id: 'নীলফামারী', label: 'নীলফামারী সদর' },
                                      { id: 'ডোমার', label: 'ডোমার' },
+                                     { id: 'রংপুর', label: 'রংপুর' },
+                                     { id: 'সৈয়দপুর', label: 'সৈয়দপুর' },
                                      { id: 'ডিমলা', label: 'ডিমলা' },
                                      { id: 'জলঢাকা', label: 'জলঢাকা' },
                                      { id: 'কিশোরগঞ্জ', label: 'কিশোরগঞ্জ' },
@@ -8224,8 +8366,17 @@ export default function App() {
                             </div>
 
                             {filteredHospitals.length === 0 ? (
-                              <Card className="p-8 text-center text-slate-400 font-bold text-xs">
-                                এই এলাকায় কোনো হাসপাতাল বা ক্লিনিক পাওয়া যায়নি।
+                              <Card className="p-8 text-center text-slate-400 font-bold text-xs space-y-3">
+                                <p>এই এলাকায় কোনো হাসপাতাল বা ক্লিনিক পাওয়া যায়নি।</p>
+                                {selectedLocation && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setSelectedLocation(null)}
+                                    className="inline-flex items-center gap-1 bg-emerald-600 text-white text-[11px] font-black px-3.5 py-2 rounded-xl shadow hover:bg-emerald-700 transition-all mx-auto"
+                                  >
+                                    📍 সব এলাকার হাসপাতাল দেখুন
+                                  </button>
+                                )}
                               </Card>
                             ) : (
                               filteredHospitals.map(c => (
