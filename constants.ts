@@ -290,7 +290,8 @@ export const CLINICS: Clinic[] = [
       "dr-ar-rezaul-karim",
       "dr-ar-nihar-ray",
       "dr-ar-ashequr",
-      "dr-ar-samiur"
+      "dr-ar-samiur",
+      "dr-ar-debabrata-haldar"
     ],
     "image": "/ar_general_hospital.png"
   },
@@ -901,6 +902,23 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 700
+  },
+  {
+    "id": "dr-ar-debabrata-haldar",
+    "name": "ডা. দেবব্রত হালদার",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এমডি (কার্ডিওলজি), এমএসিপি (আমেরিকা), এমইএসসি (ইউরোপ), সিসিডি, ফেলো প্রিভেন্টিভ কার্ডিওলজি ও কার্ডিওভাসকুলার মেডিসিন (ইন্ডিয়া), পিজিডিপ ইন ডিএম (ইন্ডিয়া) | কনসালটেন্ট কার্ডিওলজিস্ট, ক্লিনিক্যাল ও ইন্টারভেনশনাল কার্ডিওলজিস্ট (এনজিওগ্রাম ও এনজিওপ্লাস্টি বিশেষজ্ঞ) | হৃদরোগ, মেডিসিন, উচ্চরক্তচাপ, বাতজ্বর ও ডায়াবেটিস বিশেষজ্ঞ",
+    "specialty": "Cardiology",
+    "districts": [
+      "Nilphamari"
+    ],
+    "clinics": [
+      "c-ar"
+    ],
+    "schedule": "প্রতি রবিবার থেকে বুধবার বিকাল ০৩টা থেকে রাত ০৯টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 800
   },
   {
     "id": "eb-roni-ortho",

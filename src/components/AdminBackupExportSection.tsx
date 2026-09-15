@@ -23,7 +23,7 @@ import {
   fetchLastBackupStatus
 } from '../services/backupService';
 import { fetchRecentAuditLogs } from '../services/auditService';
-import { BackupMetadata, AuditLog, Profile } from '../types';
+import { BackupMetadata, AuditLog, Profile } from '../../types';
 
 interface AdminBackupExportSectionProps {
   currentProfile: Profile | null;

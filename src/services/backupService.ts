@@ -1,6 +1,6 @@
-import { db } from './firebase';
+import { db } from '../../services/firebase';
 import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
-import { BackupMetadata } from '../types';
+import { BackupMetadata } from '../../types';
 import { logAdminAudit } from './auditService';
 
 export interface CollectionMeta {

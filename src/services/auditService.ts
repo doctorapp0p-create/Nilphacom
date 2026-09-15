@@ -1,6 +1,6 @@
-import { db } from './firebase';
+import { db } from '../../services/firebase';
 import { collection, doc, setDoc, getDocs, query, orderBy, limit } from 'firebase/firestore';
-import { AuditLog } from '../types';
+import { AuditLog } from '../../types';
 
 export async function logAdminAudit(data: {
   actionType: string;

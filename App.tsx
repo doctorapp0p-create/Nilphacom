@@ -66,7 +66,8 @@ import { fetchCoupons, validateCoupon } from './src/services/couponService';
 import { Coupon } from './types';
 import { AdminEmployeeManager } from './src/components/AdminEmployeeManager';
 import { EmployeePortal } from './src/components/EmployeePortal';
-import { Share2, Bot, Video, Microscope, Ambulance, Star, ShieldCheck, Zap, MessageSquare, ArrowRight, X, Download, Smartphone, Stethoscope, Percent, MapPin, Calendar, Clock, Phone, BadgeCheck, Search, ChevronRight, FileText, Youtube, User, HelpCircle, Wallet, LogOut, Gift, Building, HeartHandshake, Baby, Heart, CreditCard, Plus, CheckCircle2, AlertCircle, RefreshCw, Tag, Camera } from 'lucide-react';
+import { AdminBackupExportSection } from './src/components/AdminBackupExportSection';
+import { Share2, Bot, Video, Microscope, Ambulance, Star, ShieldCheck, Zap, MessageSquare, ArrowRight, X, Download, Smartphone, Stethoscope, Percent, MapPin, Calendar, Clock, Phone, BadgeCheck, Search, ChevronRight, FileText, Youtube, User, HelpCircle, Wallet, LogOut, Gift, Building, HeartHandshake, Baby, Heart, CreditCard, Plus, CheckCircle2, AlertCircle, RefreshCw, Tag, Camera, Database } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const WHATSAPP_NUMBER = '8801352669100';
@@ -791,7 +792,7 @@ const AdminDashboard: React.FC<{
   onCouponsUpdated?: () => void,
   onChangeDoctorPhoto?: (doctor: Doctor) => void,
 }> = ({ profile, onLogout, ticker, setTicker, onUpdateTicker, doctors, hospitals, labTests, orders, profiles, appointments, onAdd, onEdit, onDelete, onRefreshAdminData, onUpdateAppointmentStatus, onUpdateOrderStatus, quizzes = [], submissions = [], withdrawals = [], onAddQuiz, onUpdateSubmissionStatus, onUpdateWithdrawalStatus, isLabTestsServiceEnabled = true, onToggleGlobalLabTestsService, onToggleTestActive, onToggleAllTests, onCouponsUpdated, onChangeDoctorPhoto }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'today_apps' | 'overview' | 'doctors' | 'orders' | 'hospitals' | 'labtests' | 'coupons' | 'billing' | 'referrals' | 'patients' | 'quizzes' | 'withdrawals' | 'free_doctors' | 'maternity_donation' | 'subscriptions' | 'doctor_portal' | 'employees'>('today_apps');
+  const [activeSubTab, setActiveSubTab] = useState<'today_apps' | 'overview' | 'doctors' | 'orders' | 'hospitals' | 'labtests' | 'coupons' | 'billing' | 'referrals' | 'patients' | 'quizzes' | 'withdrawals' | 'free_doctors' | 'maternity_donation' | 'subscriptions' | 'doctor_portal' | 'employees' | 'backup'>('today_apps');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedDocId, setExpandedDocId] = useState<string | null>(null);
 
@@ -1363,7 +1364,8 @@ const AdminDashboard: React.FC<{
           { id: 'maternity_donation', label: '🤰 Maternity Donation (৳2000)', icon: <Baby size={14} className="text-rose-500 animate-pulse" /> },
           { id: 'subscriptions', label: '💳 Subscriptions (20% Discount)', icon: <CreditCard size={14} className="text-indigo-500" /> },
           { id: 'doctor_portal', label: '👨‍⚕️ ডক্টর পোর্টাল ও একাউন্ট', icon: <Stethoscope size={14} className="text-teal-500" /> },
-          { id: 'employees', label: '👥 কর্মচারী ও পারমিশন (Staff & Access)', icon: <ShieldCheck size={14} className="text-violet-600 animate-pulse" /> }
+          { id: 'employees', label: '👥 কর্মচারী ও পারমিশন (Staff & Access)', icon: <ShieldCheck size={14} className="text-violet-600 animate-pulse" /> },
+          { id: 'backup', label: '💾 ডাটা ব্যাকআপ ও এক্সপোর্ট (Vault)', icon: <Database size={14} className="text-emerald-500 animate-pulse" /> }
         ].map(tab => (
           <button 
             key={tab.id}
@@ -3654,6 +3656,10 @@ const AdminDashboard: React.FC<{
             onRefreshData={onRefreshAdminData}
           />
         )}
+
+        {activeSubTab === 'backup' && (
+          <AdminBackupExportSection currentProfile={profile} />
+        )}
       </div>
     </div>
   );
@@ -4624,7 +4630,8 @@ export default function App() {
             'dr-mominur-rahman-sonet', 'dr-abdul-awal-pediatrics', 'dr-nahid-sultana-laboni',
             'dr-mahmudul-hasan-domar', 'dr-nihar-ranjan-saha', 'dr-gaosul-alam-mostakin',
             'dr-kallol-kumar-kundu', 'dr-paramita-roy', 'dr-md-abu-taher-gyn', 'dr-aleya-khatun-gyn',
-            'dr-anwarur-rahman-anon', 'dr-tapan-kumar-roy-med', 'dr-ashim-roy-chowdhury-ortho', 'dr-tahmina-sultana-toma-gyn', 'dr-fahim-kiswal-skin'
+            'dr-anwarur-rahman-anon', 'dr-tapan-kumar-roy-med', 'dr-ashim-roy-chowdhury-ortho', 'dr-tahmina-sultana-toma-gyn', 'dr-fahim-kiswal-skin',
+            'dr-ar-debabrata-haldar'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -4736,7 +4743,8 @@ export default function App() {
         'pacific-ali', 'pacific-altaf', 'pacific-hafiz', 'pacific-sabuj', 'pacific-shahjada', 'pacific-alamin', 'pacific-robiul', 'pacific-sarwar', 'pacific-kayes',
         'j-rikkon', 'j-shaheen-gyn', 'j-al-amin',
         'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
-        'ev-asad', 'ev-nripen', 'ek-gyn1'
+        'ev-asad', 'ev-nripen', 'ek-gyn1',
+        'dr-ar-debabrata-haldar'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -4849,8 +4857,8 @@ export default function App() {
                 });
               }
 
-              // Auto-sync c-ar hospital details in DB if user is admin/moderator
-              if (dbH.id === 'c-ar' && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
+              // Auto-sync c-ar hospital details in DB if user is admin/moderator or if new doctor is missing from DB
+              if (dbH.id === 'c-ar' && (!dbH.doctors?.includes('dr-ar-debabrata-haldar') || (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)))) {
                 import('firebase/firestore').then(({ doc, updateDoc }) => {
                   updateDoc(doc(db, 'hospitals', 'c-ar'), {
                     address: localC.address,
