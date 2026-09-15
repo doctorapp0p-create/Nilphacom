@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Doctor } from '../../types';
-import { X, Upload, Camera, Check, RefreshCw, Link as LinkIcon, User, AlertCircle, Loader2 } from 'lucide-react';
+import { X, Upload, Camera, Check, RefreshCw, Link as LinkIcon, User, AlertCircle, Loader2, CloudUpload } from 'lucide-react';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage, ensureFirebaseAuthSession } from '../../services/firebase';
 
 interface DoctorPhotoModalProps {
   isOpen: boolean;
@@ -45,15 +47,30 @@ const DOCTOR_AVATAR_PRESETS = [
 ];
 
 /**
- * Resizes and compresses an image in browser canvas to prevent Firestore document 1MB limit issues.
- * Returns a lightweight data URL (typically 30KB - 70KB).
+ * Converts a Base64 data URL string to a Blob object for Firebase Storage uploadBytes().
  */
-export const compressDoctorImage = (
+export const dataURLToBlob = (dataUrl: string): Blob => {
+  const arr = dataUrl.split(',');
+  const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+};
+
+/**
+ * Resizes and compresses an image in browser canvas.
+ * Returns both dataUrl for instant UI preview and Blob for Firebase Storage uploadBytes().
+ */
+export const compressDoctorImageFile = (
   file: File,
   maxWidth = 500,
   maxHeight = 600,
   quality = 0.82
-): Promise<string> => {
+): Promise<{ dataUrl: string; blob: Blob }> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -70,11 +87,23 @@ export const compressDoctorImage = (
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         if (!ctx) {
-          resolve(e.target?.result as string);
+          const dataUrl = e.target?.result as string;
+          resolve({ dataUrl, blob: dataURLToBlob(dataUrl) });
           return;
         }
         ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
+        canvas.toBlob(
+          (blob) => {
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            if (blob) {
+              resolve({ dataUrl, blob });
+            } else {
+              resolve({ dataUrl, blob: dataURLToBlob(dataUrl) });
+            }
+          },
+          'image/jpeg',
+          quality
+        );
       };
       img.onerror = () => reject(new Error('ছবি লোড করা সম্ভব হয়নি'));
       img.src = e.target?.result as string;
@@ -82,6 +111,20 @@ export const compressDoctorImage = (
     reader.onerror = () => reject(new Error('ফাইল রিড করা সম্ভব হয়নি'));
     reader.readAsDataURL(file);
   });
+};
+
+/**
+ * Resizes and compresses an image in browser canvas.
+ * Retained for backward compatibility with components expecting a data URL string promise.
+ */
+export const compressDoctorImage = async (
+  file: File,
+  maxWidth = 500,
+  maxHeight = 600,
+  quality = 0.82
+): Promise<string> => {
+  const result = await compressDoctorImageFile(file, maxWidth, maxHeight, quality);
+  return result.dataUrl;
 };
 
 export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
@@ -94,6 +137,10 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [urlInput, setUrlInput] = useState<string>('');
   const [isCompressing, setIsCompressing] = useState<boolean>(false);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [uploadStatusText, setUploadStatusText] = useState<string>('');
+  const [selectedBlob, setSelectedBlob] = useState<Blob | null>(null);
+  const [isPendingUpload, setIsPendingUpload] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'upload' | 'url' | 'presets'>('upload');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -104,6 +151,10 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
       setUrlInput(doctor.image && !doctor.image.startsWith('data:') ? doctor.image : '');
       setUploadError(null);
       setIsCompressing(false);
+      setIsUploading(false);
+      setUploadStatusText('');
+      setSelectedBlob(null);
+      setIsPendingUpload(false);
     }
   }, [doctor, isOpen]);
 
@@ -119,8 +170,10 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
     try {
       setIsCompressing(true);
       setUploadError(null);
-      const compressedDataUrl = await compressDoctorImage(file, 500, 600, 0.82);
-      setPreviewUrl(compressedDataUrl);
+      const result = await compressDoctorImageFile(file, 500, 600, 0.82);
+      setPreviewUrl(result.dataUrl);
+      setSelectedBlob(result.blob);
+      setIsPendingUpload(true);
     } catch (err: any) {
       console.error('Image compression error:', err);
       setUploadError('ছবি প্রসেসিং করতে সমস্যা হয়েছে। অন্য ছবি চেষ্টা করুন।');
@@ -140,12 +193,16 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
     }
     setUploadError(null);
     setPreviewUrl(trimmed);
+    setSelectedBlob(null);
+    setIsPendingUpload(false);
   };
 
   const handleSelectPreset = (url: string) => {
     setUploadError(null);
     setPreviewUrl(url);
     setUrlInput(url);
+    setSelectedBlob(null);
+    setIsPendingUpload(false);
   };
 
   const handleSave = async () => {
@@ -154,16 +211,51 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
       return;
     }
     try {
-      await onSavePhoto(doctor.id, previewUrl);
+      setIsUploading(true);
+      setUploadError(null);
+
+      let finalPhotoUrl = previewUrl;
+
+      // Upload to Firebase Storage when a local file was chosen or image is data URL
+      if (isPendingUpload && (selectedBlob || previewUrl.startsWith('data:'))) {
+        setUploadStatusText('ফায়ারবেস সেশন যাচাই করা হচ্ছে...');
+        await ensureFirebaseAuthSession();
+
+        const blobToUpload = selectedBlob || dataURLToBlob(previewUrl);
+
+        // Required path: doctors/{doctorId}/profile.jpg
+        const storagePath = `doctors/${doctor.id}/profile.jpg`;
+        setUploadStatusText('Firebase Storage-এ ছবিটি আপলোড হচ্ছে...');
+        const storageRef = ref(storage, storagePath);
+
+        // Upload using uploadBytes()
+        await uploadBytes(storageRef, blobToUpload, {
+          contentType: 'image/jpeg',
+          cacheControl: 'public, max-age=31536000'
+        });
+
+        // Retrieve permanent download URL via getDownloadURL()
+        setUploadStatusText('ডাউনলোড লিংক তৈরি করা হচ্ছে...');
+        finalPhotoUrl = await getDownloadURL(storageRef);
+      }
+
+      // Persist permanent download URL (or preset URL) to Firestore doctors collection
+      setUploadStatusText('প্রোফাইলে নতুন ছবি সংরক্ষণ করা হচ্ছে...');
+      await onSavePhoto(doctor.id, finalPhotoUrl);
       onClose();
     } catch (err: any) {
-      setUploadError(err?.message || 'ছবি সেভ করতে সমস্যা হয়েছে।');
+      console.error('Save doctor photo error:', err);
+      setUploadError(err?.message || 'ছবি আপলোড বা সেভ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+    } finally {
+      setIsUploading(false);
+      setUploadStatusText('');
     }
   };
 
   if (!isOpen || !doctor) return null;
 
   const isChanged = previewUrl !== doctor.image;
+  const isBusy = isProcessing || isCompressing || isUploading;
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
@@ -185,7 +277,7 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            disabled={isProcessing || isCompressing}
+            disabled={isBusy}
             className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-all disabled:opacity-50"
           >
             <X size={18} />
@@ -231,8 +323,9 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
           <div className="flex bg-slate-100 p-1 rounded-2xl gap-1">
             <button
               type="button"
+              disabled={isBusy}
               onClick={() => setActiveTab('upload')}
-              className={`flex-1 py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 ${
                 activeTab === 'upload'
                   ? 'bg-white text-blue-600 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -242,8 +335,9 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
             </button>
             <button
               type="button"
+              disabled={isBusy}
               onClick={() => setActiveTab('url')}
-              className={`flex-1 py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 ${
                 activeTab === 'url'
                   ? 'bg-white text-blue-600 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -253,8 +347,9 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
             </button>
             <button
               type="button"
+              disabled={isBusy}
               onClick={() => setActiveTab('presets')}
-              className={`flex-1 py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 ${
                 activeTab === 'presets'
                   ? 'bg-white text-blue-600 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -271,6 +366,7 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
+                disabled={isBusy}
                 onChange={handleFileChange}
                 className="hidden"
                 id="doctor-photo-file-upload"
@@ -278,7 +374,9 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
 
               <label
                 htmlFor="doctor-photo-file-upload"
-                className="border-2 border-dashed border-blue-300 hover:border-blue-500 bg-blue-50/40 hover:bg-blue-50/80 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all group"
+                className={`border-2 border-dashed border-blue-300 hover:border-blue-500 bg-blue-50/40 hover:bg-blue-50/80 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all group ${
+                  isBusy ? 'pointer-events-none opacity-60' : ''
+                }`}
               >
                 <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-all">
                   {isCompressing ? (
@@ -297,9 +395,14 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
                     JPG, PNG, WebP (মোবাইল ক্যামেরা বা গ্যালারি থেকে সরাসরি সাপোর্ট)
                   </p>
                 </div>
-                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/60">
-                  ✓ অটো-কম্প্রেসড (ফায়ারবেস ডাটাবেজের জন্য সুরক্ষিত)
-                </span>
+                <div className="flex flex-col sm:flex-row items-center gap-1.5">
+                  <span className="text-[10px] font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200/60 flex items-center gap-1">
+                    <CloudUpload size={12} className="text-blue-600" /> Firebase Storage ক্লাউড স্টোরেজ
+                  </span>
+                  <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/60 flex items-center gap-1">
+                    <Check size={12} className="text-emerald-600" /> অটো-কম্প্রেসড
+                  </span>
+                </div>
               </label>
             </div>
           )}
@@ -313,15 +416,17 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
               <div className="flex gap-2">
                 <input
                   type="url"
+                  disabled={isBusy}
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
-                  placeholder="https://images.unsplash.com/... বা ImgBB / Drive লিংক"
-                  className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 outline-none focus:border-blue-600 focus:bg-white"
+                  placeholder="https://images.unsplash.com/... বা ImgBB / ক্লাউড লিংক"
+                  className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 outline-none focus:border-blue-600 focus:bg-white disabled:opacity-50"
                 />
                 <button
                   type="button"
+                  disabled={isBusy}
                   onClick={handleApplyUrl}
-                  className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-2xl shadow-sm transition-all"
+                  className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-2xl shadow-sm transition-all disabled:opacity-50"
                 >
                   প্রিভিউ দেখুন
                 </button>
@@ -345,8 +450,9 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
                     <button
                       key={p.id}
                       type="button"
+                      disabled={isBusy}
                       onClick={() => handleSelectPreset(p.url)}
-                      className={`p-2 rounded-2xl border text-left transition-all flex flex-col items-center gap-1.5 relative ${
+                      className={`p-2 rounded-2xl border text-left transition-all flex flex-col items-center gap-1.5 relative disabled:opacity-50 ${
                         isSelected
                           ? 'border-blue-600 bg-blue-50 shadow-sm'
                           : 'border-slate-200 bg-white hover:bg-slate-50'
@@ -373,11 +479,22 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
             </div>
           )}
 
+          {/* Upload Progress Status Indicator */}
+          {isUploading && (
+            <div className="p-3.5 bg-blue-50 border border-blue-200 text-blue-900 text-xs font-bold rounded-2xl flex items-center gap-3 animate-in fade-in duration-200">
+              <Loader2 size={20} className="animate-spin text-blue-600 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="font-black text-blue-800">{uploadStatusText || 'ছবি আপলোড হচ্ছে...'}</p>
+                <p className="text-[10px] text-blue-600">Firebase Storage-এ doctors/{doctor.id}/profile.jpg পাথে স্থায়ীভাবে সংরক্ষিত হচ্ছে...</p>
+              </div>
+            </div>
+          )}
+
           {/* Error Message */}
           {uploadError && (
-            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold rounded-2xl flex items-center gap-2">
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold rounded-2xl flex items-center gap-2 animate-in fade-in duration-200">
               <AlertCircle size={16} className="shrink-0" />
-              <span>{uploadError}</span>
+              <span className="flex-1">{uploadError}</span>
             </div>
           )}
 
@@ -400,17 +517,19 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
               <div>
                 <p className="text-[11px] font-black text-slate-700">নির্বাচিত ছবি প্রিভিউ</p>
                 <p className="text-[10px] text-slate-400 font-bold">
-                  {isChanged ? 'সংরক্ষণ করতে নিচের বাটনে চাপুন' : 'বর্তমান ছবি প্রদর্শন করা হচ্ছে'}
+                  {isChanged ? (isPendingUpload ? 'Firebase Storage-এ আপলোড প্রস্তুত' : 'সংরক্ষণ করতে নিচের বাটনে চাপুন') : 'বর্তমান ছবি প্রদর্শন করা হচ্ছে'}
                 </p>
               </div>
             </div>
 
-            {isChanged && (
+            {isChanged && !isBusy && (
               <button
                 type="button"
                 onClick={() => {
                   setPreviewUrl(doctor.image || '');
                   setUrlInput(doctor.image && !doctor.image.startsWith('data:') ? doctor.image : '');
+                  setSelectedBlob(null);
+                  setIsPendingUpload(false);
                   setUploadError(null);
                 }}
                 className="text-xs font-black text-rose-600 hover:text-rose-700 bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-100 flex items-center gap-1"
@@ -426,7 +545,7 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            disabled={isProcessing || isCompressing}
+            disabled={isBusy}
             className="px-5 py-2.5 rounded-2xl border border-slate-200 text-slate-600 hover:bg-slate-100 font-black text-xs transition-all disabled:opacity-50"
           >
             বাতিল
@@ -434,13 +553,13 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
           <button
             type="button"
             onClick={handleSave}
-            disabled={isProcessing || isCompressing || !previewUrl}
+            disabled={isBusy || !previewUrl}
             className="px-6 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md shadow-emerald-600/20 transition-all flex items-center gap-2 disabled:opacity-50 active:scale-95"
           >
-            {isProcessing ? (
+            {isBusy ? (
               <>
                 <Loader2 size={14} className="animate-spin" />
-                <span>সেভ হচ্ছে...</span>
+                <span>{uploadStatusText ? 'আপলোড হচ্ছে...' : 'সেভ হচ্ছে...'}</span>
               </>
             ) : (
               <>
@@ -454,3 +573,4 @@ export const DoctorPhotoModal: React.FC<DoctorPhotoModalProps> = ({
     </div>
   );
 };
+

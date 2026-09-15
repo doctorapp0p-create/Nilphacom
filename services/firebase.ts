@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 import {
   initializeFirestore,
   getFirestore,
@@ -51,6 +52,7 @@ function initDb() {
 
 export const db = initDb();
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 
 const SERVICE_EMAIL = 'service_sync_operator@nilpha.com';
 const SERVICE_PASS = 'JbHealthcare#2026!Sync';

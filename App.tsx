@@ -7,7 +7,8 @@ import { DOCTORS, CLINICS, MEDICINES, EMERGENCY_SERVICES, DISTRICTS, LAB_TESTS, 
 import { slugify, toVirtualEmail, normalizePhoneNumber, normalizeDigits, getLoginCandidateEmails } from './utils';
 import { ALL_DISTRICTS_DATA } from './src/data/addressData';
 import { gemini } from './services/geminiService';
-import { auth, db, ensureFirebaseAuthSession } from './services/firebase';
+import { auth, db, storage, ensureFirebaseAuthSession } from './services/firebase';
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { 
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
@@ -45,7 +46,7 @@ import { AuthModal } from './src/components/AuthModal';
 import { BuyMedicineSection } from './src/components/BuyMedicineSection';
 import { MedicalRecordsSection } from './src/components/MedicalRecordsSection';
 import { AdminDataModal } from './src/components/AdminDataModal';
-import { DoctorPhotoModal, compressDoctorImage } from './src/components/DoctorPhotoModal';
+import { DoctorPhotoModal, compressDoctorImage, dataURLToBlob } from './src/components/DoctorPhotoModal';
 import { LevelUpRewardSection } from './src/components/LevelUpRewardSection';
 import { AmbulanceCalculator } from './src/components/AmbulanceCalculator';
 const doctorSponsorBanner = '/src/assets/images/doctor_sponsor_banner_1785435948836.jpg';
@@ -6924,6 +6925,19 @@ export default function App() {
       // 2. Ensure Firebase Auth session if not active
       await ensureFirebaseAuthSession();
 
+      // If doctor image is Base64 data URL, upload to Firebase Storage so Base64 is never saved to Firestore
+      if (type === "doctor" && item.image && item.image.startsWith("data:")) {
+        try {
+          const sRef = storageRef(storage, `doctors/${item.id}/profile.jpg`);
+          const blob = dataURLToBlob(item.image);
+          await uploadBytes(sRef, blob, { contentType: "image/jpeg", cacheControl: "public, max-age=31536000" });
+          const downloadUrl = await getDownloadURL(sRef);
+          item.image = downloadUrl;
+        } catch (uploadErr) {
+          console.warn("Storage upload fallback error in handleSaveData:", uploadErr);
+        }
+      }
+
       const cleanItem = Object.fromEntries(
         Object.entries(item).filter(([_, v]) => v !== undefined)
       );
@@ -7048,15 +7062,32 @@ export default function App() {
     }
     try {
       setIsProcessing(true);
+
+      // Ensure Firebase Auth session with full permissions
+      await ensureFirebaseAuthSession();
+
+      // If image is a Base64 data URL, upload to Firebase Storage at doctors/{doctorId}/profile.jpg
+      let finalImageUrl = cleanImageUrl;
+      if (cleanImageUrl.startsWith("data:")) {
+        try {
+          const sRef = storageRef(storage, `doctors/${doctorId}/profile.jpg`);
+          const blob = dataURLToBlob(cleanImageUrl);
+          await uploadBytes(sRef, blob, { contentType: "image/jpeg", cacheControl: "public, max-age=31536000" });
+          finalImageUrl = await getDownloadURL(sRef);
+        } catch (uploadErr) {
+          console.warn("Firebase Storage upload in handleUpdateDoctorPhoto notice:", uploadErr);
+        }
+      }
+
       // 1. Immediately store photo override in localStorage so it is never lost across reloads/sessions
       try {
         const savedPhotos = JSON.parse(localStorage.getItem('jb_doctor_photo_overrides') || '{}');
-        savedPhotos[doctorId] = cleanImageUrl;
+        savedPhotos[doctorId] = finalImageUrl;
         localStorage.setItem('jb_doctor_photo_overrides', JSON.stringify(savedPhotos));
 
         const localCustomDocs = JSON.parse(localStorage.getItem('jb_custom_doctors_override') || '{}');
         if (localCustomDocs[doctorId]) {
-          localCustomDocs[doctorId].image = cleanImageUrl;
+          localCustomDocs[doctorId].image = finalImageUrl;
           localStorage.setItem('jb_custom_doctors_override', JSON.stringify(localCustomDocs));
         }
       } catch (storageErr) {
@@ -7064,11 +7095,11 @@ export default function App() {
       }
 
       // 2. Optimistically update local doctor list state
-      setDoctors(prev => prev.map(d => d.id === doctorId ? { ...d, image: cleanImageUrl } : d));
+      setDoctors(prev => prev.map(d => d.id === doctorId ? { ...d, image: finalImageUrl } : d));
 
       // 3. Find full doctor object to ensure all fields are persisted in Firestore
       const existingDoc = doctors.find(d => d.id === doctorId) || DOCTORS.find(d => d.id === doctorId);
-      const updatePayload = existingDoc ? { ...existingDoc, image: cleanImageUrl } : { id: doctorId, image: cleanImageUrl };
+      const updatePayload = existingDoc ? { ...existingDoc, image: finalImageUrl } : { id: doctorId, image: finalImageUrl };
       const cleanPayload = Object.fromEntries(
         Object.entries(updatePayload).filter(([_, v]) => v !== undefined)
       );

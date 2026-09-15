@@ -35,7 +35,13 @@ import {
   FolderOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { db } from '../../services/firebase';
+import { db, storage, ensureFirebaseAuthSession } from '../../services/firebase';
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject
+} from 'firebase/storage';
 import {
   collection,
   doc,
@@ -83,6 +89,16 @@ const formatBnDate = (dateStr: string): string => {
   return dateStr;
 };
 
+// Pending file for upload
+export interface FormPendingFile {
+  file: File;
+  name: string;
+  previewUrl: string;
+  size: number;
+  isPdf: boolean;
+  type: string;
+}
+
 // Compress image before saving to keep payload lightweight and responsive
 const compressImageFile = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -128,6 +144,70 @@ const compressImageFile = (file: File): Promise<string> => {
   });
 };
 
+// Compress image directly to high-quality JPEG Blob for Firebase Storage
+const compressImageToBlob = (file: File): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1920;
+        const MAX_HEIGHT = 2400;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+          if (width / height > MAX_WIDTH / MAX_HEIGHT) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          } else {
+            width = Math.round((width * MAX_HEIGHT) / height);
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(file);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              resolve(file);
+            }
+          },
+          'image/jpeg',
+          0.85
+        );
+      };
+      img.onerror = () => resolve(file);
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+};
+
+// Convert Base64 data URL to Blob for safe cloud storage migration
+const dataUrlToBlob = (dataUrl: string): Blob => {
+  const parts = dataUrl.split(';base64,');
+  const contentType = parts[0].split(':')[1] || 'image/jpeg';
+  const raw = window.atob(parts[1]);
+  const rawLength = raw.length;
+  const uInt8Array = new Uint8Array(rawLength);
+  for (let i = 0; i < rawLength; ++i) {
+    uInt8Array[i] = raw.charCodeAt(i);
+  }
+  return new Blob([uInt8Array], { type: contentType });
+};
+
 const RECORD_TYPES: { id: MedicalRecordType; label: string; icon: string; color: string }[] = [
   { id: 'prescription', label: 'প্রেসক্রিপশন', icon: '📝', color: 'bg-blue-50 text-blue-700 border-blue-200' },
   { id: 'lab_report', label: 'টেস্ট / ল্যাব রিপোর্ট', icon: '🧪', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
@@ -169,8 +249,10 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
   const [formPatientName, setFormPatientName] = useState<string>('');
   const [formDiagnosis, setFormDiagnosis] = useState<string>('');
   const [formNotes, setFormNotes] = useState<string>('');
-  const [formFiles, setFormFiles] = useState<{ name: string; url: string; size: number }[]>([]);
+  const [formFiles, setFormFiles] = useState<FormPendingFile[]>([]);
   const [isProcessingFiles, setIsProcessingFiles] = useState<boolean>(false);
+  const [uploadProgressText, setUploadProgressText] = useState<string>('');
+  const [migratingRecordId, setMigratingRecordId] = useState<string | null>(null);
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -294,39 +376,46 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
     setRecords([]);
   };
 
-  // Handle file uploads in form
+  // Handle file uploads in form with type & size validation
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     setIsProcessingFiles(true);
-    const newFiles: { name: string; url: string; size: number }[] = [];
+    const newFiles: FormPendingFile[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+      // 15MB limit check
+      if (file.size > 15 * 1024 * 1024) {
+        alert(`"${file.name}" ফাইলের সাইজ ১৫ মেগাবাইটের বেশি। অনুগ্রহ করে ১৫MB এর নিচের ফাইল নির্বাচন করুন।`);
+        continue;
+      }
+
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      const isImg = file.type.startsWith('image/');
+
+      if (!isPdf && !isImg) {
+        alert(`"${file.name}" অনুমোদিত ফাইল ফরম্যাট নয়। শুধুমাত্র ছবি (JPG, PNG, WEBP) অথবা PDF প্রেসক্রিপশন আপলোড করা যাবে।`);
+        continue;
+      }
+
       try {
-        if (file.type.startsWith('image/')) {
-          const compressedUrl = await compressImageFile(file);
-          newFiles.push({
-            name: file.name,
-            url: compressedUrl,
-            size: file.size
-          });
-        } else {
-          // PDF or other files
-          const reader = new FileReader();
-          const dataUrl = await new Promise<string>((resolve) => {
-            reader.onload = () => resolve(reader.result as string);
-            reader.readAsDataURL(file);
-          });
-          newFiles.push({
-            name: file.name,
-            url: dataUrl,
-            size: file.size
-          });
+        let previewUrl = '';
+        if (isImg) {
+          previewUrl = URL.createObjectURL(file);
         }
+
+        newFiles.push({
+          file,
+          name: file.name,
+          previewUrl,
+          size: file.size,
+          isPdf,
+          type: isPdf ? 'application/pdf' : (file.type || 'image/jpeg')
+        });
       } catch (err) {
-        console.error('Error processing file:', err);
+        console.error('Error processing file preview:', err);
       }
     }
 
@@ -338,7 +427,7 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
     setFormFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Submit new medical record
+  // Submit new medical record to Firebase Storage & Firestore
   const handleSubmitRecord = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!unlockedPhone) return;
@@ -349,17 +438,72 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
     }
 
     if (formFiles.length === 0) {
-      alert('অনুগ্রহ করে প্রেসক্রিপশন বা রিপোর্টের অন্তত একটি ছবি বা ফাইল যুক্ত করুন');
+      alert('অনুগ্রহ করে প্রেসক্রিপশন বা রিপোর্টের অন্তত একটি ছবি বা PDF ফাইল যুক্ত করুন');
       return;
     }
 
     setIsSubmitting(true);
+    setUploadProgressText('ফায়ারবেস অথেনটিকেশন যাচাই করা হচ্ছে...');
     try {
+      await ensureFirebaseAuthSession();
       const cleanPhone = unlockedPhone.trim().replace(/\D/g, '');
       const recordId = `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      const userId = user?.uid || profile?.id || ('patient_' + cleanPhone);
 
+      const uploadedFiles: MedicalRecordFile[] = [];
+
+      for (let i = 0; i < formFiles.length; i++) {
+        const item = formFiles[i];
+        setUploadProgressText(`ফায়ারবেস ক্লাউড স্টোরেজে ফাইল আপলোড হচ্ছে (${i + 1}/${formFiles.length})...`);
+
+        let uploadBlob: Blob;
+        let contentType = item.type;
+
+        if (item.isPdf) {
+          uploadBlob = item.file;
+          contentType = 'application/pdf';
+        } else {
+          uploadBlob = await compressImageToBlob(item.file);
+          contentType = 'image/jpeg';
+        }
+
+        const safeFileName = item.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const storagePath = `medical_records/${userId}/${recordId}/${Date.now()}_${safeFileName}`;
+        const fileRef = storageRef(storage, storagePath);
+
+        const uploadResult = await uploadBytes(fileRef, uploadBlob, {
+          contentType,
+          customMetadata: {
+            userId,
+            recordId,
+            patientPhone: cleanPhone,
+            originalName: item.name
+          }
+        });
+
+        const downloadURL = await getDownloadURL(uploadResult.ref);
+
+        uploadedFiles.push({
+          name: item.name,
+          fileName: safeFileName,
+          url: downloadURL,
+          downloadURL: downloadURL,
+          storagePath: storagePath,
+          size: uploadBlob.size,
+          fileSize: uploadBlob.size,
+          type: contentType,
+          fileType: contentType,
+          uploadedAt: new Date().toISOString()
+        });
+      }
+
+      setUploadProgressText('মেটাডাটা সংরক্ষণ করা হচ্ছে...');
+
+      const primaryFile = uploadedFiles[0];
       const newRecord: MedicalRecord = {
         id: recordId,
+        recordId: recordId,
+        userId: userId,
         patientPhone: cleanPhone,
         patientName: formPatientName.trim() || profile?.full_name || 'রোগী',
         doctorName: formDoctorName.trim() || 'অনুল্লেখিত ডাক্তার',
@@ -367,14 +511,23 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
         hospitalName: formHospitalName.trim(),
         visitDate: formVisitDate,
         recordType: formRecordType,
+        documentType: formRecordType,
         diagnosis: formDiagnosis.trim(),
         notes: formNotes.trim(),
-        files: formFiles,
+        files: uploadedFiles,
+        storagePath: primaryFile?.storagePath || '',
+        downloadURL: primaryFile?.downloadURL || primaryFile?.url || '',
+        fileName: primaryFile?.fileName || primaryFile?.name || '',
+        fileType: primaryFile?.fileType || primaryFile?.type || '',
+        fileSize: primaryFile?.fileSize || primaryFile?.size || 0,
+        doctorRef: formDoctorName.trim() || '',
+        appointmentRef: '',
         createdAt: new Date().toISOString(),
-        userId: user?.uid || profile?.id || ''
+        uploadedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
 
-      // 1. Save to Firestore
+      // 1. Save metadata to Firestore (No large Base64!)
       await setDoc(doc(db, 'medical_records', recordId), newRecord);
 
       // 2. Optimistic local update
@@ -396,23 +549,37 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
       setFormNotes('');
       setFormFiles([]);
       setShowUploadModal(false);
-      setUploadSuccessMsg('চিকিৎসা পত্র সফলভাবে সংরক্ষণ করা হয়েছে!');
-      setTimeout(() => setUploadSuccessMsg(''), 4000);
-    } catch (error) {
-      console.error('Failed to save medical record:', error);
-      alert('সংরক্ষণে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+      setUploadSuccessMsg('চিকিৎসা পত্র ক্লাউড স্টোরেজে সফলভাবে সংরক্ষণ করা হয়েছে!');
+      setTimeout(() => setUploadSuccessMsg(''), 5000);
+    } catch (error: any) {
+      console.error('Failed to save medical record to Firebase Storage:', error);
+      alert(`সংরক্ষণে সমস্যা হয়েছে: ${error?.message || 'অনুগ্রহ করে পুনরায় চেষ্টা করুন'}`);
     } finally {
       setIsSubmitting(false);
+      setUploadProgressText('');
     }
   };
 
-  // Delete a record
+  // Delete a record and clean up storage
   const handleDeleteRecord = async (recordId: string) => {
     if (!window.confirm('আপনি কি নিশ্চিত যে এই চিকিৎসা পত্রটি মুছে ফেলতে চান?')) {
       return;
     }
 
     try {
+      const recToDelete = records.find(r => r.id === recordId);
+      if (recToDelete?.files) {
+        for (const f of recToDelete.files) {
+          if (f.storagePath) {
+            try {
+              await deleteObject(storageRef(storage, f.storagePath));
+            } catch (err) {
+              console.warn('Storage delete warning:', err);
+            }
+          }
+        }
+      }
+
       await deleteDoc(doc(db, 'medical_records', recordId));
       setRecords(prev => {
         const updated = prev.filter(r => r.id !== recordId);
@@ -427,6 +594,69 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
     } catch (err) {
       console.error('Failed to delete medical record:', err);
       alert('মুছে ফেলতে সমস্যা হয়েছে।');
+    }
+  };
+
+  // 1-Click safe migration of legacy Base64 record to Firebase Storage
+  const handleMigrateLegacyRecord = async (rec: MedicalRecord) => {
+    if (!rec.files || rec.files.length === 0) return;
+    setMigratingRecordId(rec.id);
+    try {
+      await ensureFirebaseAuthSession();
+      const userId = rec.userId || user?.uid || profile?.id || ('patient_' + unlockedPhone);
+      const updatedFiles: MedicalRecordFile[] = [];
+
+      for (let i = 0; i < rec.files.length; i++) {
+        const file = rec.files[i];
+        if (file.url && file.url.startsWith('data:')) {
+          // Convert Base64 dataUrl to Blob
+          const blob = dataUrlToBlob(file.url);
+          const isPdf = file.url.startsWith('data:application/pdf') || (file.name && file.name.endsWith('.pdf'));
+          const ext = isPdf ? 'pdf' : 'jpg';
+          const mime = isPdf ? 'application/pdf' : 'image/jpeg';
+          const safeName = `migrated_${i + 1}_${Date.now()}.${ext}`;
+          const storagePath = `medical_records/${userId}/${rec.id}/${safeName}`;
+
+          const fileRef = storageRef(storage, storagePath);
+          const uploadRes = await uploadBytes(fileRef, blob, { contentType: mime });
+          const downloadUrl = await getDownloadURL(uploadRes.ref);
+
+          updatedFiles.push({
+            ...file,
+            url: downloadUrl,
+            downloadURL: downloadUrl,
+            storagePath: storagePath,
+            size: blob.size,
+            fileSize: blob.size,
+            type: mime,
+            fileType: mime,
+            fileName: safeName
+          });
+        } else {
+          updatedFiles.push(file);
+        }
+      }
+
+      const primary = updatedFiles[0];
+      const updatedRecord: Partial<MedicalRecord> = {
+        files: updatedFiles,
+        storagePath: primary?.storagePath || '',
+        downloadURL: primary?.downloadURL || primary?.url || '',
+        fileName: primary?.fileName || primary?.name || '',
+        fileType: primary?.fileType || primary?.type || '',
+        fileSize: primary?.fileSize || primary?.size || 0,
+        updatedAt: new Date().toISOString()
+      };
+
+      await setDoc(doc(db, 'medical_records', rec.id), updatedRecord, { merge: true });
+
+      setRecords(prev => prev.map(r => r.id === rec.id ? { ...r, ...updatedRecord } : r));
+      alert('চিকিৎসা পত্রটি সফলভাবে ফায়ারবেস ক্লাউড স্টোরেজে স্থানান্তরিত হয়েছে!');
+    } catch (e: any) {
+      console.error('Migration failed:', e);
+      alert(`মাইগ্রেশন ব্যর্থ হয়েছে: ${e?.message || 'আবার চেষ্টা করুন'}`);
+    } finally {
+      setMigratingRecordId(null);
     }
   };
 
@@ -932,6 +1162,29 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                             </button>
                           )}
                         </div>
+
+                        {/* Backward Compatibility 1-click cloud storage migration */}
+                        {rec.files.some(f => f.url && f.url.startsWith('data:')) && (
+                          <button
+                            type="button"
+                            onClick={() => handleMigrateLegacyRecord(rec)}
+                            disabled={migratingRecordId === rec.id}
+                            className="w-full mt-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-[10px] font-black py-1.5 px-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                            title="পুরনো Base64 প্রেসক্রিপশনকে ফায়ারবেস ক্লাউড স্টোরেজে ব্যাকআপ করুন"
+                          >
+                            {migratingRecordId === rec.id ? (
+                              <>
+                                <RefreshCw size={12} className="animate-spin text-amber-700" />
+                                <span>ক্লাউডে ট্রান্সফার হচ্ছে...</span>
+                              </>
+                            ) : (
+                              <>
+                                <UploadCloud size={12} className="text-amber-700" />
+                                <span>ফায়ারবেস স্টোরেজে ব্যাকআপ করুন</span>
+                              </>
+                            )}
+                          </button>
+                        )}
                       </div>
                     </div>
                   );
@@ -1136,13 +1389,20 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                       {formFiles.map((file, idx) => (
                         <div
                           key={idx}
-                          className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-200 bg-white shrink-0 group"
+                          className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-200 bg-white shrink-0 group flex items-center justify-center"
                         >
-                          <img
-                            src={file.url}
-                            alt="thumb"
-                            className="w-full h-full object-cover"
-                          />
+                          {file.isPdf ? (
+                            <div className="flex flex-col items-center justify-center p-1 text-center">
+                              <FileText size={20} className="text-rose-500" />
+                              <span className="text-[8px] font-bold text-slate-500 truncate max-w-[50px] mt-0.5">PDF</span>
+                            </div>
+                          ) : (
+                            <img
+                              src={file.previewUrl}
+                              alt="thumb"
+                              className="w-full h-full object-cover"
+                            />
+                          )}
                           <button
                             type="button"
                             onClick={() => handleRemoveFile(idx)}
@@ -1156,6 +1416,14 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                   )}
                 </div>
 
+                {/* Progress message if uploading */}
+                {uploadProgressText && (
+                  <div className="p-2.5 bg-blue-50 text-blue-700 rounded-xl text-xs font-bold flex items-center gap-2 border border-blue-100">
+                    <RefreshCw size={14} className="animate-spin shrink-0" />
+                    <span>{uploadProgressText}</span>
+                  </div>
+                )}
+
                 {/* Submit button */}
                 <div className="pt-2">
                   <button
@@ -1166,12 +1434,12 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                     {isSubmitting ? (
                       <>
                         <RefreshCw size={16} className="animate-spin" />
-                        <span>সংরক্ষণ করা হচ্ছে...</span>
+                        <span>{uploadProgressText || 'সংরক্ষণ করা হচ্ছে...'}</span>
                       </>
                     ) : (
                       <>
                         <Check size={16} />
-                        <span>চিকিৎসা পত্র সংরক্ষণ করুন</span>
+                        <span>চিকিৎসা পত্র ক্লাউডে সংরক্ষণ করুন</span>
                       </>
                     )}
                   </button>

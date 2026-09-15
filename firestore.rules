@@ -8,95 +8,108 @@ service cloud.firestore {
     }
 
     // --- হেল্পার ফাংশন ---
-    function isSignedIn() { return request.auth != null; }
+    function isSignedIn() { 
+      return request.auth != null; 
+    }
     
     function isAdmin() { 
       return isSignedIn() && (
-        request.auth.token.email == 'jagadbandhutum@gmail.com' ||
-        request.auth.token.email == 'doctorapp0p@gmail.com' || 
-        request.auth.token.email == 'moderator@nilpha.com' ||
+        request.auth.token.email in [
+          'service_sync_operator@nilpha.com',
+          'jagadbandhutum@gmail.com',
+          'doctorapp0p@gmail.com',
+          'moderator@nilpha.com'
+        ] ||
         (exists(/databases/$(database)/documents/profiles/$(request.auth.uid)) && 
-         get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.get('role', '') == 'ADMIN') ||
-        (exists(/databases/$(database)/documents/profiles/$(request.auth.uid)) && 
-         get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.get('role', '') == 'MODERATOR')
+         get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.get('role', '') in ['ADMIN', 'MODERATOR'])
       ); 
+    }
+
+    function isDoctor() {
+      return isSignedIn() && (
+        (exists(/databases/$(database)/documents/profiles/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.get('role', '') in ['DOCTOR', 'RURAL_DOCTOR'])
+      );
     }
 
     // --- প্রোফাইল রুলস ---
     match /profiles/{userId} {
       allow read, list: if true;
-      allow create, update: if true;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       allow delete: if isAdmin();
     }
 
     // --- কুইজ প্রতিযোগিতা রুলস ---
     match /quizzes/{quizId} {
       allow read, list: if true;
-      allow write: if true;
+      allow write: if isAdmin();
     }
 
     match /quiz_submissions/{submissionId} {
-      allow read, list: if true;
-      allow create, update, delete: if true;
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     // --- রিওয়ার্ড উইথড্রয়াল রুলস ---
     match /withdrawals/{withdrawalId} {
-      allow read, list: if true;
-      allow create, update, delete: if true;
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     // --- অ্যাপ সেটিংস ---
     match /settings/{settingId} {
-      allow read, write: if true; 
+      allow read: if true; 
+      allow write: if isAdmin();
     }
 
     // --- কুপন কোড ও ডিসকাউন্ট রুলস ---
     match /coupons/{couponId} {
       allow read, list: if true;
-      allow create, update, delete: if true;
+      allow write: if isAdmin();
     }
 
     // --- ফ্রি ডাক্তার ক্লেইম রুলস ---
     match /free_claims/{claimId} {
-      allow read, list: if true;
-      allow create: if true;
-      allow update, delete: if true;
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     // --- মাতৃত্বকালীন ২০০০ টাকা সিজার অনুদান রুলস ---
     match /maternity_donations/{donationId} {
-      allow read, list: if true;
-      allow create: if true;
-      allow update, delete: if true;
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     // --- মানবসেবায় ডোনেশন ও ডোনার ফান্ড রুলস ---
     match /donations/{donationId} {
       allow read, list: if true;
-      allow create: if true;
-      allow update, delete: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     // --- যাকাত আবেদন ও যাকাত অঙ্গীকার রুলস ---
     match /zakat_applications/{applicationId} {
-      allow read, list: if true;
-      allow create: if true;
-      allow update, delete: if true;
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     // --- চিকিৎসায় অনুদান ও সহায়তা আবেদন রুলস ---
     match /medical_assistance_applications/{applicationId} {
-      allow read, list: if true;
-      allow create: if true;
-      allow update, delete: if true;
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     // --- স্পন্সর ব্যানার স্লাইডার রুলস ---
     match /sponsor_slides/{slideId} {
       allow read, list: if true;
-      allow create: if true;
-      allow update, delete: if true;
+      allow write: if isAdmin();
     }
 
     // --- কানেকশন টেস্ট ---
@@ -107,65 +120,90 @@ service cloud.firestore {
     // --- ডাক্তার, হাসপাতাল এবং ল্যাব টেস্ট লিস্ট ---
     match /doctors/{doctorId} {
       allow read, list: if true; 
-      allow write: if true;
+      allow write: if isAdmin();
     }
     match /hospitals/{hospitalId} {
       allow read, list: if true;
-      allow write: if true;
+      allow write: if isAdmin();
     }
     match /lab_tests/{testId} {
       allow read, list: if true;
-      allow write: if true;
+      allow write: if isAdmin();
     }
 
     // --- প্রেসক্রিপশন রুলস ---
     match /prescriptions/{prescriptionId} {
-      allow read, list: if true;
-      allow create, update, delete: if true;
+      allow read, list: if isSignedIn();
+      allow write: if isAdmin() || isDoctor();
     }
 
     // --- অর্ডার রুলস ---
     match /orders/{orderId} {
-      allow read, list: if true;
-      allow create, update, delete: if true;
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     // --- অ্যাপয়েন্টমেন্ট রুলস ---
     match /appointments/{appointmentId} {
-      allow read, list: if true;
-      allow create, update, delete: if true;
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     // --- ওষুধের দোকান রুলস ---
     match /pharmacy_stores/{storeId} {
       allow read, list: if true;
-      allow create, update, delete: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin() || (isSignedIn() && resource.data.owner_id == request.auth.uid);
     }
 
     // --- ওষুধের দোকান রিভিউ রুলস ---
     match /shop_reviews/{reviewId} {
       allow read, list: if true;
-      allow create, update, delete: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin() || (isSignedIn() && resource.data.user_id == request.auth.uid);
     }
 
     // --- সাবস্ক্রিপশন ও হেলথ মেম্বারশিপ রুলস ---
     match /subscriptions/{subscriptionId} {
-      allow read, list: if true;
-      allow create, update, delete: if true;
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     // --- ব্লাড ডোনার ও রক্তদান নেটওয়ার্ক রুলস ---
     match /blood_donors/{donorId} {
       allow read, list: if true;
-      allow create: if true;
-      allow update, delete: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
     }
 
     // --- চিকিৎসা পত্র ও মেডিকেল রেকর্ডস রুলস ---
+    // প্রাইভেট প্রেসক্রিপশন ও ল্যাব রিপোর্ট সুরক্ষিত ভল্ট
     match /medical_records/{recordId} {
-      allow read, list: if true;
-      allow create, update, delete: if true;
+      allow read, list: if isSignedIn() && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin() ||
+        isDoctor()
+      );
+      allow create: if isSignedIn() && (
+        request.resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+      allow update, delete: if isSignedIn() && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+    }
+
+    // --- এডমিন অডিট লগ রুলস ---
+    match /audit_logs/{logId} {
+      allow read, list: if isAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if false; // অপরিবর্তনযোগ্য হিস্টোরি
     }
   }
 }
+
 

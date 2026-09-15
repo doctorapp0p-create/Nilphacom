@@ -561,13 +561,21 @@ export type MedicalRecordType = 'prescription' | 'lab_report' | 'discharge_lette
 
 export interface MedicalRecordFile {
   name: string;
-  url: string; // base64 data url or preview link
+  fileName?: string;
+  url: string; // Firebase Storage download URL or legacy Base64 preview
+  downloadURL?: string;
+  storagePath?: string;
   type?: string;
+  fileType?: string;
   size?: number;
+  fileSize?: number;
+  uploadedAt?: string;
 }
 
 export interface MedicalRecord {
   id: string;
+  recordId?: string;
+  userId?: string;
   patientPhone: string;
   patientName?: string;
   doctorName?: string;
@@ -575,11 +583,39 @@ export interface MedicalRecord {
   hospitalName?: string;
   visitDate: string; // YYYY-MM-DD
   recordType: MedicalRecordType;
+  documentType?: MedicalRecordType;
   diagnosis?: string;
   notes?: string;
   files: MedicalRecordFile[];
+  storagePath?: string;
+  downloadURL?: string;
+  fileName?: string;
+  fileType?: string;
+  fileSize?: number;
+  doctorRef?: string;
+  appointmentRef?: string;
   createdAt: string;
-  userId?: string;
+  uploadedAt?: string;
+  updatedAt?: string;
   followUpDate?: string;
+}
+
+export interface AuditLog {
+  id: string;
+  actionType: string;
+  performedBy: string;
+  performedByEmail?: string;
+  affectedRecord: string;
+  collectionName?: string;
+  details?: Record<string, any>;
+  timestamp: string;
+}
+
+export interface BackupMetadata {
+  lastBackupDate: string;
+  exportedCollections: string[];
+  totalRecordsCount: number;
+  exportedBy: string;
+  status: 'success' | 'failed' | 'in_progress';
 }
 
