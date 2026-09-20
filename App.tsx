@@ -4631,7 +4631,21 @@ export default function App() {
             'dr-mahmudul-hasan-domar', 'dr-nihar-ranjan-saha', 'dr-gaosul-alam-mostakin',
             'dr-kallol-kumar-kundu', 'dr-paramita-roy', 'dr-md-abu-taher-gyn', 'dr-aleya-khatun-gyn',
             'dr-anwarur-rahman-anon', 'dr-tapan-kumar-roy-med', 'dr-ashim-roy-chowdhury-ortho', 'dr-tahmina-sultana-toma-gyn', 'dr-fahim-kiswal-skin',
-            'dr-ar-debabrata-haldar'
+            'dr-ar-debabrata-haldar',
+            'dr-aratul-akter-biva',
+            'dr-sarwar-alam-pulse',
+            'dr-asduzzaman-shah-ortho',
+            'dr-akm-faizullah-bipu',
+            'dr-farhanul-hasan-sifat',
+            'dr-hemanta-kumar-roy-ortho',
+            'dr-mehedi-hasan-rubel',
+            'dr-sudhangshu-ranjan-biswas',
+            'dr-md-abdur-rahim-ortho',
+            'dr-nazmul-sakib-care',
+            'dr-dokhina-mohan-roy',
+            'dr-rayhan-bari',
+            'dr-minhajul-korim-tushar',
+            'dr-mr-sharmin-gyn'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -4650,12 +4664,32 @@ export default function App() {
 
           // Sync dr-drishti-saha new clinic in DB if missing
           const drishtiDoc = docRes.docs.find(docD => docD.id === 'dr-drishti-saha');
-          if (drishtiDoc && !drishtiDoc.data()?.clinics?.includes('c-padma-domar')) {
-            const updatedClinics = Array.from(new Set([...(drishtiDoc.data()?.clinics || []), 'c-padma-domar']));
+          if (drishtiDoc && (!drishtiDoc.data()?.clinics?.includes('c-padma-domar') || !drishtiDoc.data()?.clinics?.includes('c-care-hospital-domar'))) {
+            const updatedClinics = Array.from(new Set([...(drishtiDoc.data()?.clinics || []), 'c-padma-domar', 'c-care-hospital-domar']));
             setDoc(doc(db, 'doctors', 'dr-drishti-saha'), { 
               clinics: updatedClinics, 
-              schedule: "সেভেন স্টার: দুপুর ৩টা - রাত ৯টা | পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ৮টা" 
+              schedule: "কেয়ার হাসপাতাল: প্রতিদিন বিকাল ৩টা - রাত ১০টা | সেভেন স্টার: দুপুর ৩টা - রাত ৯টা | পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ৮টা" 
             }, { merge: true }).catch(e => console.warn(`Updating dr-drishti-saha clinics in DB:`, e));
+          }
+
+          // Sync dr-akm-faizullah-bipu new clinic in DB if missing
+          const faizullahDoc = docRes.docs.find(docD => docD.id === 'dr-akm-faizullah-bipu');
+          if (faizullahDoc && !faizullahDoc.data()?.clinics?.includes('c-care-hospital-domar')) {
+            const updatedClinics = Array.from(new Set([...(faizullahDoc.data()?.clinics || []), 'c-care-hospital-domar']));
+            setDoc(doc(db, 'doctors', 'dr-akm-faizullah-bipu'), { 
+              clinics: updatedClinics, 
+              schedule: "কেয়ার হাসপাতাল: প্রতিদিন বিকাল ৩টা - রাত ৮টা | আপডেট হসপিটাল: শনি, সোম ও বুধ বিকাল ৩টা - রাত ১০টা" 
+            }, { merge: true }).catch(e => console.warn(`Updating dr-akm-faizullah-bipu clinics in DB:`, e));
+          }
+
+          // Sync dr-sharmin-sultana-sathi new clinic in DB if missing
+          const sharminDoc = docRes.docs.find(docD => docD.id === 'dr-sharmin-sultana-sathi');
+          if (sharminDoc && !sharminDoc.data()?.clinics?.includes('c-golden-domar')) {
+            const updatedClinics = Array.from(new Set([...(sharminDoc.data()?.clinics || []), 'c-golden-domar']));
+            setDoc(doc(db, 'doctors', 'dr-sharmin-sultana-sathi'), { 
+              clinics: updatedClinics, 
+              schedule: "সেভেন স্টার: প্রতিদিন সন্ধ্যা ৬টা - রাত ৯টা | গোল্ডেন ডায়াগনস্টিক: প্রতিদিন বিকাল ৪টা - রাত ১০টা" 
+            }, { merge: true }).catch(e => console.warn(`Updating dr-sharmin-sultana-sathi clinics in DB:`, e));
           }
 
           // Sync dr-mominur-rahman-sonet new clinic in DB if missing
@@ -4728,6 +4762,56 @@ export default function App() {
               setDoc(doc(db, 'hospitals', alMadinaHosp.id), { name: alMadinaHosp.name, address: alMadinaHosp.address, doctors: alMadinaHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-al-madina-domar name:`, e));
             }
           }
+
+          const domarGeneralDoc = hospRes.docs.find(docH => docH.id === 'c-domar-general');
+          const domarGeneralHosp = CLINICS.find(c => c.id === 'c-domar-general');
+          if (domarGeneralHosp) {
+            if (!domarGeneralDoc) {
+              setDoc(doc(db, 'hospitals', domarGeneralHosp.id), domarGeneralHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-domar-general in DB:`, e));
+            } else if (domarGeneralDoc.data()?.name !== domarGeneralHosp.name || domarGeneralDoc.data()?.address !== domarGeneralHosp.address) {
+              setDoc(doc(db, 'hospitals', domarGeneralHosp.id), { name: domarGeneralHosp.name, address: domarGeneralHosp.address, doctors: domarGeneralHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-domar-general in DB:`, e));
+            }
+          }
+
+          const pulseDoc = hospRes.docs.find(docH => docH.id === 'c-pulse-domar');
+          const pulseHosp = CLINICS.find(c => c.id === 'c-pulse-domar');
+          if (pulseHosp) {
+            if (!pulseDoc) {
+              setDoc(doc(db, 'hospitals', pulseHosp.id), pulseHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-pulse-domar in DB:`, e));
+            } else if (pulseDoc.data()?.name !== pulseHosp.name || pulseDoc.data()?.address !== pulseHosp.address) {
+              setDoc(doc(db, 'hospitals', pulseHosp.id), { name: pulseHosp.name, address: pulseHosp.address, doctors: pulseHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-pulse-domar in DB:`, e));
+            }
+          }
+
+          const updateHospDoc = hospRes.docs.find(docH => docH.id === 'c-domar-update-hospital');
+          const updateHosp = CLINICS.find(c => c.id === 'c-domar-update-hospital');
+          if (updateHosp) {
+            if (!updateHospDoc) {
+              setDoc(doc(db, 'hospitals', updateHosp.id), updateHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-domar-update-hospital in DB:`, e));
+            } else if (updateHospDoc.data()?.name !== updateHosp.name || updateHospDoc.data()?.address !== updateHosp.address) {
+              setDoc(doc(db, 'hospitals', updateHosp.id), { name: updateHosp.name, address: updateHosp.address, doctors: updateHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-domar-update-hospital in DB:`, e));
+            }
+          }
+
+          const goldenDoc = hospRes.docs.find(docH => docH.id === 'c-golden-domar');
+          const goldenHosp = CLINICS.find(c => c.id === 'c-golden-domar');
+          if (goldenHosp) {
+            if (!goldenDoc) {
+              setDoc(doc(db, 'hospitals', goldenHosp.id), goldenHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-golden-domar in DB:`, e));
+            } else if (goldenDoc.data()?.name !== goldenHosp.name || goldenDoc.data()?.address !== goldenHosp.address) {
+              setDoc(doc(db, 'hospitals', goldenHosp.id), { name: goldenHosp.name, address: goldenHosp.address, doctors: goldenHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-golden-domar in DB:`, e));
+            }
+          }
+
+          const careDoc = hospRes.docs.find(docH => docH.id === 'c-care-hospital-domar');
+          const careHosp = CLINICS.find(c => c.id === 'c-care-hospital-domar');
+          if (careHosp) {
+            if (!careDoc) {
+              setDoc(doc(db, 'hospitals', careHosp.id), careHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-care-hospital-domar in DB:`, e));
+            } else if (careDoc.data()?.name !== careHosp.name || careDoc.data()?.address !== careHosp.address) {
+              setDoc(doc(db, 'hospitals', careHosp.id), { name: careHosp.name, address: careHosp.address, doctors: careHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-care-hospital-domar in DB:`, e));
+            }
+          }
         }).catch(() => {});
       }
 
@@ -4744,7 +4828,23 @@ export default function App() {
         'j-rikkon', 'j-shaheen-gyn', 'j-al-amin',
         'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
         'ev-asad', 'ev-nripen', 'ek-gyn1',
-        'dr-ar-debabrata-haldar'
+        'dr-ar-debabrata-haldar',
+        'dr-aratul-akter-biva',
+        'dr-sarwar-alam-pulse',
+        'dr-asduzzaman-shah-ortho',
+        'dr-akm-faizullah-bipu',
+        'dr-farhanul-hasan-sifat',
+        'dr-hemanta-kumar-roy-ortho',
+        'dr-mehedi-hasan-rubel',
+        'dr-sudhangshu-ranjan-biswas',
+        'dr-sharmin-sultana-sathi',
+        'dr-md-abdur-rahim-ortho',
+        'dr-nazmul-sakib-care',
+        'dr-dokhina-mohan-roy',
+        'dr-rayhan-bari',
+        'dr-minhajul-korim-tushar',
+        'dr-mr-sharmin-gyn',
+        'dr-drishti-saha'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -4763,8 +4863,22 @@ export default function App() {
               if (dbD.id === 'dr-drishti-saha') {
                 return {
                   ...dbD,
-                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-padma-domar'])),
-                  schedule: "সেভেন স্টার: দুপুর ৩টা - রাত ৯টা | পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ৮টা"
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-padma-domar', 'c-care-hospital-domar'])),
+                  schedule: "কেয়ার হাসপাতাল: প্রতিদিন বিকাল ৩টা - রাত ১০টা | সেভেন স্টার: দুপুর ৩টা - রাত ৯টা | পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ৮টা"
+                };
+              }
+              if (dbD.id === 'dr-akm-faizullah-bipu') {
+                return {
+                  ...dbD,
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-care-hospital-domar'])),
+                  schedule: "কেয়ার হাসপাতাল: প্রতিদিন বিকাল ৩টা - রাত ৮টা | আপডেট হসপিটাল: শনি, সোম ও বুধ বিকাল ৩টা - রাত ১০টা"
+                };
+              }
+              if (dbD.id === 'dr-sharmin-sultana-sathi') {
+                return {
+                  ...dbD,
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-golden-domar'])),
+                  schedule: "সেভেন স্টার: প্রতিদিন সন্ধ্যা ৬টা - রাত ৯টা | গোল্ডেন ডায়াগনস্টিক: প্রতিদিন বিকাল ৪টা - রাত ১০টা"
                 };
               }
               if (dbD.id === 'dr-mominur-rahman-sonet') {
@@ -6533,7 +6647,7 @@ export default function App() {
       }));
 
     // Area and Clinic ID constants for accurate location filtering
-    const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar'];
+    const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar', 'c-domar-general', 'c-pulse-domar', 'c-domar-update-hospital', 'c-golden-domar', 'c-care-hospital-domar'];
     const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
     const RANGPUR_CLINIC_IDS = ['c-popular-rangpur'];
 
@@ -6727,7 +6841,7 @@ export default function App() {
     let list = hospitals;
     if (selectedLocation) {
       const loc = selectedLocation.toLowerCase().trim();
-      const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar'];
+      const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar', 'c-domar-general', 'c-pulse-domar', 'c-domar-update-hospital', 'c-golden-domar', 'c-care-hospital-domar'];
       const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
       const RANGPUR_CLINIC_IDS = ['c-popular-rangpur'];
 

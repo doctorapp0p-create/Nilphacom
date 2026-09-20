@@ -32,7 +32,9 @@ import {
   Check,
   RefreshCw,
   LogOut,
-  FolderOpen
+  FolderOpen,
+  Camera,
+  Upload
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db, storage, ensureFirebaseAuthSession } from '../../services/firebase';
@@ -252,7 +254,12 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
   const [formFiles, setFormFiles] = useState<FormPendingFile[]>([]);
   const [isProcessingFiles, setIsProcessingFiles] = useState<boolean>(false);
   const [uploadProgressText, setUploadProgressText] = useState<string>('');
+  const [uploadErrorMsg, setUploadErrorMsg] = useState<string>('');
   const [migratingRecordId, setMigratingRecordId] = useState<string | null>(null);
+
+  // File input refs for reliable device selection & camera capture
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -381,6 +388,7 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    setUploadErrorMsg('');
     setIsProcessingFiles(true);
     const newFiles: FormPendingFile[] = [];
 
@@ -419,6 +427,9 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
       }
     }
 
+    // Reset input value so selecting the exact same file again re-triggers onChange
+    e.target.value = '';
+
     setFormFiles(prev => [...prev, ...newFiles]);
     setIsProcessingFiles(false);
   };
@@ -432,12 +443,16 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
     e.preventDefault();
     if (!unlockedPhone) return;
 
+    setUploadErrorMsg('');
+
     if (!formVisitDate) {
+      setUploadErrorMsg('অনুগ্রহ করে ডাক্তার দেখানোর তারিখ নির্বাচন করুন');
       alert('অনুগ্রহ করে ডাক্তার দেখানোর তারিখ নির্বাচন করুন');
       return;
     }
 
     if (formFiles.length === 0) {
+      setUploadErrorMsg('অনুগ্রহ করে প্রেসক্রিপশন বা রিপোর্টের অন্তত একটি ছবি বা PDF ফাইল যুক্ত করুন');
       alert('অনুগ্রহ করে প্রেসক্রিপশন বা রিপোর্টের অন্তত একটি ছবি বা PDF ফাইল যুক্ত করুন');
       return;
     }
@@ -548,11 +563,13 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
       setFormDiagnosis('');
       setFormNotes('');
       setFormFiles([]);
+      setUploadErrorMsg('');
       setShowUploadModal(false);
       setUploadSuccessMsg('চিকিৎসা পত্র ক্লাউড স্টোরেজে সফলভাবে সংরক্ষণ করা হয়েছে!');
       setTimeout(() => setUploadSuccessMsg(''), 5000);
     } catch (error: any) {
       console.error('Failed to save medical record to Firebase Storage:', error);
+      setUploadErrorMsg(`সংরক্ষণে সমস্যা হয়েছে: ${error?.message || 'অনুগ্রহ করে পুনরায় চেষ্টা করুন'}`);
       alert(`সংরক্ষণে সমস্যা হয়েছে: ${error?.message || 'অনুগ্রহ করে পুনরায় চেষ্টা করুন'}`);
     } finally {
       setIsSubmitting(false);
@@ -1361,57 +1378,114 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                     <span className="text-[10px] text-slate-400 font-normal">একাধিক ছবি যোগ করা যাবে</span>
                   </label>
 
-                  <div className="border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-2xl p-4 text-center bg-slate-50/60 transition-all relative">
-                    <input
-                      type="file"
-                      accept="image/*,application/pdf"
-                      multiple
-                      onChange={handleFileChange}
-                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                  {/* Hidden file inputs for high compatibility across all mobile & desktop browsers */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,application/pdf"
+                    multiple
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="medical-file-upload-input"
+                  />
+                  <input
+                    ref={cameraInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="medical-camera-upload-input"
+                  />
+
+                  {/* Upload Actions: Camera & Gallery / File */}
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <button
+                      type="button"
                       disabled={isProcessingFiles}
-                    />
+                      onClick={() => cameraInputRef.current?.click()}
+                      className="flex items-center justify-center gap-2 py-3 px-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl text-emerald-800 text-xs font-black transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                    >
+                      <Camera size={16} className="text-emerald-700" />
+                      <span>ক্যামেরা দিয়ে ছবি তুলুন</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={isProcessingFiles}
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex items-center justify-center gap-2 py-3 px-3 bg-blue-50 hover:bg-blue-100 border border-blue-300 rounded-xl text-blue-800 text-xs font-black transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                    >
+                      <Upload size={16} className="text-blue-700" />
+                      <span>গ্যালারি / ফাইল থেকে বেছে নিন</span>
+                    </button>
+                  </div>
+
+                  {/* Drag and drop / Tap box as additional intuitive target */}
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-2xl p-3.5 text-center bg-slate-50/60 hover:bg-slate-50 transition-all cursor-pointer group"
+                  >
                     <div className="space-y-1">
-                      <div className="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center mx-auto">
-                        <UploadCloud size={20} />
+                      <div className="w-9 h-9 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center mx-auto group-hover:scale-105 transition-transform">
+                        <UploadCloud size={18} />
                       </div>
                       <p className="text-xs font-black text-slate-700">
-                        {isProcessingFiles ? 'ফাইল প্রসেস হচ্ছে...' : 'ছবি তুলুন বা ফাইল সিলেক্ট করুন'}
+                        {isProcessingFiles ? 'ফাইল প্রসেস হচ্ছে...' : 'ক্লিক করে ছবি বা প্রেসক্রিপশন সিলেক্ট করুন'}
                       </p>
                       <p className="text-[10px] text-slate-400">
-                        JPG, PNG বা PDF ফরম্যাট
+                        JPG, PNG, WEBP বা PDF ফরম্যাট (প্রতি ফাইল সর্বোচ্চ ১৫MB)
                       </p>
                     </div>
                   </div>
 
+                  {/* Upload Error Banner */}
+                  {uploadErrorMsg && (
+                    <div className="mt-2 p-2.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-bold flex items-center gap-2">
+                      <AlertCircle size={14} className="shrink-0 text-rose-600" />
+                      <span>{uploadErrorMsg}</span>
+                    </div>
+                  )}
+
                   {/* Attached Files Preview */}
                   {formFiles.length > 0 && (
-                    <div className="mt-2.5 flex gap-2 overflow-x-auto no-scrollbar py-1">
-                      {formFiles.map((file, idx) => (
-                        <div
-                          key={idx}
-                          className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-200 bg-white shrink-0 group flex items-center justify-center"
-                        >
-                          {file.isPdf ? (
-                            <div className="flex flex-col items-center justify-center p-1 text-center">
-                              <FileText size={20} className="text-rose-500" />
-                              <span className="text-[8px] font-bold text-slate-500 truncate max-w-[50px] mt-0.5">PDF</span>
-                            </div>
-                          ) : (
-                            <img
-                              src={file.previewUrl}
-                              alt="thumb"
-                              className="w-full h-full object-cover"
-                            />
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveFile(idx)}
-                            className="absolute top-1 right-1 bg-rose-600 text-white rounded-full p-0.5 shadow hover:bg-rose-700 transition-colors"
+                    <div className="mt-2.5 space-y-1">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-600 px-1">
+                        <span>সংযুক্ত ফাইল ({formFiles.length}টি)</span>
+                        <span className="text-emerald-600">আপলোডের জন্য প্রস্তুত</span>
+                      </div>
+                      <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
+                        {formFiles.map((file, idx) => (
+                          <div
+                            key={idx}
+                            className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-emerald-500/40 bg-white shrink-0 group flex items-center justify-center shadow-xs"
                           >
-                            <X size={12} />
-                          </button>
-                        </div>
-                      ))}
+                            {file.isPdf ? (
+                              <div className="flex flex-col items-center justify-center p-1 text-center">
+                                <FileText size={20} className="text-rose-500" />
+                                <span className="text-[8px] font-bold text-slate-500 truncate max-w-[50px] mt-0.5">PDF</span>
+                              </div>
+                            ) : (
+                              <img
+                                src={file.previewUrl}
+                                alt="thumb"
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRemoveFile(idx);
+                              }}
+                              className="absolute top-1 right-1 bg-rose-600 text-white rounded-full p-0.5 shadow hover:bg-rose-700 transition-colors cursor-pointer"
+                              title="মুছে ফেলুন"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
