@@ -637,6 +637,103 @@ export const CLINICS: Clinic[] = [
       "dr-mr-sharmin-gyn"
     ],
     "image": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-new-janata-dimla",
+    "name": "নিউ জনতা ডিজিটাল ডায়াগনস্টিক সেন্টার",
+    "district": "Nilphamari",
+    "address": "মেডিকেল মোড়, ডিমলা, নীলফামারী।",
+    "doctors": [
+      "dr-din-mohammad-dimla",
+      "dr-hirok-kumar-roy",
+      "dr-niranjan-kumar-roy",
+      "dr-mimosa-ferdousi"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-dimla-update-clinic",
+    "name": "ডিমলা আপডেট ক্লিনিক এন্ড ডায়াগনস্টিক সেন্টার",
+    "district": "Nilphamari",
+    "address": "ডিমলা মেডিকেল মোড়, ইসলামিয়া কলেজ রোড, ডিমলা, নীলফামারী।",
+    "doctors": [
+      "dr-abdur-rahim-riyad-dimla",
+      "dr-md-abu-taher-gyn"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-shurokkha-dimla",
+    "name": "সুরক্ষা ডায়াগনস্টিক সেন্টার",
+    "district": "Nilphamari",
+    "address": "মেডিকেল মোড়, ডিমলা, নীলফামারী।",
+    "doctors": [
+      "dr-sabrina-alam-mukta",
+      "dr-md-sakib-ohab-ortho",
+      "dr-ma-hai-dimla"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-doctors-dimla",
+    "name": "ডক্টরস ডায়াগনস্টিক এন্ড কনসালটেশন সেন্টার",
+    "district": "Nilphamari",
+    "address": "মেডিকেল মোড়, ডিমলা, নীলফামারী।",
+    "doctors": [
+      "dr-ahm-rezaul-korib-sojib",
+      "dr-paramita-roy",
+      "dr-md-moniruzzaman-moni",
+      "dr-md-sultan-mahbub",
+      "dr-mohammad-kamruzzaman-ped"
+    ],
+    "image": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-life-dimla",
+    "name": "লাইফ ডায়াগনস্টিক এন্ড হেলথ পয়েন্ট",
+    "district": "Nilphamari",
+    "address": "মেডিকেল মোড়, ডিমলা, নীলফামারী।",
+    "doctors": [
+      "dr-md-asaduzzaman-asad-dimla",
+      "dr-md-mazharul-islam",
+      "dr-iqbal-ahmed-dimla",
+      "dr-rebeka-sultana-khushi",
+      "dr-md-jahangir-alam-dimla",
+      "dr-saiful-islam-dental-dimla",
+      "dr-md-atikul-islam-dimla",
+      "dr-sanjida-rahman-dental"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-sonar-bangla-dimla",
+    "name": "সোনার বাংলা ডায়াগনস্টিক সেন্টার",
+    "district": "Nilphamari",
+    "address": "মেডিকেল মোড়, ডিমলা, নীলফামারী।",
+    "doctors": [
+      "dr-md-moniruzzaman-sonarbangla",
+      "dr-md-mazharul-islam",
+      "dr-md-shafiqul-islam-surg",
+      "dr-md-moniruzzaman-uhc-dimla",
+      "dr-mahjabin-liza"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-sohel-dimla",
+    "name": "ডিমলা সোহেল ডিজিটাল ডায়াগনস্টিক সেন্টার",
+    "district": "Nilphamari",
+    "address": "মেডিকেল মোড়, ডিমলা, নীলফামারী।",
+    "doctors": [
+      "dr-partha-pratim-pramanik",
+      "dr-sanjib-kumar-singh",
+      "dr-mushtary-akhtar-brishti",
+      "dr-pradip-kumar-roy",
+      "dr-khandakar-shafiqur-rahman",
+      "dr-iqbal-ahmed-dimla",
+      "dr-abu-hena-mostafa-kamal"
+    ],
+    "image": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=800"
   }
 ];
 
@@ -2759,17 +2856,20 @@ export const DOCTORS: Doctor[] = [
   {
     "id": "dr-partha-pratim-pramanik",
     "name": "ডাঃ পার্থ প্রতিম প্রামানিক",
-    "degree": "এমবিবিএস, সিসিডি (বারডেম), ডিওসি (চর্ম ও যৌন), এসসিএল (কুষ্ঠ) | প্রাক্তন মেডিকেল অফিসার, ডেনিস বাংলাদেশ লেপ্রসি মিশন হাসপাতাল, নীলফামারী | বিএমডিসি রেজিঃ নং- ৯২১৬৯ | চর্ম, যৌন, কুষ্ঠ ও এলার্জি রোগের অভিজ্ঞ চিকিৎসক",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), পিজিটি (মেডিসিন), সিসিডি (বারডেম), ডিওসি (চর্ম ও যৌন), এসসিএল (কুষ্ঠ) | চর্ম, যৌন, কুষ্ঠ, এলার্জি ও মেডিসিন অভিজ্ঞ চিকিৎসক",
     "specialty": "Dermatology",
     "districts": [
       "Nilphamari",
       "Domar",
-      "ডোমার"
+      "ডোমার",
+      "Dimla",
+      "ডিমলা"
     ],
     "clinics": [
-      "c-seven-star-domar"
+      "c-seven-star-domar",
+      "c-sohel-dimla"
     ],
-    "schedule": "মঙ্গলবার দুপুর ২টা থেকে সন্ধ্যা ৬টা পর্যন্ত",
+    "schedule": "সেভেন স্টার ডোমার: মঙ্গলবার দুপুর ২টা - সন্ধ্যা ৬টা | সোহেল ডিজিটাল ডিমলা: শুক্রবার দুপুর ১টা - বিকাল ৫টা",
     "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
@@ -3023,12 +3123,15 @@ export const DOCTORS: Doctor[] = [
     "districts": [
       "Nilphamari",
       "Domar",
-      "ডোমার"
+      "ডোমার",
+      "Dimla",
+      "ডিমলা"
     ],
     "clinics": [
-      "c-padma-domar"
+      "c-padma-domar",
+      "c-doctors-dimla"
     ],
-    "schedule": "প্রতিদিন দুপুর ২:৩০টা থেকে রাত ৯টা পর্যন্ত।",
+    "schedule": "পদ্মা ক্লিনিক ডোমার: প্রতিদিন দুপুর ২:৩০টা - রাত ৯টা | ডক্টরস ডায়াগনস্টিক ডিমলা: প্রতি সোমবার দুপুর ২:৩০টা - বিকাল ৫টা",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=300",
@@ -3043,12 +3146,15 @@ export const DOCTORS: Doctor[] = [
       "Nilphamari",
       "Domar",
       "ডোমার",
+      "Dimla",
+      "ডিমলা",
       "Rangpur"
     ],
     "clinics": [
-      "c-padma-domar"
+      "c-padma-domar",
+      "c-dimla-update-clinic"
     ],
-    "schedule": "প্রতিদিন দুপুর ২:৩০টা থেকে রাত ১০টা পর্যন্ত।",
+    "schedule": "ডোমার পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ১০টা | ডিমলা আপডেট ক্লিনিক: নির্ধারিত সময়ে (যোগাযোগ সাপেক্ষে)",
     "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
@@ -3475,6 +3581,561 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 300
+  },
+  {
+    "id": "dr-din-mohammad-dimla",
+    "name": "ডাঃ দীন মোহাম্মদ",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য) | মা, শিশু ও সার্জারি বিষয়ে প্রশিক্ষণপ্রাপ্ত অভিজ্ঞ চিকিৎসক",
+    "specialty": "Pediatrics",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-new-janata-dimla"
+    ],
+    "schedule": "শনিবার সকাল ৯টা থেকে বৃহস্পতিবার দুপুর ২টা পর্যন্ত (শুক্রবার বন্ধ)",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-hirok-kumar-roy",
+    "name": "ডাঃ হিরক কুমার রায়",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমপিএইচ, ফেলো অব ডব্লিউ.এইচ.ও (থাইল্যান্ড), এফসিপিএস (সার্জারি), এমআরসিএস (শেফপুর) | মেডিসিন ও সার্জারি বিষয়ে অভিজ্ঞ চিকিৎসক ও সার্জন",
+    "specialty": "Surgery",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-new-janata-dimla"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১১টা থেকে সন্ধ্যা ৬টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-niranjan-kumar-roy",
+    "name": "ডাঃ নিরঞ্জন কুমার রায়",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (কার্ডিওলজি) কোর্স, পিজিটি (মেডিসিন), সিসিডি (ডায়াবেটোলজি - বারডেম, ঢাকা) | মেডিসিন, ডায়াবেটিস, উচ্চ রক্তচাপ ও হৃদরোগ বিশেষজ্ঞ",
+    "specialty": "Cardiology",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-new-janata-dimla"
+    ],
+    "schedule": "প্রতিদিন দুপুর ২:৩০টা থেকে বিকাল ৫টা পর্যন্ত। শুক্রবার সকাল ১১টা থেকে।",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-mimosa-ferdousi",
+    "name": "ডাঃ মিমোসা ফেরদৌসী",
+    "degree": "এমবিবিএস (আর ইউ), ডিএমইউ (আল্ট্রাসোনোগ্রাম), পিজিটি (রেডিওলজি এন্ড ইমেজিং) | প্রাক্তন মেডিকেল অফিসার, নর্দান মেডিকেল কলেজ, রংপুর | গাইনি, প্রসূতি ও বন্ধ্যাত্ব রোগের চিকিৎসা",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-new-janata-dimla"
+    ],
+    "schedule": "প্রতিদিন সকাল ১১টা থেকে বিকাল ৫টা পর্যন্ত (শুক্রবার বন্ধ)",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-abdur-rahim-riyad-dimla",
+    "name": "মোঃ আব্দুর রহিম রিয়াদ",
+    "degree": "ডি.এম.এফ (রাষ্ট্রীয় চিকিৎসা অনুষদ), সি.এম.ইউ (আল্ট্রাসোনোগ্রাফি) | বিএমডিসি রেজিস্ট্রেশন নং: ডি-১৩৭৬৬ | জেনারেল প্র্যাকটিশনার ও সনোলজিস্ট",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-dimla-update-clinic"
+    ],
+    "schedule": "প্রতিদিন সকাল ৯:০০টা থেকে রাত ৮:০০টা পর্যন্ত (নির্দিষ্ট দিন ও সময় যোগাযোগ সাপেক্ষে)",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 300
+  },
+  {
+    "id": "dr-sabrina-alam-mukta",
+    "name": "ডাঃ সাবরিনা আলম (মুক্তা)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডিএমইউ (আল্ট্রাসোনোগ্রাফি) | গাইনি, প্রসূতি, আল্ট্রাসনোলজি ও সাধারণ স্বাস্থ্যসেবা চিকিৎসক",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-shurokkha-dimla"
+    ],
+    "schedule": "প্রতিদিন সকাল ১০টা থেকে সন্ধ্যা ৫টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-md-sakib-ohab-ortho",
+    "name": "ডাঃ মোঃ সাকিব ওহাব",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), প্রশিক্ষণপ্রাপ্ত অর্থোপেডিক্স বিভাগ | সহকারী সার্জন (মেডিকেল অফিসার), উপজেলা স্বাস্থ্য কমপ্লেক্স, কিশোরগঞ্জ, নীলফামারী | হাড়-জোড়া ও বাত-ব্যথা বিশেষজ্ঞ",
+    "specialty": "Orthopedics",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-shurokkha-dimla"
+    ],
+    "schedule": "প্রতি রবিবার সকাল ১১টা থেকে বিকাল ৫টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-ma-hai-dimla",
+    "name": "সহযোগী অধ্যাপক ডাঃ এম. এ. হাই",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমপিএইচ (বিএসএমএমইউ), ঢাকা, পিজিটি (চর্ম-যৌন, এলার্জি ও নাক-কান-গলা) | সহযোগী অধ্যাপক (কমিউনিটি মেডিসিন), নর্দান মেডিকেল কলেজ ও হাসপাতাল, রংপুর | সাবেক চিকিৎসক, চর্ম ও যৌন বিভাগ, রমেক | মেডিসিন, চর্ম-যৌন, এলার্জি ও নাক-কান-গলা রোগ বিশেষজ্ঞ",
+    "specialty": "Dermatology",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-shurokkha-dimla"
+    ],
+    "schedule": "প্রতি বুধবার সকাল ১০টা থেকে বিকাল ৩টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-ahm-rezaul-korib-sojib",
+    "name": "ডাঃ এ.এইচ.এম রেজাউল করিব (সজীব)",
+    "degree": "এমবিবিএস, ডি-কার্ড (ফোকাস), সিসিডি (বারডেম) | হৃদরোগ, উচ্চ রক্তচাপ, ডায়াবেটিস ও মেডিসিন বিশেষজ্ঞ",
+    "specialty": "Cardiology",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-doctors-dimla"
+    ],
+    "schedule": "শুক্রবার সকাল ১০টা থেকে বিকাল ৫টা পর্যন্ত | প্রতিদিন দুপুর ২:৩০টা থেকে বিকাল ৫টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-md-moniruzzaman-moni",
+    "name": "ডাঃ মোঃ মনিরুজ্জামান (মনি)",
+    "degree": "এমবিবিএস (রামেক), বিসিএস (স্বাস্থ্য), সিসিডি (বারডেম), এমএস (গাইনি ও অবস) | স্ত্রী, প্রসূতি ও বন্ধ্যাত্ব রোগ বিশেষজ্ঞ ও সার্জন",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-doctors-dimla"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে বিকাল ৫টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-md-sultan-mahbub",
+    "name": "ডাঃ মোঃ সুলতান মাহবুব",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (ডার্মাটোলজি) | চর্ম, যৌন, এলার্জি ও কুষ্ঠ রোগ বিশেষজ্ঞ",
+    "specialty": "Dermatology",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-doctors-dimla"
+    ],
+    "schedule": "প্রতি রবিবার সকাল ১০টা থেকে দুপুর ২টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-mohammad-kamruzzaman-ped",
+    "name": "ডাঃ মোহাম্মদ কামরুজ্জামান",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডিসিএইচ, এফসিপিএস (শিশু) | নবজাতক ও শিশু কিশোর রোগ বিশেষজ্ঞ",
+    "specialty": "Pediatrics",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-doctors-dimla"
+    ],
+    "schedule": "শুক্রবার সকাল ১০টা - বিকাল ৫টা | রবি, মঙ্গল ও বুধবার দুপুর ২:৩০টা - বিকাল ৫টা",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-md-asaduzzaman-asad-dimla",
+    "name": "ডাঃ মোঃ আসাদুজ্জামান (আসাদ)",
+    "degree": "এমবিবিএস (দিনাজপুর), বিসিএস (স্বাস্থ্য) | জেনারেল ফিজিশিয়ান ও মেডিকেল অফিসার",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-life-dimla"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৪:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 300
+  },
+  {
+    "id": "dr-md-mazharul-islam",
+    "name": "ডাঃ মোঃ মাজহারুল ইসলাম",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), সিসিডি (ডায়াবেটোলজি - বারডেম হাসপাতাল, ঢাকা), ডিএমইউ (আল্ট্রা) | পদবি: মেডিকেল অফিসার, উপজেলা স্বাস্থ্য কমপ্লেক্স, ডিমলা | ডায়াবেটিস, মেডিসিন ও সনোলজিস্ট",
+    "specialty": "Endocrinology",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-life-dimla",
+      "c-sonar-bangla-dimla"
+    ],
+    "schedule": "লাইফ ডায়াগনস্টিক: প্রতিদিন বিকাল ৪টা - রাত ১০টা | সোনার বাংলা: দুপুর ২:৩০টা - বিকাল ৫টা",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-iqbal-ahmed-dimla",
+    "name": "ডাঃ ইকবাল আহমেদ",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডিপ্লোমা (নাক, কান, গলা), পিজিটি (মেডিসিন), সিসিডি (মেডিসিন) | মেডিসিন, ডায়াবেটিস ও নাক-কান-গলা অভিজ্ঞ চিকিৎসক",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-life-dimla",
+      "c-sohel-dimla"
+    ],
+    "schedule": "লাইফ ডায়াগনস্টিক: শুক্রবার সকাল ১০টা - রাত ৮টা | সোহেল ডিজিটাল: মঙ্গলবার সকাল ১১টা - বিকাল ৫টা",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-rebeka-sultana-khushi",
+    "name": "ডাঃ রেবেকা সুলতানা খুশি",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), সিএমইউ (আল্ট্রা), পিজিটি (ইন্টারনাল মেডিসিন) | মেডিসিন, মা-শিশু ও সনোলজিস্ট",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-life-dimla"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৪:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-md-jahangir-alam-dimla",
+    "name": "ডাঃ মোঃ জাহাঙ্গীর আলম",
+    "degree": "এমবিবিএস (রাজশাহী), সিএমইউ (আল্ট্রাসোনোগ্রাফি), পিজিটি (অ্যানেসথেশিয়া এন্ড পেইন ম্যানেজমেন্ট) | বাত-ব্যথা, পেইন ম্যানেজমেন্ট ও জেনারেল প্র্যাকটিশনার",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-life-dimla"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৪:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 300
+  },
+  {
+    "id": "dr-saiful-islam-dental-dimla",
+    "name": "ডাঃ সাইফুল ইসলাম",
+    "degree": "ডেন্টাল সার্জন | স্পেশাল ট্রেইন অন ডেন্টাল ইমপ্ল্যান্ট ও ফিক্সড অর্থোডন্টিক্স | মুখ ও দন্তরোগ বিশেষজ্ঞ",
+    "specialty": "Dentistry",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-life-dimla"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৪:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 300
+  },
+  {
+    "id": "dr-md-atikul-islam-dimla",
+    "name": "ডাঃ মোঃ আতিকুল ইসলাম",
+    "degree": "এমবিবিএস, এমসিপিএস, ডিইউ (চর্ম ও যৌন), ডিএমইউ (আল্ট্রা), সিসিএইচ (হাইপারটেনশন), পিজিটি (ডায়াবেটিস ও হরমোন) | চর্ম, যৌন, এলার্জি, উচ্চ রক্তচাপ ও ডায়াবেটিস অভিজ্ঞ চিকিৎসক",
+    "specialty": "Dermatology",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-life-dimla"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৪:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-sanjida-rahman-dental",
+    "name": "ডাঃ মোছাঃ সানজিদা রহমান",
+    "degree": "বিডিএস (ঢাকা ডেন্টাল কলেজ), বিসিএস (স্বাস্থ্য), স্পেশাল ট্রেইন ইন এসথেটিক ডেন্টিস্ট্রি | মুখ ও দন্তরোগ বিশেষজ্ঞ ও সার্জন",
+    "specialty": "Dentistry",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-life-dimla"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৪:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-md-moniruzzaman-sonarbangla",
+    "name": "ডাঃ মোঃ মনিরুজ্জামান",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), সিএমইউ (আল্ট্রাসোনোগ্রাফি) | জেনারেল ফিজিশিয়ান ও সনোলজিস্ট",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-sonar-bangla-dimla"
+    ],
+    "schedule": "প্রতিদিন দুপুর ২:৩০টা থেকে রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 300
+  },
+  {
+    "id": "dr-md-shafiqul-islam-surg",
+    "name": "ডাঃ মোঃ শফিকুল ইসলাম",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য) | সার্জারি, প্লাস্টিক সার্জারি, কসমেটিক্স এবং ট্রমা সার্জারি বিষয়ে অভিজ্ঞ সার্জন",
+    "specialty": "Surgery",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-sonar-bangla-dimla"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০:০০ টা থেকে বিকেল ৫:০০ টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-md-moniruzzaman-uhc-dimla",
+    "name": "ডাঃ মোঃ মনিরুজ্জামান (ইউএইচসি)",
+    "degree": "এমবিবিএস (ডিএইচ), বিসিএস (স্বাস্থ্য) | পদবি: মেডিকেল অফিসার, উপজেলা স্বাস্থ্য কমপ্লেক্স, ডিমলা, নীলফামারী",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-sonar-bangla-dimla"
+    ],
+    "schedule": "প্রতিদিন দুপুর ২:৩০ মিনিট থেকে বিকাল ৫টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 300
+  },
+  {
+    "id": "dr-mahjabin-liza",
+    "name": "ডাঃ মাহজাবিন লিজা",
+    "degree": "এমবিবিএস (ঢাকা), সিএমইউ (আল্ট্রাসোনোগ্রাফি) | মেডিসিন পরামর্শ, গাইনি পরামর্শ ও আল্ট্রাসাউন্ড সেবা",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-sonar-bangla-dimla"
+    ],
+    "schedule": "প্রতিদিন সকাল ১০টা থেকে রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-sanjib-kumar-singh",
+    "name": "ডাঃ সঞ্জীব কুমার সিং",
+    "degree": "এমবিবিএস, পিজিটি (মেডিসিন) | মেডিসিন ও ডায়াবেটিস অভিজ্ঞ চিকিৎসক",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-sohel-dimla"
+    ],
+    "schedule": "প্রতিদিন সকাল ১০:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 300
+  },
+  {
+    "id": "dr-mushtary-akhtar-brishti",
+    "name": "ডাঃ মুশতারী আখতার (বৃষ্টি)",
+    "degree": "এমবিবিএস (রাজশাহী), পিজিটি (গাইনী), পিজিটি (প্যাথলজি) | স্ত্রী, প্রসূতি ও প্যাথলজি অভিজ্ঞ চিকিৎসক",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-sohel-dimla"
+    ],
+    "schedule": "প্রতিদিন সকাল ১০:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 400
+  },
+  {
+    "id": "dr-pradip-kumar-roy",
+    "name": "ডাঃ প্রদীপ কুমার রায়",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন), এমডি (ডায়াবেটিস) | মেডিসিন ও ডায়াবেটিস বিশেষজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-sohel-dimla"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে সন্ধ্যা ৬টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-khandakar-shafiqur-rahman",
+    "name": "ডাঃ খন্দকার শফিকুর রহমান",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (নাক, কান, গলা) | নাক, কান ও গলা বিশেষজ্ঞ এবং হেড-নেক সার্জন",
+    "specialty": "ENT",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-sohel-dimla"
+    ],
+    "schedule": "প্রতি মঙ্গলবার বিকাল ৩টা থেকে সন্ধ্যা ৭টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-abu-hena-mostafa-kamal",
+    "name": "ডাঃ আবু হেনা মোস্তফা কামাল",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন), সিসিডি (ডায়াবেটিস) | মেডিসিন ও ডায়াবেটিস বিশেষজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "Dimla",
+      "ডিমলা"
+    ],
+    "clinics": [
+      "c-sohel-dimla"
+    ],
+    "schedule": "প্রতি শুক্রবার বিকাল ৩টা থেকে সন্ধ্যা ৬টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
   }
 ];
 

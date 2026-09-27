@@ -4645,7 +4645,36 @@ export default function App() {
             'dr-dokhina-mohan-roy',
             'dr-rayhan-bari',
             'dr-minhajul-korim-tushar',
-            'dr-mr-sharmin-gyn'
+            'dr-mr-sharmin-gyn',
+            'dr-din-mohammad-dimla',
+            'dr-hirok-kumar-roy',
+            'dr-niranjan-kumar-roy',
+            'dr-mimosa-ferdousi',
+            'dr-abdur-rahim-riyad-dimla',
+            'dr-sabrina-alam-mukta',
+            'dr-md-sakib-ohab-ortho',
+            'dr-ma-hai-dimla',
+            'dr-ahm-rezaul-korib-sojib',
+            'dr-md-moniruzzaman-moni',
+            'dr-md-sultan-mahbub',
+            'dr-mohammad-kamruzzaman-ped',
+            'dr-md-asaduzzaman-asad-dimla',
+            'dr-md-mazharul-islam',
+            'dr-iqbal-ahmed-dimla',
+            'dr-rebeka-sultana-khushi',
+            'dr-md-jahangir-alam-dimla',
+            'dr-saiful-islam-dental-dimla',
+            'dr-md-atikul-islam-dimla',
+            'dr-sanjida-rahman-dental',
+            'dr-md-moniruzzaman-sonarbangla',
+            'dr-md-shafiqul-islam-surg',
+            'dr-md-moniruzzaman-uhc-dimla',
+            'dr-mahjabin-liza',
+            'dr-sanjib-kumar-singh',
+            'dr-mushtary-akhtar-brishti',
+            'dr-pradip-kumar-roy',
+            'dr-khandakar-shafiqur-rahman',
+            'dr-abu-hena-mostafa-kamal'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -4680,6 +4709,59 @@ export default function App() {
               clinics: updatedClinics, 
               schedule: "কেয়ার হাসপাতাল: প্রতিদিন বিকাল ৩টা - রাত ৮টা | আপডেট হসপিটাল: শনি, সোম ও বুধ বিকাল ৩টা - রাত ১০টা" 
             }, { merge: true }).catch(e => console.warn(`Updating dr-akm-faizullah-bipu clinics in DB:`, e));
+          }
+
+          // Sync dr-md-abu-taher-gyn new clinic in DB if missing
+          const abuTaherDoc = docRes.docs.find(docD => docD.id === 'dr-md-abu-taher-gyn');
+          if (abuTaherDoc && !abuTaherDoc.data()?.clinics?.includes('c-dimla-update-clinic')) {
+            const updatedClinics = Array.from(new Set([...(abuTaherDoc.data()?.clinics || []), 'c-dimla-update-clinic']));
+            setDoc(doc(db, 'doctors', 'dr-md-abu-taher-gyn'), { 
+              clinics: updatedClinics, 
+              districts: Array.from(new Set([...(abuTaherDoc.data()?.districts || []), 'Dimla', 'ডিমলা'])),
+              schedule: "ডোমার পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ১০টা | ডিমলা আপডেট ক্লিনিক: নির্ধারিত সময়ে (যোগাযোগ সাপেক্ষে)" 
+            }, { merge: true }).catch(e => console.warn(`Updating dr-md-abu-taher-gyn clinics in DB:`, e));
+          }
+
+          // Sync dr-paramita-roy new clinic in DB if missing
+          const paramitaDoc = docRes.docs.find(docD => docD.id === 'dr-paramita-roy');
+          if (paramitaDoc && !paramitaDoc.data()?.clinics?.includes('c-doctors-dimla')) {
+            const updatedClinics = Array.from(new Set([...(paramitaDoc.data()?.clinics || []), 'c-doctors-dimla']));
+            setDoc(doc(db, 'doctors', 'dr-paramita-roy'), { 
+              clinics: updatedClinics, 
+              districts: Array.from(new Set([...(paramitaDoc.data()?.districts || []), 'Dimla', 'ডিমলা'])),
+              schedule: "পদ্মা ক্লিনিক ডোমার: প্রতিদিন দুপুর ২:৩০টা - রাত ৯টা | ডক্টরস ডায়াগনস্টিক ডিমলা: প্রতি সোমবার দুপুর ২:৩০টা - বিকাল ৫টা" 
+            }, { merge: true }).catch(e => console.warn(`Updating dr-paramita-roy clinics in DB:`, e));
+          }
+
+          // Sync dr-partha-pratim-pramanik new clinic in DB if missing
+          const parthaDoc = docRes.docs.find(docD => docD.id === 'dr-partha-pratim-pramanik');
+          if (parthaDoc && !parthaDoc.data()?.clinics?.includes('c-sohel-dimla')) {
+            const updatedClinics = Array.from(new Set([...(parthaDoc.data()?.clinics || []), 'c-sohel-dimla']));
+            setDoc(doc(db, 'doctors', 'dr-partha-pratim-pramanik'), { 
+              clinics: updatedClinics, 
+              districts: Array.from(new Set([...(parthaDoc.data()?.districts || []), 'Dimla', 'ডিমলা'])),
+              schedule: "সেভেন স্টার ডোমার: মঙ্গলবার দুপুর ২টা - সন্ধ্যা ৬টা | সোহেল ডিজিটাল ডিমলা: শুক্রবার দুপুর ১টা - বিকাল ৫টা" 
+            }, { merge: true }).catch(e => console.warn(`Updating dr-partha-pratim-pramanik clinics in DB:`, e));
+          }
+
+          // Sync dr-md-mazharul-islam new clinic in DB if missing
+          const mazharulDoc = docRes.docs.find(docD => docD.id === 'dr-md-mazharul-islam');
+          if (mazharulDoc && !mazharulDoc.data()?.clinics?.includes('c-sonar-bangla-dimla')) {
+            const updatedClinics = Array.from(new Set([...(mazharulDoc.data()?.clinics || []), 'c-sonar-bangla-dimla']));
+            setDoc(doc(db, 'doctors', 'dr-md-mazharul-islam'), { 
+              clinics: updatedClinics, 
+              schedule: "লাইফ ডায়াগনস্টিক: প্রতিদিন বিকাল ৪টা - রাত ১০টা | সোনার বাংলা: দুপুর ২:৩০টা - বিকাল ৫টা" 
+            }, { merge: true }).catch(e => console.warn(`Updating dr-md-mazharul-islam clinics in DB:`, e));
+          }
+
+          // Sync dr-iqbal-ahmed-dimla new clinic in DB if missing
+          const iqbalDoc = docRes.docs.find(docD => docD.id === 'dr-iqbal-ahmed-dimla');
+          if (iqbalDoc && !iqbalDoc.data()?.clinics?.includes('c-sohel-dimla')) {
+            const updatedClinics = Array.from(new Set([...(iqbalDoc.data()?.clinics || []), 'c-sohel-dimla']));
+            setDoc(doc(db, 'doctors', 'dr-iqbal-ahmed-dimla'), { 
+              clinics: updatedClinics, 
+              schedule: "লাইফ ডায়াগনস্টিক: শুক্রবার সকাল ১০টা - রাত ৮টা | সোহেল ডিজিটাল: মঙ্গলবার সকাল ১১টা - বিকাল ৫টা" 
+            }, { merge: true }).catch(e => console.warn(`Updating dr-iqbal-ahmed-dimla clinics in DB:`, e));
           }
 
           // Sync dr-sharmin-sultana-sathi new clinic in DB if missing
@@ -4812,6 +4894,76 @@ export default function App() {
               setDoc(doc(db, 'hospitals', careHosp.id), { name: careHosp.name, address: careHosp.address, doctors: careHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-care-hospital-domar in DB:`, e));
             }
           }
+
+          const newJanataDoc = hospRes.docs.find(docH => docH.id === 'c-new-janata-dimla');
+          const newJanataHosp = CLINICS.find(c => c.id === 'c-new-janata-dimla');
+          if (newJanataHosp) {
+            if (!newJanataDoc) {
+              setDoc(doc(db, 'hospitals', newJanataHosp.id), newJanataHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-new-janata-dimla in DB:`, e));
+            } else if (newJanataDoc.data()?.name !== newJanataHosp.name || newJanataDoc.data()?.address !== newJanataHosp.address) {
+              setDoc(doc(db, 'hospitals', newJanataHosp.id), { name: newJanataHosp.name, address: newJanataHosp.address, doctors: newJanataHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-new-janata-dimla in DB:`, e));
+            }
+          }
+
+          const dimlaUpdateDoc = hospRes.docs.find(docH => docH.id === 'c-dimla-update-clinic');
+          const dimlaUpdateHosp = CLINICS.find(c => c.id === 'c-dimla-update-clinic');
+          if (dimlaUpdateHosp) {
+            if (!dimlaUpdateDoc) {
+              setDoc(doc(db, 'hospitals', dimlaUpdateHosp.id), dimlaUpdateHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-dimla-update-clinic in DB:`, e));
+            } else if (dimlaUpdateDoc.data()?.name !== dimlaUpdateHosp.name || dimlaUpdateDoc.data()?.address !== dimlaUpdateHosp.address) {
+              setDoc(doc(db, 'hospitals', dimlaUpdateHosp.id), { name: dimlaUpdateHosp.name, address: dimlaUpdateHosp.address, doctors: dimlaUpdateHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-dimla-update-clinic in DB:`, e));
+            }
+          }
+
+          const shurokkhaDoc = hospRes.docs.find(docH => docH.id === 'c-shurokkha-dimla');
+          const shurokkhaHosp = CLINICS.find(c => c.id === 'c-shurokkha-dimla');
+          if (shurokkhaHosp) {
+            if (!shurokkhaDoc) {
+              setDoc(doc(db, 'hospitals', shurokkhaHosp.id), shurokkhaHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-shurokkha-dimla in DB:`, e));
+            } else if (shurokkhaDoc.data()?.name !== shurokkhaHosp.name || shurokkhaDoc.data()?.address !== shurokkhaHosp.address) {
+              setDoc(doc(db, 'hospitals', shurokkhaHosp.id), { name: shurokkhaHosp.name, address: shurokkhaHosp.address, doctors: shurokkhaHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-shurokkha-dimla in DB:`, e));
+            }
+          }
+
+          const doctorsDimlaDoc = hospRes.docs.find(docH => docH.id === 'c-doctors-dimla');
+          const doctorsDimlaHosp = CLINICS.find(c => c.id === 'c-doctors-dimla');
+          if (doctorsDimlaHosp) {
+            if (!doctorsDimlaDoc) {
+              setDoc(doc(db, 'hospitals', doctorsDimlaHosp.id), doctorsDimlaHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-doctors-dimla in DB:`, e));
+            } else if (doctorsDimlaDoc.data()?.name !== doctorsDimlaHosp.name || doctorsDimlaDoc.data()?.address !== doctorsDimlaHosp.address) {
+              setDoc(doc(db, 'hospitals', doctorsDimlaHosp.id), { name: doctorsDimlaHosp.name, address: doctorsDimlaHosp.address, doctors: doctorsDimlaHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-doctors-dimla in DB:`, e));
+            }
+          }
+
+          const lifeDimlaDoc = hospRes.docs.find(docH => docH.id === 'c-life-dimla');
+          const lifeDimlaHosp = CLINICS.find(c => c.id === 'c-life-dimla');
+          if (lifeDimlaHosp) {
+            if (!lifeDimlaDoc) {
+              setDoc(doc(db, 'hospitals', lifeDimlaHosp.id), lifeDimlaHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-life-dimla in DB:`, e));
+            } else if (lifeDimlaDoc.data()?.name !== lifeDimlaHosp.name || lifeDimlaDoc.data()?.address !== lifeDimlaHosp.address) {
+              setDoc(doc(db, 'hospitals', lifeDimlaHosp.id), { name: lifeDimlaHosp.name, address: lifeDimlaHosp.address, doctors: lifeDimlaHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-life-dimla in DB:`, e));
+            }
+          }
+
+          const sonarBanglaDoc = hospRes.docs.find(docH => docH.id === 'c-sonar-bangla-dimla');
+          const sonarBanglaHosp = CLINICS.find(c => c.id === 'c-sonar-bangla-dimla');
+          if (sonarBanglaHosp) {
+            if (!sonarBanglaDoc) {
+              setDoc(doc(db, 'hospitals', sonarBanglaHosp.id), sonarBanglaHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-sonar-bangla-dimla in DB:`, e));
+            } else if (sonarBanglaDoc.data()?.name !== sonarBanglaHosp.name || sonarBanglaDoc.data()?.address !== sonarBanglaHosp.address) {
+              setDoc(doc(db, 'hospitals', sonarBanglaHosp.id), { name: sonarBanglaHosp.name, address: sonarBanglaHosp.address, doctors: sonarBanglaHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-sonar-bangla-dimla in DB:`, e));
+            }
+          }
+
+          const sohelDoc = hospRes.docs.find(docH => docH.id === 'c-sohel-dimla');
+          const sohelHosp = CLINICS.find(c => c.id === 'c-sohel-dimla');
+          if (sohelHosp) {
+            if (!sohelDoc) {
+              setDoc(doc(db, 'hospitals', sohelHosp.id), sohelHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-sohel-dimla in DB:`, e));
+            } else if (sohelDoc.data()?.name !== sohelHosp.name || sohelDoc.data()?.address !== sohelHosp.address) {
+              setDoc(doc(db, 'hospitals', sohelHosp.id), { name: sohelHosp.name, address: sohelHosp.address, doctors: sohelHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-sohel-dimla in DB:`, e));
+            }
+          }
         }).catch(() => {});
       }
 
@@ -4844,7 +4996,41 @@ export default function App() {
         'dr-rayhan-bari',
         'dr-minhajul-korim-tushar',
         'dr-mr-sharmin-gyn',
-        'dr-drishti-saha'
+        'dr-drishti-saha',
+        'dr-din-mohammad-dimla',
+        'dr-hirok-kumar-roy',
+        'dr-niranjan-kumar-roy',
+        'dr-mimosa-ferdousi',
+        'dr-abdur-rahim-riyad-dimla',
+        'dr-md-abu-taher-gyn',
+        'dr-sabrina-alam-mukta',
+        'dr-md-sakib-ohab-ortho',
+        'dr-ma-hai-dimla',
+        'dr-ahm-rezaul-korib-sojib',
+        'dr-md-moniruzzaman-moni',
+        'dr-md-sultan-mahbub',
+        'dr-mohammad-kamruzzaman-ped',
+        'dr-paramita-roy',
+        'dr-md-asaduzzaman-asad-dimla',
+        'dr-md-mazharul-islam',
+        'dr-iqbal-ahmed-dimla',
+        'dr-rebeka-sultana-khushi',
+        'dr-md-jahangir-alam-dimla',
+        'dr-saiful-islam-dental-dimla',
+        'dr-md-atikul-islam-dimla',
+        'dr-sanjida-rahman-dental',
+        'dr-partha-pratim-pramanik',
+        'dr-md-mazharul-islam',
+        'dr-iqbal-ahmed-dimla',
+        'dr-md-moniruzzaman-sonarbangla',
+        'dr-md-shafiqul-islam-surg',
+        'dr-md-moniruzzaman-uhc-dimla',
+        'dr-mahjabin-liza',
+        'dr-sanjib-kumar-singh',
+        'dr-mushtary-akhtar-brishti',
+        'dr-pradip-kumar-roy',
+        'dr-khandakar-shafiqur-rahman',
+        'dr-abu-hena-mostafa-kamal'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -4872,6 +5058,44 @@ export default function App() {
                   ...dbD,
                   clinics: Array.from(new Set([...(dbD.clinics || []), 'c-care-hospital-domar'])),
                   schedule: "কেয়ার হাসপাতাল: প্রতিদিন বিকাল ৩টা - রাত ৮টা | আপডেট হসপিটাল: শনি, সোম ও বুধ বিকাল ৩টা - রাত ১০টা"
+                };
+              }
+              if (dbD.id === 'dr-md-abu-taher-gyn') {
+                return {
+                  ...dbD,
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-dimla-update-clinic'])),
+                  districts: Array.from(new Set([...(dbD.districts || []), 'Dimla', 'ডিমলা'])),
+                  schedule: "ডোমার পদ্মা ক্লিনিক: দুপুর ২:৩০টা - রাত ১০টা | ডিমলা আপডেট ক্লিনিক: নির্ধারিত সময়ে (যোগাযোগ সাপেক্ষে)"
+                };
+              }
+              if (dbD.id === 'dr-paramita-roy') {
+                return {
+                  ...dbD,
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-doctors-dimla'])),
+                  districts: Array.from(new Set([...(dbD.districts || []), 'Dimla', 'ডিমলা'])),
+                  schedule: "পদ্মা ক্লিনিক ডোমার: প্রতিদিন দুপুর ২:৩০টা - রাত ৯টা | ডক্টরস ডায়াগনস্টিক ডিমলা: প্রতি সোমবার দুপুর ২:৩০টা - বিকাল ৫টা"
+                };
+              }
+              if (dbD.id === 'dr-partha-pratim-pramanik') {
+                return {
+                  ...dbD,
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-sohel-dimla'])),
+                  districts: Array.from(new Set([...(dbD.districts || []), 'Dimla', 'ডিমলা'])),
+                  schedule: "সেভেন স্টার ডোমার: মঙ্গলবার দুপুর ২টা - সন্ধ্যা ৬টা | সোহেল ডিজিটাল ডিমলা: শুক্রবার দুপুর ১টা - বিকাল ৫টা"
+                };
+              }
+              if (dbD.id === 'dr-md-mazharul-islam') {
+                return {
+                  ...dbD,
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-sonar-bangla-dimla'])),
+                  schedule: "লাইফ ডায়াগনস্টিক: প্রতিদিন বিকাল ৪টা - রাত ১০টা | সোনার বাংলা: দুপুর ২:৩০টা - বিকাল ৫টা"
+                };
+              }
+              if (dbD.id === 'dr-iqbal-ahmed-dimla') {
+                return {
+                  ...dbD,
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-sohel-dimla'])),
+                  schedule: "লাইফ ডায়াগনস্টিক: শুক্রবার সকাল ১০টা - রাত ৮টা | সোহেল ডিজিটাল: মঙ্গলবার সকাল ১১টা - বিকাল ৫টা"
                 };
               }
               if (dbD.id === 'dr-sharmin-sultana-sathi') {
@@ -6648,6 +6872,7 @@ export default function App() {
 
     // Area and Clinic ID constants for accurate location filtering
     const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar', 'c-domar-general', 'c-pulse-domar', 'c-domar-update-hospital', 'c-golden-domar', 'c-care-hospital-domar'];
+    const DIMLA_CLINIC_IDS = ['c-new-janata-dimla', 'c-dimla-update-clinic', 'c-shurokkha-dimla', 'c-doctors-dimla', 'c-life-dimla', 'c-sonar-bangla-dimla', 'c-sohel-dimla'];
     const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
     const RANGPUR_CLINIC_IDS = ['c-popular-rangpur'];
 
@@ -6719,9 +6944,10 @@ export default function App() {
       }
 
       if (l.includes('নীলফামারী') || l.includes('nilphamari')) {
-        // Nilphamari Sadar: Doctors practicing in Sadar clinics or Sadar chambers, excluding doctors who only practice in Domar
+        // Nilphamari Sadar: Doctors practicing in Sadar clinics or Sadar chambers, excluding doctors who only practice in Domar or Dimla
         const hasDomarOnly = dClinics.length > 0 && dClinics.every((c: string) => DOMAR_CLINIC_IDS.includes(c));
-        if (hasDomarOnly) return false;
+        const hasDimlaOnly = dClinics.length > 0 && dClinics.every((c: string) => DIMLA_CLINIC_IDS.includes(c));
+        if (hasDomarOnly || hasDimlaOnly) return false;
         
         return dClinics.some((c: string) => SADAR_CLINIC_IDS.includes(c)) ||
                dAddr.includes('নীলফামারী সদর') ||
@@ -6743,7 +6969,8 @@ export default function App() {
       }
 
       if (l.includes('dimla') || l.includes('ডিমলা')) {
-        return dDistricts.includes('dimla') || dDistricts.includes('ডিমলা') ||
+        return dClinics.some((c: string) => DIMLA_CLINIC_IDS.includes(c)) ||
+               dDistricts.includes('dimla') || dDistricts.includes('ডিমলা') ||
                dDeg.includes('ডিমলা') || dAddr.includes('ডিমলা');
       }
 
@@ -6842,6 +7069,7 @@ export default function App() {
     if (selectedLocation) {
       const loc = selectedLocation.toLowerCase().trim();
       const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar', 'c-domar-general', 'c-pulse-domar', 'c-domar-update-hospital', 'c-golden-domar', 'c-care-hospital-domar'];
+      const DIMLA_CLINIC_IDS = ['c-new-janata-dimla', 'c-dimla-update-clinic', 'c-shurokkha-dimla', 'c-doctors-dimla', 'c-life-dimla', 'c-sonar-bangla-dimla', 'c-sohel-dimla'];
       const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
       const RANGPUR_CLINIC_IDS = ['c-popular-rangpur'];
 
@@ -6855,9 +7083,11 @@ export default function App() {
         if (loc.includes('নীলফামারী') || loc.includes('nilphamari')) {
           return SADAR_CLINIC_IDS.includes(h.id) || (
             !DOMAR_CLINIC_IDS.includes(h.id) && 
+            !DIMLA_CLINIC_IDS.includes(h.id) && 
             !RANGPUR_CLINIC_IDS.includes(h.id) && 
             h.id !== 'c-prava-dhaka' &&
             !addr.includes('ডোমার') && 
+            !addr.includes('ডিমলা') && 
             !addr.includes('রংপুর') && 
             !addr.includes('ঢাকা')
           );
@@ -6868,7 +7098,7 @@ export default function App() {
         if (loc.includes('syedpur') || loc.includes('sayedpur') || loc.includes('saidpur') || loc.includes('সৈয়দপুর') || loc.includes('সৈয়দপুর')) {
           return (addr.includes('সৈয়দপুর') || addr.includes('সৈয়দপুর')) && !addr.includes('সৈয়দপুর সড়ক, নীলফামারী') && !addr.includes('সৈয়দপুর সড়ক, নীলফামারী');
         }
-        if (loc.includes('dimla') || loc.includes('ডিমলা')) return addr.includes('ডিমলা');
+        if (loc.includes('dimla') || loc.includes('ডিমলা')) return DIMLA_CLINIC_IDS.includes(h.id) || addr.includes('ডিমলা') || name.includes('ডিমলা');
         if (loc.includes('jaldhaka') || loc.includes('জলঢাকা')) return addr.includes('জলঢাকা');
         if (loc.includes('kishoreganj') || loc.includes('kishorganj') || loc.includes('কিশোরগঞ্জ')) return addr.includes('কিশোরগঞ্জ');
         if (loc.includes('debiganj') || loc.includes('দেবিগঞ্জ')) return addr.includes('দেবিগঞ্জ');
