@@ -4599,6 +4599,18 @@ export default function App() {
             districts: ['Nilphamari']
           };
         }
+        if (d.id === 'dr-ar-towhid-hasan') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ এস.এম. তৌহিদ হাসান',
+            degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), ডিইএম (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম) বিএমইউ, এফসিপিএস (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম-০৬), এডভান্সড কোর্স ইন এন্ডোক্রাইনোলজী (মায়ো ক্লিনিক-আমেরিকা) | ডায়াবেটিস, থাইরয়েড, হরমোন ও মেডিসিন রোগ বিশেষজ্ঞ',
+            specialty: 'Endocrinology',
+            schedule: 'প্রতি শুক্রবার সকাল ৯টা থেকে দুপুর ২টা পর্যন্ত',
+            clinics: ['c-ar'],
+            districts: ['Nilphamari', 'নীলফামারী']
+          };
+        }
         return { id: d.id, ...data } as Doctor;
       }).filter(d => d.id !== 'moun-biplab');
 
@@ -4674,7 +4686,8 @@ export default function App() {
             'dr-mushtary-akhtar-brishti',
             'dr-pradip-kumar-roy',
             'dr-khandakar-shafiqur-rahman',
-            'dr-abu-hena-mostafa-kamal'
+            'dr-abu-hena-mostafa-kamal',
+            'dr-ar-towhid-hasan'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -4816,6 +4829,20 @@ export default function App() {
               districts: Array.from(new Set([...(alAminDoc.data()?.districts || []), 'Nilphamari', 'নীলফামারী', 'Rangpur'])),
               schedule: "প্রতি রবিবার দুপুর ২টা থেকে রাত ৮ টা পর্যন্ত" 
             }, { merge: true }).catch(e => console.warn(`Updating j-al-amin schedule in DB:`, e));
+          }
+
+          // Sync dr-ar-towhid-hasan schedule and details in DB
+          const towhidDoc = docRes.docs.find(docD => docD.id === 'dr-ar-towhid-hasan');
+          if (towhidDoc && (towhidDoc.data()?.schedule !== "প্রতি শুক্রবার সকাল ৯টা থেকে দুপুর ২টা পর্যন্ত" || !towhidDoc.data()?.clinics?.includes('c-ar') || towhidDoc.data()?.specialty !== "Endocrinology")) {
+            const updatedClinics = Array.from(new Set([...(towhidDoc.data()?.clinics || []), 'c-ar']));
+            setDoc(doc(db, 'doctors', 'dr-ar-towhid-hasan'), { 
+              name: "ডাঃ এস.এম. তৌহিদ হাসান",
+              degree: "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডিইএম (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম) বিএমইউ, এফসিপিএস (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম-০৬), এডভান্সড কোর্স ইন এন্ডোক্রাইনোলজী (মায়ো ক্লিনিক-আমেরিকা) | ডায়াবেটিস, থাইরয়েড, হরমোন ও মেডিসিন রোগ বিশেষজ্ঞ",
+              specialty: "Endocrinology",
+              clinics: updatedClinics,
+              districts: Array.from(new Set([...(towhidDoc.data()?.districts || []), 'Nilphamari', 'নীলফামারী'])),
+              schedule: "প্রতি শুক্রবার সকাল ৯টা থেকে দুপুর ২টা পর্যন্ত" 
+            }, { merge: true }).catch(e => console.warn(`Updating dr-ar-towhid-hasan schedule in DB:`, e));
           }
 
           // Also auto-sync or update hospital in DB
@@ -5054,7 +5081,8 @@ export default function App() {
         'dr-mushtary-akhtar-brishti',
         'dr-pradip-kumar-roy',
         'dr-khandakar-shafiqur-rahman',
-        'dr-abu-hena-mostafa-kamal'
+        'dr-abu-hena-mostafa-kamal',
+        'dr-ar-towhid-hasan'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -6943,6 +6971,17 @@ export default function App() {
       if (targetId === 'pulmonology') {
         const deg = (d.degree || '').toLowerCase();
         return deg.includes('বক্ষব্যাধি বিশেষজ্ঞ') || deg.includes('pulmonolog') || deg.includes('md (chest');
+      }
+
+      // Check for Endocrinology / Diabetes / Hormone specialists who also cover internal medicine
+      if (targetId === 'endocrinology') {
+        const deg = (d.degree || '').toLowerCase();
+        if (deg.includes('এন্ডোক্রাইনোলজী') || deg.includes('ডায়াবেটিস') || deg.includes('ডায়াবেটিস') || deg.includes('হরমোন') || deg.includes('থাইরয়েড') || deg.includes('থাইরয়েড')) return true;
+      }
+
+      if (targetId === 'medicine') {
+        const deg = (d.degree || '').toLowerCase();
+        if (deg.includes('মেডিসিন') || deg.includes('medicine')) return true;
       }
 
       // Neurology general: if someone searches or selects "নিউরোলজি" or "neurology", match both neuromedicine and neurosurgery
