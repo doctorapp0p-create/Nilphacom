@@ -4804,6 +4804,20 @@ export default function App() {
             }, { merge: true }).catch(e => console.warn(`Updating eb-mezbah-uro schedule in DB:`, e));
           }
 
+          // Sync j-al-amin schedule and details in DB
+          const alAminDoc = docRes.docs.find(docD => docD.id === 'j-al-amin');
+          if (alAminDoc && (alAminDoc.data()?.schedule !== "প্রতি রবিবার দুপুর ২টা থেকে রাত ৮ টা পর্যন্ত" || !alAminDoc.data()?.clinics?.includes('c-janata'))) {
+            const updatedClinics = Array.from(new Set([...(alAminDoc.data()?.clinics || []), 'c-janata']));
+            setDoc(doc(db, 'doctors', 'j-al-amin'), { 
+              name: "ডাঃ মোঃ আল-আমিন",
+              degree: "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডিইউএম/ডিইএম (বাংলাদেশ মেডিক্যাল বিশ্ববিদ্যালয়, ঢাকা), এফসিপিএস, এফপি (এন্ডোক্রাইনোলজি ও মেটাবলিজম) | রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | হরমোন, ডায়াবেটিস ও মেটাবলিজম বিশেষজ্ঞ",
+              specialty: "Endocrinology",
+              clinics: updatedClinics,
+              districts: Array.from(new Set([...(alAminDoc.data()?.districts || []), 'Nilphamari', 'নীলফামারী', 'Rangpur'])),
+              schedule: "প্রতি রবিবার দুপুর ২টা থেকে রাত ৮ টা পর্যন্ত" 
+            }, { merge: true }).catch(e => console.warn(`Updating j-al-amin schedule in DB:`, e));
+          }
+
           // Also auto-sync or update hospital in DB
           const siddhikaDoc = hospRes.docs.find(docH => docH.id === 'c-siddhika-domar');
           const siddhikaHosp = CLINICS.find(c => c.id === 'c-siddhika-domar');
@@ -4962,6 +4976,16 @@ export default function App() {
               setDoc(doc(db, 'hospitals', sohelHosp.id), sohelHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-sohel-dimla in DB:`, e));
             } else if (sohelDoc.data()?.name !== sohelHosp.name || sohelDoc.data()?.address !== sohelHosp.address) {
               setDoc(doc(db, 'hospitals', sohelHosp.id), { name: sohelHosp.name, address: sohelHosp.address, doctors: sohelHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-sohel-dimla in DB:`, e));
+            }
+          }
+
+          const janataDoc = hospRes.docs.find(docH => docH.id === 'c-janata');
+          const janataHosp = CLINICS.find(c => c.id === 'c-janata');
+          if (janataHosp) {
+            if (!janataDoc) {
+              setDoc(doc(db, 'hospitals', janataHosp.id), janataHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-janata in DB:`, e));
+            } else if (janataDoc.data()?.name !== janataHosp.name || janataDoc.data()?.address !== janataHosp.address) {
+              setDoc(doc(db, 'hospitals', janataHosp.id), { name: janataHosp.name, address: janataHosp.address, doctors: janataHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-janata in DB:`, e));
             }
           }
         }).catch(() => {});
