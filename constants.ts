@@ -1128,7 +1128,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ebadot"
     ],
-    "schedule": "প্রতি মঙ্গলবার ও বুধবার, দুপুর ২টা হতে রাত ৮টা",
+    "schedule": "প্রতি মঙ্গলবার, দুপুর ২টা হতে রাত ৮টা",
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",

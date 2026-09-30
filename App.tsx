@@ -4817,6 +4817,14 @@ export default function App() {
             }, { merge: true }).catch(e => console.warn(`Updating eb-mezbah-uro schedule in DB:`, e));
           }
 
+          // Sync eb-mostafa-med schedule in DB
+          const mostafaDoc = docRes.docs.find(docD => docD.id === 'eb-mostafa-med');
+          if (mostafaDoc && mostafaDoc.data()?.schedule !== "প্রতি মঙ্গলবার, দুপুর ২টা হতে রাত ৮টা") {
+            setDoc(doc(db, 'doctors', 'eb-mostafa-med'), { 
+              schedule: "প্রতি মঙ্গলবার, দুপুর ২টা হতে রাত ৮টা" 
+            }, { merge: true }).catch(e => console.warn(`Updating eb-mostafa-med schedule in DB:`, e));
+          }
+
           // Sync j-al-amin schedule and details in DB
           const alAminDoc = docRes.docs.find(docD => docD.id === 'j-al-amin');
           if (alAminDoc && (alAminDoc.data()?.schedule !== "প্রতি রবিবার দুপুর ২টা থেকে রাত ৮ টা পর্যন্ত" || !alAminDoc.data()?.clinics?.includes('c-janata'))) {
