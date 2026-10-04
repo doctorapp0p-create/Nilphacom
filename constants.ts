@@ -212,6 +212,13 @@ export const SPECIALTIES = [
     "bnName": "ফিজিওথেরাপি",
     "icon": "Activity",
     "emoji": "🧘"
+  },
+  {
+    "id": "sonology",
+    "name": "Sonologist",
+    "bnName": "সোনোলজিস্ট",
+    "icon": "Activity",
+    "emoji": "📡"
   }
 ];
 
@@ -350,7 +357,8 @@ export const CLINICS: Clinic[] = [
       "pacific-alamin",
       "pacific-robiul",
       "pacific-sarwar",
-      "pacific-kayes"
+      "pacific-kayes",
+      "dr-hanan-ashavee-sonologist"
     ],
     "image": "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&q=80&w=800"
   },
@@ -369,7 +377,8 @@ export const CLINICS: Clinic[] = [
       "j-shaheen-gyn",
       "j-parul-gyn",
       "j-masud-med",
-      "j-al-amin"
+      "j-al-amin",
+      "dr-hanan-ashavee-sonologist"
     ],
     "image": "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&q=80&w=800"
   },
@@ -4137,6 +4146,25 @@ export const DOCTORS: Doctor[] = [
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-hanan-ashavee-sonologist",
+    "name": "Dr. Hanan Ashavee — Consultant Sonologist (ডাঃ হানান আশাবী)",
+    "degree": "MBBS (SZMC), Diploma in Medical Ultrasound, C. Clinical Ultrasound | Advanced Training in Breast, Thyroid & TVS | Consultant Sonologist (কনসালটেন্ট সোনোলজিস্ট) | নীলফামারীতে অভিজ্ঞ সোনোলজিস্টের পরামর্শ ও আল্ট্রাসনোগ্রাফি সেবা",
+    "specialty": "Sonologist",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-pacific",
+      "c-janata"
+    ],
+    "schedule": "প্রতিদিন সকাল ১০টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 500
   }
 ];

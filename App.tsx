@@ -1703,6 +1703,7 @@ const AdminDashboard: React.FC<{
                     <option value="ENT">ই.এন.টি / নাক-কান-গলা (ENT)</option>
                     <option value="Eye">চক্ষু বিশেষজ্ঞ (Eye)</option>
                     <option value="Neurology">নিউরো মেডিসিন (Neurology)</option>
+                    <option value="Sonologist">সোনোলজিস্ট (Sonologist)</option>
                   </select>
                 </div>
               </div>
@@ -1712,6 +1713,7 @@ const AdminDashboard: React.FC<{
                 {[
                   { id: 'all', label: 'সব' },
                   { id: 'Medicine', label: '🩺 মেডিসিন' },
+                  { id: 'Sonologist', label: '📡 সোনোলজিস্ট' },
                   { id: 'dentistry', label: '🦷 ডেন্টাল' },
                   { id: 'Gynecology', label: '🤰 গাইনী' },
                   { id: 'Pediatrics', label: '👶 শিশু রোগ' },
@@ -3473,6 +3475,7 @@ const AdminDashboard: React.FC<{
                       <option value="কিডনি ও মূত্ররোগ (Nephrology / Urology)">কিডনি ও মূত্ররোগ (Nephrology / Urology)</option>
                       <option value="জেনারেল ও ল্যাপারোস্কোপিক সার্জারি (Surgery)">জেনারেল ও ল্যাপারোস্কোপিক সার্জারি (Surgery)</option>
                       <option value="পুষ্টি ও ডায়াবেটিস (Nutrition / Diabetology)">পুষ্টি ও ডায়াবেটিস (Nutrition / Diabetology)</option>
+                      <option value="সোনোলজিস্ট ও আল্ট্রাসনোগ্রাফি (Sonologist)">সোনোলজিস্ট ও আল্ট্রাসনোগ্রাফি (Sonologist)</option>
                     </select>
                   </div>
 
@@ -4687,7 +4690,8 @@ export default function App() {
             'dr-pradip-kumar-roy',
             'dr-khandakar-shafiqur-rahman',
             'dr-abu-hena-mostafa-kamal',
-            'dr-ar-towhid-hasan'
+            'dr-ar-towhid-hasan',
+            'dr-hanan-ashavee-sonologist'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -4851,6 +4855,16 @@ export default function App() {
               districts: Array.from(new Set([...(towhidDoc.data()?.districts || []), 'Nilphamari', 'নীলফামারী'])),
               schedule: "প্রতি শুক্রবার সকাল ৯টা থেকে দুপুর ২টা পর্যন্ত" 
             }, { merge: true }).catch(e => console.warn(`Updating dr-ar-towhid-hasan schedule in DB:`, e));
+          }
+
+          // Sync dr-hanan-ashavee-sonologist clinics in DB
+          const hananDoc = docRes.docs.find(docD => docD.id === 'dr-hanan-ashavee-sonologist');
+          if (hananDoc && (!hananDoc.data()?.clinics?.includes('c-pacific') || !hananDoc.data()?.clinics?.includes('c-janata'))) {
+            const updatedClinics = Array.from(new Set([...(hananDoc.data()?.clinics || []), 'c-pacific', 'c-janata']));
+            setDoc(doc(db, 'doctors', 'dr-hanan-ashavee-sonologist'), { 
+              clinics: updatedClinics,
+              specialty: "Sonologist"
+            }, { merge: true }).catch(e => console.warn(`Updating dr-hanan-ashavee-sonologist clinics in DB:`, e));
           }
 
           // Also auto-sync or update hospital in DB
@@ -5090,7 +5104,8 @@ export default function App() {
         'dr-pradip-kumar-roy',
         'dr-khandakar-shafiqur-rahman',
         'dr-abu-hena-mostafa-kamal',
-        'dr-ar-towhid-hasan'
+        'dr-ar-towhid-hasan',
+        'dr-hanan-ashavee-sonologist'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -6964,6 +6979,7 @@ export default function App() {
       if (s === 'vascular surgery' || s === 'vascular_surgery' || s.includes('ভাসকুলার সার্জারি')) return 'vascular_surgery';
       if (s === 'surgery' || s.includes('সার্জারি') || s.includes('সার্জন') || s.includes('অপারেশন')) return 'surgery';
       if (s === 'medicine' || s.includes('মেডিসিন') || s.includes('ইন্টারনাল মেডিসিন') || s.includes('internal medicine')) return 'medicine';
+      if (s === 'sonologist' || s === 'sonology' || s.includes('সোনোলজি') || s.includes('সোনোলজিস্ট') || s.includes('sonolog') || s.includes('আল্ট্রাসাউন্ড') || s.includes('আল্ট্রাসনোগ্রাফি') || s.includes('ultrasound') || s.includes('ultrasonography')) return 'sonologist';
       
       return s;
     };
@@ -6990,6 +7006,13 @@ export default function App() {
       if (targetId === 'medicine') {
         const deg = (d.degree || '').toLowerCase();
         if (deg.includes('মেডিসিন') || deg.includes('medicine')) return true;
+      }
+
+      // Check for Sonology / Ultrasound
+      if (targetId === 'sonologist' || targetId === 'sonology') {
+        const deg = (d.degree || '').toLowerCase();
+        const spec = (d.specialty || '').toLowerCase();
+        if (spec.includes('sonolog') || spec.includes('সোনোলজিস্ট') || deg.includes('সোনোলজিস্ট') || deg.includes('sonologist') || deg.includes('ultrasound') || deg.includes('আল্ট্রাসাউন্ড') || deg.includes('আল্ট্রাসনোগ্রাফি') || deg.includes('dmu') || deg.includes('cmu')) return true;
       }
 
       // Neurology general: if someone searches or selects "নিউরোলজি" or "neurology", match both neuromedicine and neurosurgery
