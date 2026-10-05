@@ -449,9 +449,9 @@ export const CLINICS: Clinic[] = [
   },
   {
     "id": "c-newlife",
-    "name": "নিউ লাইফ কেয়ার ডায়াগনস্টিক",
+    "name": "নিউ লাইফ কেয়ার ডায়াগনস্টিক এন্ড কনসালটেশন সেন্টার",
     "district": "Nilphamari",
-    "address": "চৌরঙ্গী মোড় (হাসপাতাল সড়ক), নীলফামারী",
+    "address": "টেরঙ্গী মোড় (হাসপাতাল সড়ক), পোস্ট অফিস সংলগ্ন, নীলফামারী সদর, নীলফামারী",
     "doctors": [
       "nl-med1",
       "nl-uro1",
@@ -460,7 +460,8 @@ export const CLINICS: Clinic[] = [
       "nl-card1",
       "nl-skin1",
       "nl-atiar",
-      "j-atiur"
+      "j-atiur",
+      "dr-sohanur-rahman-sohag"
     ],
     "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   },
@@ -4166,6 +4167,25 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 500
+  },
+  {
+    "id": "dr-sohanur-rahman-sohag",
+    "name": "ডাঃ মোঃ সোহানুর রহমান সোহাগ",
+    "degree": "এমবিবিএস (রাজ), এমডি (বক্ষব্যাধি), এমএসিপি (আমেরিকা) | সহকারী অধ্যাপক, মেডিসিন বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল | বক্ষব্যাধি ও মেডিসিন বিশেষজ্ঞ",
+    "specialty": "Pulmonology",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-newlife"
+    ],
+    "schedule": "প্রতি বৃহস্পতিবার দুপুর ২টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
   }
 ];
 

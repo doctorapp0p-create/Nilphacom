@@ -4614,6 +4614,18 @@ export default function App() {
             districts: ['Nilphamari', 'নীলফামারী']
           };
         }
+        if (d.id === 'dr-sohanur-rahman-sohag') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ মোঃ সোহানুর রহমান সোহাগ',
+            degree: 'এমবিবিএস (রাজ), এমডি (বক্ষব্যাধি), এমএসিপি (আমেরিকা) | সহকারী অধ্যাপক, মেডিসিন বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল | বক্ষব্যাধি ও মেডিসিন বিশেষজ্ঞ',
+            specialty: 'Pulmonology',
+            schedule: 'প্রতি বৃহস্পতিবার দুপুর ২টা থেকে রাত ৯টা পর্যন্ত',
+            clinics: ['c-newlife'],
+            districts: ['Nilphamari', 'নীলফামারী', 'Rangpur']
+          };
+        }
         return { id: d.id, ...data } as Doctor;
       }).filter(d => d.id !== 'moun-biplab');
 
@@ -4691,7 +4703,8 @@ export default function App() {
             'dr-khandakar-shafiqur-rahman',
             'dr-abu-hena-mostafa-kamal',
             'dr-ar-towhid-hasan',
-            'dr-hanan-ashavee-sonologist'
+            'dr-hanan-ashavee-sonologist',
+            'dr-sohanur-rahman-sohag'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -5037,6 +5050,20 @@ export default function App() {
               setDoc(doc(db, 'hospitals', janataHosp.id), { name: janataHosp.name, address: janataHosp.address, doctors: janataHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-janata in DB:`, e));
             }
           }
+
+          const newlifeDoc = hospRes.docs.find(docH => docH.id === 'c-newlife');
+          const newlifeHosp = CLINICS.find(c => c.id === 'c-newlife');
+          if (newlifeHosp) {
+            if (!newlifeDoc) {
+              setDoc(doc(db, 'hospitals', newlifeHosp.id), newlifeHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-newlife in DB:`, e));
+            } else if (newlifeDoc.data()?.name !== newlifeHosp.name || newlifeDoc.data()?.address !== newlifeHosp.address || !newlifeDoc.data()?.doctors?.includes('dr-sohanur-rahman-sohag')) {
+              setDoc(doc(db, 'hospitals', newlifeHosp.id), { 
+                name: newlifeHosp.name, 
+                address: newlifeHosp.address, 
+                doctors: Array.from(new Set([...(newlifeDoc.data()?.doctors || []), ...newlifeHosp.doctors])) 
+              }, { merge: true }).catch(e => console.warn(`Updating c-newlife in DB:`, e));
+            }
+          }
         }).catch(() => {});
       }
 
@@ -5105,7 +5132,8 @@ export default function App() {
         'dr-khandakar-shafiqur-rahman',
         'dr-abu-hena-mostafa-kamal',
         'dr-ar-towhid-hasan',
-        'dr-hanan-ashavee-sonologist'
+        'dr-hanan-ashavee-sonologist',
+        'dr-sohanur-rahman-sohag'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
