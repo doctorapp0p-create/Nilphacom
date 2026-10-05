@@ -4626,14 +4626,46 @@ export default function App() {
             districts: ['Nilphamari', 'নীলফামারী', 'Rangpur']
           };
         }
+        if (d.id === 'dr-md-abu-sayeed-gastro') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ মোঃ আবু সাঈদ',
+            degree: 'এমবিবিএস (রাজশাহী মেডিকেল কলেজ), পিজিটি (মেডিসিন), সিএমইউ (আল্ট্রা), এফসিপিএস মেডিসিন (গ্যাস্ট্রোএন্টারোলজি) – ফাইনাল পার্ট, এমআরএইচএমও (মেডিসিন বিভাগ, ঢাকা মেডিকেল কলেজ হাসপাতাল) | মেডিসিন ও গ্যাস্ট্রোএন্টারোলজি রোগ বিশেষজ্ঞ',
+            specialty: 'Gastroenterology',
+            schedule: 'শনি থেকে মঙ্গলবার: সকাল ১০টা - বিকাল ৬টা | বুধ থেকে শুক্রবার: সকাল ১০টা - রাত ১০টা',
+            clinics: ['c-newlife'],
+            districts: ['Nilphamari', 'নীলফামারী', 'Dhaka']
+          };
+        }
+        if (d.id === 'dr-md-najmus-sakib-bari') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ মোঃ নাজমুস সাকিব বারী',
+            degree: 'এমবিবিএস (এসএসএমসি), বিসিএস (স্বাস্থ্য), এফসিপিএস (এফ.পি) অর্থোপেডিক সার্জারী, পিজিটি (জেনারেল সার্জারী) | ইমার্জেন্সি মেডিকেল অফিসার, ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী | হাড়-জোড়া, বাত-ব্যথা, মেরুদণ্ড, অর্থোপেডিক ও জেনারেল সার্জারী বিশেষজ্ঞ',
+            specialty: 'Orthopedics',
+            schedule: 'প্রতিদিন: দুপুর ২টা থেকে রাত ১০টা | শুক্রবার: সকাল ১০টা থেকে রাত ১০টা',
+            clinics: ['c-newlife'],
+            districts: ['Nilphamari', 'নীলফামারী']
+          };
+        }
         return { id: d.id, ...data } as Doctor;
-      }).filter(d => d.id !== 'moun-biplab');
+      }).filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1');
 
       // Check if moun-biplab exists in Firestore and clean it up if user is admin/moderator
       const hasBiplabInDb = docRes.docs.some(d => d.id === 'moun-biplab');
       if (hasBiplabInDb && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
         import('firebase/firestore').then(({ doc, deleteDoc }) => {
           deleteDoc(doc(db, 'doctors', 'moun-biplab')).catch(e => console.error("Auto-deleting Dr. Biplab failed: ", e));
+        });
+      }
+
+      // Check if nl-uro1 (Dr. Mohammad Mobarak Hossain) exists in Firestore and clean it up if user is admin/moderator
+      const hasUro1InDb = docRes.docs.some(d => d.id === 'nl-uro1');
+      if (hasUro1InDb && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
+        import('firebase/firestore').then(({ doc, deleteDoc }) => {
+          deleteDoc(doc(db, 'doctors', 'nl-uro1')).catch(e => console.error("Auto-deleting nl-uro1 failed: ", e));
         });
       }
 
@@ -4704,7 +4736,9 @@ export default function App() {
             'dr-abu-hena-mostafa-kamal',
             'dr-ar-towhid-hasan',
             'dr-hanan-ashavee-sonologist',
-            'dr-sohanur-rahman-sohag'
+            'dr-sohanur-rahman-sohag',
+            'dr-md-abu-sayeed-gastro',
+            'dr-md-najmus-sakib-bari'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -5054,13 +5088,17 @@ export default function App() {
           const newlifeDoc = hospRes.docs.find(docH => docH.id === 'c-newlife');
           const newlifeHosp = CLINICS.find(c => c.id === 'c-newlife');
           if (newlifeHosp) {
+            const currentDocList = (newlifeDoc?.data()?.doctors || []).filter((id: string) => id !== 'nl-uro1');
+            const targetDocList = newlifeHosp.doctors.filter(id => id !== 'nl-uro1');
+            const hasMissingTarget = targetDocList.some(id => !currentDocList.includes(id));
+            const hasUro1InList = (newlifeDoc?.data()?.doctors || []).includes('nl-uro1');
             if (!newlifeDoc) {
               setDoc(doc(db, 'hospitals', newlifeHosp.id), newlifeHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-newlife in DB:`, e));
-            } else if (newlifeDoc.data()?.name !== newlifeHosp.name || newlifeDoc.data()?.address !== newlifeHosp.address || !newlifeDoc.data()?.doctors?.includes('dr-sohanur-rahman-sohag')) {
+            } else if (newlifeDoc.data()?.name !== newlifeHosp.name || newlifeDoc.data()?.address !== newlifeHosp.address || hasMissingTarget || hasUro1InList) {
               setDoc(doc(db, 'hospitals', newlifeHosp.id), { 
                 name: newlifeHosp.name, 
                 address: newlifeHosp.address, 
-                doctors: Array.from(new Set([...(newlifeDoc.data()?.doctors || []), ...newlifeHosp.doctors])) 
+                doctors: Array.from(new Set([...currentDocList, ...targetDocList])) 
               }, { merge: true }).catch(e => console.warn(`Updating c-newlife in DB:`, e));
             }
           }
@@ -5133,7 +5171,9 @@ export default function App() {
         'dr-abu-hena-mostafa-kamal',
         'dr-ar-towhid-hasan',
         'dr-hanan-ashavee-sonologist',
-        'dr-sohanur-rahman-sohag'
+        'dr-sohanur-rahman-sohag',
+        'dr-md-abu-sayeed-gastro',
+        'dr-md-najmus-sakib-bari'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -5270,6 +5310,9 @@ export default function App() {
           doctorsWithOverrides.unshift(customDoc);
         }
       });
+
+      // Filter out deleted doctors
+      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1');
 
       // Sequential list ordering: hospital/clinic/thana doctors appear first in sequential order, and Dr. Habibur Rahman (Dentist) is placed at the very end of the list
       const sortedMergedDoctors = [...doctorsWithOverrides].sort((a, b) => {
@@ -7041,6 +7084,13 @@ export default function App() {
         const deg = (d.degree || '').toLowerCase();
         const spec = (d.specialty || '').toLowerCase();
         if (spec.includes('sonolog') || spec.includes('সোনোলজিস্ট') || deg.includes('সোনোলজিস্ট') || deg.includes('sonologist') || deg.includes('ultrasound') || deg.includes('আল্ট্রাসাউন্ড') || deg.includes('আল্ট্রাসনোগ্রাফি') || deg.includes('dmu') || deg.includes('cmu')) return true;
+      }
+
+      // Check for Gastroenterology
+      if (targetId === 'gastroenterology') {
+        const deg = (d.degree || '').toLowerCase();
+        const spec = (d.specialty || '').toLowerCase();
+        if (deg.includes('গ্যাস্ট্রো') || deg.includes('gastro') || deg.includes('লিভার') || spec.includes('gastro') || spec.includes('গ্যাস্ট্রো')) return true;
       }
 
       // Neurology general: if someone searches or selects "নিউরোলজি" or "neurology", match both neuromedicine and neurosurgery

@@ -451,17 +451,18 @@ export const CLINICS: Clinic[] = [
     "id": "c-newlife",
     "name": "নিউ লাইফ কেয়ার ডায়াগনস্টিক এন্ড কনসালটেশন সেন্টার",
     "district": "Nilphamari",
-    "address": "টেরঙ্গী মোড় (হাসপাতাল সড়ক), পোস্ট অফিস সংলগ্ন, নীলফামারী সদর, নীলফামারী",
+    "address": "চৌরঙ্গী মোড়, হাসপাতাল সড়ক, পোস্ট অফিস সংলগ্ন, নার্সিং কলেজের বিপরীতে, নীলফামারী সদর, নীলফামারী",
     "doctors": [
       "nl-med1",
-      "nl-uro1",
       "nl-gyn1",
       "nl-med2",
       "nl-card1",
       "nl-skin1",
       "nl-atiar",
       "j-atiur",
-      "dr-sohanur-rahman-sohag"
+      "dr-sohanur-rahman-sohag",
+      "dr-md-abu-sayeed-gastro",
+      "dr-md-najmus-sakib-bari"
     ],
     "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   },
@@ -2165,23 +2166,6 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 600
-  },
-  {
-    "id": "nl-uro1",
-    "name": "Prof. Dr. Mohammad Mobarak Hossain",
-    "degree": "MBBS, MS (Urology), FCPS (Surgery) | Former Professor, Dhaka Medical College Hospital",
-    "specialty": "Urology",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-newlife"
-    ],
-    "schedule": "শুক্রবার: সকাল ১০:০০ - রাত ৮:০০",
-    "availableToday": false,
-    "rating": 5,
-    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 1000
   },
   {
     "id": "nl-gyn1",
@@ -4186,6 +4170,43 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 700
+  },
+  {
+    "id": "dr-md-abu-sayeed-gastro",
+    "name": "ডাঃ মোঃ আবু সাঈদ",
+    "degree": "এমবিবিএস (রাজশাহী মেডিকেল কলেজ), পিজিটি (মেডিসিন), সিএমইউ (আল্ট্রা), এফসিপিএস মেডিসিন (গ্যাস্ট্রোএন্টারোলজি) – ফাইনাল পার্ট, এমআরএইচএমও (মেডিসিন বিভাগ, ঢাকা মেডিকেল কলেজ হাসপাতাল) | মেডিসিন ও গ্যাস্ট্রোএন্টারোলজি রোগ বিশেষজ্ঞ",
+    "specialty": "Gastroenterology",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-newlife"
+    ],
+    "schedule": "শনি থেকে মঙ্গলবার: সকাল ১০টা - বিকাল ৬টা | বুধ থেকে শুক্রবার: সকাল ১০টা - রাত ১০টা",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-md-najmus-sakib-bari",
+    "name": "ডাঃ মোঃ নাজমুস সাকিব বারী",
+    "degree": "এমবিবিএস (এসএসএমসি), বিসিএস (স্বাস্থ্য), এফসিপিএস (এফ.পি) অর্থোপেডিক সার্জারী, পিজিটি (জেনারেল সার্জারী) | ইমার্জেন্সি মেডিকেল অফিসার, ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী | হাড়-জোড়া, বাত-ব্যথা, মেরুদণ্ড, অর্থোপেডিক ও জেনারেল সার্জারী বিশেষজ্ঞ",
+    "specialty": "Orthopedics",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-newlife"
+    ],
+    "schedule": "প্রতিদিন: দুপুর ২টা থেকে রাত ১০টা | শুক্রবার: সকাল ১০টা থেকে রাত ১০টা",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
   }
 ];
 
