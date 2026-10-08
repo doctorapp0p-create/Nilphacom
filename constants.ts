@@ -504,6 +504,20 @@ export const CLINICS: Clinic[] = [
     "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   },
   {
+    "id": "c-people-care-rangpur",
+    "name": "পিপল কেয়ার ডায়াগনোস্টিক সেন্টার",
+    "district": "Rangpur",
+    "address": "ধাপ কেন্দ্রীয় জামে মসজিদ কমপ্লেক্স, ধাপ, রংপুর।",
+    "doctors": [
+      "dr-km-sakir-ahmed",
+      "dr-hazrat-ali-ortho",
+      "dr-abdul-kadir-goni",
+      "dr-billal-hossain-ped",
+      "dr-mezbah-ahmed-ent"
+    ],
+    "image": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=800"
+  },
+  {
     "id": "c-prava-dhaka",
     "name": "ঢাকা প্রাভা হেলথ কেয়ার (ঢাকা)",
     "district": "Dhaka",
@@ -4206,6 +4220,96 @@ export const DOCTORS: Doctor[] = [
     "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-km-sakir-ahmed",
+    "name": "ডাঃ কে.এম. সাকির আহমেদ",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমএসিপি (আমেরিকা), এমডি (হেপাটোলজি) (পিজি হাসপাতাল, ঢাকা) | রেজিষ্ট্রার, মেডিসিন বিভাগ, রংপুর মেডিকেল কলেজ হাসপাতাল | গ্যাস্ট্রো-লিভার ও মেডিসিন বিশেষজ্ঞ",
+    "specialty": "Gastroenterology",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-people-care-rangpur"
+    ],
+    "schedule": "প্রতিদিন চেম্বার (যোগাযোগ সাপেক্ষে)",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-hazrat-ali-ortho",
+    "name": "ডাঃ হযরত আলী",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস, এমএস (অর্থোপেডিক সার্জারী), এ ও স্পাইন (সুইজারল্যান্ড), এ ও স্পাইন প্রিন্সিপল্স কোর্স-ইন্ডিয়া, ফেলোশীপঃ আর্থ্রোস্কোপি ও আর্থ্রোপ্লাস্টি (কলকাতা-ভারত) | সহকারী অধ্যাপক (আর্থ্রোস্কোপি ও স্পোর্টস ইনজুরি), রেজিষ্ট্রার, অর্থোপেডিক্স সার্জন, অর্থোপেডিক্স ও ট্রমাটোলজি বিভাগ রংপুর মেডিকেল কলেজ ও হাসপাতাল | এক্স-ঢাকা মেডিকেল কলেজ ও হাসপাতাল",
+    "specialty": "Orthopedics",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-people-care-rangpur"
+    ],
+    "schedule": "প্রতিদিন চেম্বার (যোগাযোগ সাপেক্ষে)",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-abdul-kadir-goni",
+    "name": "ডাঃ মোঃ আব্দুল কাদির গনি",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন) | সহকারী অধ্যাপক (মেডিসিন বিভাগ), রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর | মেডিসিন বিশেষজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-people-care-rangpur"
+    ],
+    "schedule": "প্রতিদিন চেম্বার (যোগাযোগ সাপেক্ষে)",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-billal-hossain-ped",
+    "name": "মেজর (ডাঃ) মোঃ বিল্লাল হোসেন (অব.)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (শিশুরোগ) | কনসালটেন্ট (শিশু), নগর মাতৃসদন, রংপুর | নবজাতক, শিশু ও কিশোর রোগ বিশেষজ্ঞ",
+    "specialty": "Pediatrics",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-people-care-rangpur"
+    ],
+    "schedule": "প্রতিদিন চেম্বার (যোগাযোগ সাপেক্ষে)",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-mezbah-ahmed-ent",
+    "name": "ডাঃ মেজবাহ আহমেদ",
+    "degree": "এমবিবিএস, ডিএলও (ডিইউ) | কনসালটেন্ট ইএনটি, নাক, কান, গলা বিশেষজ্ঞ ও হেড-নেক সার্জন | এক্স-আরএস, রংপুর মেডিকেল কলেজ ও হাসপাতাল",
+    "specialty": "ENT",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-people-care-rangpur"
+    ],
+    "schedule": "প্রতিদিন চেম্বার (যোগাযোগ সাপেক্ষে)",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
   }
 ];

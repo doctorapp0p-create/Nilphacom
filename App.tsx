@@ -4650,6 +4650,66 @@ export default function App() {
             districts: ['Nilphamari', 'নীলফামারী']
           };
         }
+        if (d.id === 'dr-km-sakir-ahmed') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ কে.এম. সাকির আহমেদ',
+            degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), এমএসিপি (আমেরিকা), এমডি (হেপাটোলজি) (পিজি হাসপাতাল, ঢাকা) | রেজিষ্ট্রার, মেডিসিন বিভাগ, রংপুর মেডিকেল কলেজ হাসপাতাল | গ্যাস্ট্রো-লিভার ও মেডিসিন বিশেষজ্ঞ',
+            specialty: 'Gastroenterology',
+            schedule: 'প্রতিদিন চেম্বার (যোগাযোগ সাপেক্ষে)',
+            clinics: ['c-people-care-rangpur'],
+            districts: ['Rangpur', 'রংপুর']
+          };
+        }
+        if (d.id === 'dr-hazrat-ali-ortho') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ হযরত আলী',
+            degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস, এমএস (অর্থোপেডিক সার্জারী), এ ও স্পাইন (সুইজারল্যান্ড), এ ও স্পাইন প্রিন্সিপল্স কোর্স-ইন্ডিয়া, ফেলোশীপঃ আর্থ্রোস্কোপি ও আর্থ্রোপ্লাস্টি (কলকাতা-ভারত) | সহকারী অধ্যাপক (আর্থ্রোস্কোপি ও স্পোর্টস ইনজুরি), রেজিষ্ট্রার, অর্থোপেডিক্স সার্জন, অর্থোপেডিক্স ও ট্রমাটোলজি বিভাগ রংপুর মেডিকেল কলেজ ও হাসপাতাল | এক্স-ঢাকা মেডিকেল কলেজ ও হাসপাতাল',
+            specialty: 'Orthopedics',
+            schedule: 'প্রতিদিন চেম্বার (যোগাযোগ সাপেক্ষে)',
+            clinics: ['c-people-care-rangpur'],
+            districts: ['Rangpur', 'রংপুর']
+          };
+        }
+        if (d.id === 'dr-abdul-kadir-goni') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ মোঃ আব্দুল কাদির গনি',
+            degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন) | সহকারী অধ্যাপক (মেডিসিন বিভাগ), রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর | মেডিসিন বিশেষজ্ঞ',
+            specialty: 'Medicine',
+            schedule: 'প্রতিদিন চেম্বার (যোগাযোগ সাপেক্ষে)',
+            clinics: ['c-people-care-rangpur'],
+            districts: ['Rangpur', 'রংপুর']
+          };
+        }
+        if (d.id === 'dr-billal-hossain-ped') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'মেজর (ডাঃ) মোঃ বিল্লাল হোসেন (অব.)',
+            degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (শিশুরোগ) | কনসালটেন্ট (শিশু), নগর মাতৃসদন, রংপুর | নবজাতক, শিশু ও কিশোর রোগ বিশেষজ্ঞ',
+            specialty: 'Pediatrics',
+            schedule: 'প্রতিদিন চেম্বার (যোগাযোগ সাপেক্ষে)',
+            clinics: ['c-people-care-rangpur'],
+            districts: ['Rangpur', 'রংপুর']
+          };
+        }
+        if (d.id === 'dr-mezbah-ahmed-ent') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ মেজবাহ আহমেদ',
+            degree: 'এমবিবিএস, ডিএলও (ডিইউ) | কনসালটেন্ট ইএনটি, নাক, কান, গলা বিশেষজ্ঞ ও হেড-নেক সার্জন | এক্স-আরএস, রংপুর মেডিকেল কলেজ ও হাসপাতাল',
+            specialty: 'ENT',
+            schedule: 'প্রতিদিন চেম্বার (যোগাযোগ সাপেক্ষে)',
+            clinics: ['c-people-care-rangpur'],
+            districts: ['Rangpur', 'রংপুর']
+          };
+        }
         return { id: d.id, ...data } as Doctor;
       }).filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1');
 
@@ -4738,7 +4798,12 @@ export default function App() {
             'dr-hanan-ashavee-sonologist',
             'dr-sohanur-rahman-sohag',
             'dr-md-abu-sayeed-gastro',
-            'dr-md-najmus-sakib-bari'
+            'dr-md-najmus-sakib-bari',
+            'dr-km-sakir-ahmed',
+            'dr-hazrat-ali-ortho',
+            'dr-abdul-kadir-goni',
+            'dr-billal-hossain-ped',
+            'dr-mezbah-ahmed-ent'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -5102,6 +5167,16 @@ export default function App() {
               }, { merge: true }).catch(e => console.warn(`Updating c-newlife in DB:`, e));
             }
           }
+
+          const peopleCareDoc = hospRes.docs.find(docH => docH.id === 'c-people-care-rangpur');
+          const peopleCareHosp = CLINICS.find(c => c.id === 'c-people-care-rangpur');
+          if (peopleCareHosp) {
+            if (!peopleCareDoc) {
+              setDoc(doc(db, 'hospitals', peopleCareHosp.id), peopleCareHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-people-care-rangpur in DB:`, e));
+            } else if (peopleCareDoc.data()?.name !== peopleCareHosp.name || peopleCareDoc.data()?.address !== peopleCareHosp.address) {
+              setDoc(doc(db, 'hospitals', peopleCareHosp.id), { name: peopleCareHosp.name, address: peopleCareHosp.address, doctors: peopleCareHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-people-care-rangpur in DB:`, e));
+            }
+          }
         }).catch(() => {});
       }
 
@@ -5173,7 +5248,12 @@ export default function App() {
         'dr-hanan-ashavee-sonologist',
         'dr-sohanur-rahman-sohag',
         'dr-md-abu-sayeed-gastro',
-        'dr-md-najmus-sakib-bari'
+        'dr-md-najmus-sakib-bari',
+        'dr-km-sakir-ahmed',
+        'dr-hazrat-ali-ortho',
+        'dr-abdul-kadir-goni',
+        'dr-billal-hossain-ped',
+        'dr-mezbah-ahmed-ent'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -7020,7 +7100,7 @@ export default function App() {
     const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar', 'c-domar-general', 'c-pulse-domar', 'c-domar-update-hospital', 'c-golden-domar', 'c-care-hospital-domar'];
     const DIMLA_CLINIC_IDS = ['c-new-janata-dimla', 'c-dimla-update-clinic', 'c-shurokkha-dimla', 'c-doctors-dimla', 'c-life-dimla', 'c-sonar-bangla-dimla', 'c-sohel-dimla'];
     const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
-    const RANGPUR_CLINIC_IDS = ['c-popular-rangpur'];
+    const RANGPUR_CLINIC_IDS = ['c-popular-rangpur', 'c-people-care-rangpur'];
 
     const normalizeSpecialtyId = (specStr: string): string => {
       if (!specStr) return '';
@@ -7243,7 +7323,7 @@ export default function App() {
       const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar', 'c-domar-general', 'c-pulse-domar', 'c-domar-update-hospital', 'c-golden-domar', 'c-care-hospital-domar'];
       const DIMLA_CLINIC_IDS = ['c-new-janata-dimla', 'c-dimla-update-clinic', 'c-shurokkha-dimla', 'c-doctors-dimla', 'c-life-dimla', 'c-sonar-bangla-dimla', 'c-sohel-dimla'];
       const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
-      const RANGPUR_CLINIC_IDS = ['c-popular-rangpur'];
+      const RANGPUR_CLINIC_IDS = ['c-popular-rangpur', 'c-people-care-rangpur'];
 
       list = list.filter(h => {
         const addr = (h.address || '').toLowerCase();
