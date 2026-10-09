@@ -518,6 +518,39 @@ export const CLINICS: Clinic[] = [
     "image": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=800"
   },
   {
+    "id": "c-update-rangpur",
+    "name": "আপডেট ডায়াগনষ্টিক",
+    "district": "Rangpur",
+    "address": "ধাপ, জেল রোড, রংপুর।",
+    "doctors": [
+      "dr-mostafizur-rahman-mithu",
+      "dr-md-nurul-hasan-babu",
+      "dr-alfe-sani-moudud-ahmed",
+      "dr-md-ruhul-amin-sarker",
+      "dr-mosammat-shamim-ara-begum",
+      "dr-bipul-kumar-saha",
+      "dr-md-mamunur-rashid-ortho",
+      "dr-k-m-mohidul-islam",
+      "dr-u-k-m-najmun-ara",
+      "dr-md-asaduzzaman-neuromedicine",
+      "dr-mahmuda-yasmin-shompa",
+      "dr-prof-shakil-gafur",
+      "dr-hasanul-islam-cardio",
+      "dr-tapash-bose-chest",
+      "dr-prof-ranjit-basak-ped",
+      "dr-syeda-shahnaz-nasrullah",
+      "dr-bablu-kumar-saha-pedsurg",
+      "dr-hasina-ferdousy-gyn",
+      "dr-nilufar-akter-nila",
+      "dr-yeasmin-dil-jannat-munni",
+      "dr-abdul-hye-rubel-physmed",
+      "dr-md-nurul-islam-khan-hep",
+      "dr-abeda-akter-ped",
+      "dr-md-rashedul-islam-ranju-uro"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
+  },
+  {
     "id": "c-prava-dhaka",
     "name": "ঢাকা প্রাভা হেলথ কেয়ার (ঢাকা)",
     "district": "Dhaka",
@@ -4311,6 +4344,438 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
+  },
+  {
+    "id": "dr-mostafizur-rahman-mithu",
+    "name": "ডাঃ মোস্তাফিজুর রহমান (মিঠু)",
+    "degree": "এমবিবিএস, এমএস (ইউরোলজি) | কিডনী, মূত্রনালী, মূত্রথলী, প্রোষ্টেট, পুরুষ বন্ধ্যাত্ব, যৌনতন্ত্র রোগ বিশেষজ্ঞ ও এন্ড্রোল্যাপারোস্কপিক সার্জন | সহযোগী অধ্যাপক ও বিভাগীয় প্রধান, ইউরোলজি বিভাগ, প্রাইম মেডিকেল কলেজ ও হাসপাতাল, রংপুর | বিএমডিসি রেজি: নং: ৪৫৮৩০",
+    "specialty": "Urology",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "শনিবার থেকে বৃহস্পতিবার: বিকাল ৪টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-md-nurul-hasan-babu",
+    "name": "ডাঃ মোঃ নুরুল হাসান (বাবু)",
+    "degree": "এমবিবিএস, এমপিএইচ, এমবিএ, ডিপ্লোমা ইন মেডিকেল আল্ট্রাসাউন্ড (বিটিইবি), বিসিএস (স্বাস্থ্য), সিএমইউ | সার্টিফাইড ইন ফিটাল এ্যানোমালি স্ক্যান (লন্ডন স্কুল অব আল্ট্রাসাউন্ড) | ট্রেইন্ড ইন এন্ডোসনোগ্রাফী ডপলার এন্ড ইলাসট্রোগ্রাফী | ক্লিনিক্যাল আল্ট্রাসাউন্ড কনসালটেন্ট | বিএমডিসি রেজি: নং: ৩০৯২১",
+    "specialty": "Sonologist",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "শনিবার থেকে বৃহস্পতিবার: বিকাল ৫টা হতে ৯টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-alfe-sani-moudud-ahmed",
+    "name": "ডাঃ মোঃ আলফে সানি মৌদুদ আহমেদ",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (ক্রিটিক্যাল কেয়ার মেডিসিন) (বিএমইউ) | ক্রিটিক্যাল কেয়ার মেডিসিন স্পেশালিষ্ট | সহকারী অধ্যাপক, রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর।",
+    "specialty": "Medicine",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "প্রতিদিন: বিকাল ৫টা - রাত ৯টা পর্যন্ত (শুক্রবার বন্ধ)",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-md-ruhul-amin-sarker",
+    "name": "ডাঃ মোঃ রুহুল আমিন সরকার",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন) | মেডিসিন, ডায়াবেটিস ও বাত-ব্যথা বিশেষজ্ঞ | সহযোগী অধ্যাপক (মেডিসিন বিভাগ), রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর।",
+    "specialty": "Medicine",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "শনিবার থেকে বৃহস্পতিবার: বিকাল ৪টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-mosammat-shamim-ara-begum",
+    "name": "ডাঃ মোছাম্মৎ শামীম আরা বেগম",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (শিশু), এফসিপিএস (শিশু নিউরোলজী এন্ড ডেভেলপমেন্ট) | ঢাকা থেকে আগত শিশু ও শিশু নিউরোলজি বিশেষজ্ঞ | সহযোগী অধ্যাপক (শিশু), ন্যাশনাল ইন্সটিটিউট অব নিউরোসায়েন্সেস ও হাসপাতাল, ঢাকা।",
+    "specialty": "Pediatric Neurology",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "আগামী ৮ নভেম্বর ২০২৪ ইং, রোজ: শুক্রবার সময়: সকাল ৯.৩০ মিনিট থেকে বিকাল ৫টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1594824813579-410a08e1a179?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 1000
+  },
+  {
+    "id": "dr-bipul-kumar-saha",
+    "name": "ডাঃ বিপুল কুমার সাহা",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমএস (জেনারেল সার্জারী) | জেনারেল ল্যাপারোস্কপিক, ব্রেস্ট ও কলোরেক্টাল সার্জন | রেজিষ্ট্রার (সার্জারী), রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর।",
+    "specialty": "General & Laparoscopic Surgery",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "প্রতিদিন: বিকাল ৩টা - রাত ৯টা পর্যন্ত (শুক্রবার বন্ধ)",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-md-mamunur-rashid-ortho",
+    "name": "ডাঃ মোঃ মামুনুর রশীদ",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডি-অর্থো (নিটোর, ঢাকা), এও স্পাইন (বেসিক ও অ্যাডভান্সড) | মেরুদণ্ড ও জয়েন্টের সমস্যা, হাড় জোড়া, ভাঙ্গা ও বাত-ব্যথা রোগ বিশেষজ্ঞ ও সার্জন | কনসালটেন্ট (অর্থোপেডিক সার্জারি), ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী।",
+    "specialty": "Orthopedics & Spine Surgery",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "শনিবার থেকে বৃহস্পতিবার: বিকাল ৪টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-k-m-mohidul-islam",
+    "name": "ডাঃ কে, এম, মহিদুল ইসলাম",
+    "degree": "এমবিবিএস (ডিএমসি), বিসিএস (স্বাস্থ্য), এফসিপিএস (ইএনটি), এমএস (ইএনটি) | নাক, কান, গলা ও হেড-নেক সার্জন | কনসালটেন্ট (ইএনটি), ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী।",
+    "specialty": "ENT & Head Neck Surgery",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "রবি, মঙ্গল ও বৃহস্পতিবার: বিকাল ৩টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-u-k-m-najmun-ara",
+    "name": "ডাঃ ইউ, কে, এম, নাজমুন আরা",
+    "degree": "এমবিবিএস (রাজ), বিসিএস (স্বাস্থ্য), এফসিপিএস (গাইনী ও অবস্), ডিএমইউ (আল্ট্রা) | স্ত্রী রোগ ও প্রসূতি বিশেষজ্ঞ এবং সার্জন | গাইনী ও প্রসূতি বিভাগ, রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর।",
+    "specialty": "Gynecology & Obstetrics",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "বৃহস্পতি ও শুক্রবার: বিকাল ৩.৩০ মিনিট - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-md-asaduzzaman-neuromedicine",
+    "name": "ডাঃ মোঃ আসাদুজ্জামান (আসাদ)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমসিপিএস (মেডিসিন), এমডি (নিউরোলজি) (বিএসএমএমইউ) | সহকারী অধ্যাপক (স্ট্রোক), ন্যাশনাল ইন্সটিটিউট অব নিউরোসায়েন্সেস ও হাসপাতাল, ঢাকা | মেম্বার, আমেরিকান একাডেমি অব নিউরোলজি | নিউরোমেডিসিন, মেডিসিন, ডায়াবেটিস, বাত-ব্যথা, প্যারালাইসিস, মাথাব্যথা ও ষ্ট্রোক রোগ বিশেষজ্ঞ",
+    "specialty": "Neuromedicine",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "প্রতিদিন: বিকাল ৫টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-mahmuda-yasmin-shompa",
+    "name": "ডাঃ মাহমুদা ইয়াসমিন শম্পা",
+    "degree": "এমবিবিএস, ডিপ্লোমা ইন মেডিকেল আল্ট্রাসাউন্ড (বিটিইবি), সি-ইন এন্ডোসকপি এন্ড ক্লোনোসকপি (ইন্ডিয়া) | ট্রেইন্ড ইন এন্ডোসকপি, ডপলার ও ফিটাল অ্যানোমালি স্ক্যান | ক্লিনিক্যাল আল্ট্রাসাউন্ড কনসালটেন্ট | চেয়ারম্যান, আপডেট ডায়াগনষ্টিক, রংপুর।",
+    "specialty": "Sonologist",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "শনিবার থেকে বৃহস্পতিবার: সকাল ১০টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1594824813579-410a08e1a179?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-prof-shakil-gafur",
+    "name": "প্রফেসর ডাঃ শাকিল গাফুর",
+    "degree": "এমবিবিএস, ডিটিসিডি, এমডি (কার্ডিওলজি) | কার্ডিওলজি, হাইপারটেনশন ও বক্ষব্যাধি বিশেষজ্ঞ | অধ্যাপক ও বিভাগীয় প্রধান, কার্ডিওলজি বিভাগ, রংপুর মেডিকেল কলেজ ও হাসপাতাল।",
+    "specialty": "Cardiology",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "প্রতিদিন: বিকাল ৪টা - রাত ৮টা পর্যন্ত (শুক্রবার বন্ধ)",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 800
+  },
+  {
+    "id": "dr-hasanul-islam-cardio",
+    "name": "ডাঃ মোঃ হাসানুল ইসলাম",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (কার্ডিওলজি) | হৃদরোগ, উচ্চ রক্তচাপ ও মেডিসিন বিশেষজ্ঞ | সহকারী অধ্যাপক (কার্ডিওলজি), রংপুর মেডিকেল কলেজ হাসপাতাল।",
+    "specialty": "Cardiology",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "শনিবার থেকে বৃহস্পতিবার: বিকাল ৫টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-tapash-bose-chest",
+    "name": "ডাঃ তাপস বোস",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (রেসপিরেটরি মেডিসিন), এফসিসিপি (ইউএসএ) | বক্ষব্যাধি, অ্যাজমা ও রেসপিরেটরি মেডিসিন বিশেষজ্ঞ | সহকারী অধ্যাপক ও বিভাগীয় প্রধান, রেসপিরেটরি মেডিসিন বিভাগ, রংপুর মেডিকেল কলেজ হাসপাতাল।",
+    "specialty": "Chest & Respiratory Medicine",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "প্রতিদিন: বিকাল ৪টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-prof-ranjit-basak-ped",
+    "name": "প্রফেসর ডাঃ রঞ্জিত বসাক",
+    "degree": "এমবিবিএস, এফসিপিএস (শিশু), এমডি (শিশু) | নবজাতক, কিশোর ও শিশু রোগ বিশেষজ্ঞ | অধ্যাপক (শিশু বিভাগ), রংপুর মেডিকেল কলেজ ও হাসপাতাল।",
+    "specialty": "Pediatrics",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "শনিবার থেকে বৃহস্পতিবার: বিকাল ৪.৩০টা - রাত ৮.৩০টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 800
+  },
+  {
+    "id": "dr-syeda-shahnaz-nasrullah",
+    "name": "ডাঃ সৈয়দা শাহনাজ নাসরুল্লাহ ইলোরা",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (সার্জারি) | জেনারেল, ল্যাপারোস্কপিক, ব্রেস্ট ও কলোরেক্টাল সার্জন | সহকারী অধ্যাপক (সার্জারি), রংপুর মেডিকেল কলেজ হাসপাতাল।",
+    "specialty": "General & Laparoscopic Surgery",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "শনিবার থেকে বৃহস্পতিবার: বিকাল ৩টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-bablu-kumar-saha-pedsurg",
+    "name": "ডাঃ বাবলু কুমার সাহা",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমএস (পেডিয়াট্রিক সার্জারি), এফএসিএস (ইউএসএ) | নবজাতক ও শিশু সার্জারি বিশেষজ্ঞ এবং ল্যাপারোস্কপিক সার্জন | রংপুর মেডিকেল কলেজ হাসপাতাল।",
+    "specialty": "Pediatric Surgery",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "প্রতিদিন: বিকাল ৪টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 800
+  },
+  {
+    "id": "dr-hasina-ferdousy-gyn",
+    "name": "ডাঃ হাসিনা ফেরদৌসী",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (গাইনী ও অবস্) | স্ত্রী রোগ ও প্রসূতি বিশেষজ্ঞ এবং সার্জন | রংপুর মেডিকেল কলেজ হাসপাতাল।",
+    "specialty": "Gynecology & Obstetrics",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "প্রতিদিন: বিকাল ৪টা - রাত ৮টা পর্যন্ত (শুক্রবার বন্ধ)",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-nilufar-akter-nila",
+    "name": "ডাঃ নীলুফার আক্তার নীলা",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (গাইনী ও অবস্) | গাইনী, বন্ধ্যাত্ব ও প্রসূতি রোগ বিশেষজ্ঞ এবং সার্জন | রংপুর মেডিকেল কলেজ হাসপাতাল।",
+    "specialty": "Gynecology & Obstetrics",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "শনিবার থেকে বৃহস্পতিবার: বিকাল ৩.৩০টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1594824813579-410a08e1a179?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-yeasmin-dil-jannat-munni",
+    "name": "ডাঃ ইয়াসমিন দিল জান্নাত মুন্নি",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমএস (অবস্ ও গাইনী) | স্ত্রী রোগ, প্রসূতি বিশেষজ্ঞ ও ল্যাপারোস্কপিক সার্জন | রংপুর মেডিকেল কলেজ হাসপাতাল।",
+    "specialty": "Gynecology & Obstetrics",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "প্রতিদিন: বিকাল ৪টা - রাত ৮টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-abdul-hye-rubel-physmed",
+    "name": "ডাঃ মোঃ আব্দুল হাই রুবেল",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (ফিজিক্যাল মেডিসিন) | বাত-ব্যথা, প্যারালাইসিস, স্পাইন ও জয়েন্ট রোগ বিশেষজ্ঞ | সহযোগী অধ্যাপক (ফিজিক্যাল মেডিসিন), রংপুর মেডিকেল কলেজ হাসপাতাল।",
+    "specialty": "Physical Medicine & Rehabilitation",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "শনিবার থেকে বৃহস্পতিবার: বিকাল ৫টা - রাত ৮.৩০টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-md-nurul-islam-khan-hep",
+    "name": "ডাঃ মোহাম্মদ নুরুল ইসলাম খান",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (হেপাটোলজি) | লিভার, পরিপাকতন্ত্র ও মেডিসিন বিশেষজ্ঞ | রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর।",
+    "specialty": "Gastroenterology",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "প্রতিদিন: বিকাল ৪.০০টা - রাত ৯.০০টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-abeda-akter-ped",
+    "name": "ডাঃ আবেদা আক্তার",
+    "degree": "এমবিবিএস, এমডি (পেডিয়াট্রিক গ্যাস্ট্রোএন্টারোলজি) | শিশুরোগ, শিশু পরিপাকতন্ত্র ও লিভার রোগ বিশেষজ্ঞ | শিশু বিভাগ, রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর।",
+    "specialty": "Pediatrics",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "প্রতিদিন: বিকাল ৪.০০টা হতে রাত ৯.০০টা (শুক্রবার বন্ধ)",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1594824813583-1626f81a70cb?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-md-rashedul-islam-ranju-uro",
+    "name": "ডাঃ মোঃ রাশেদুল ইসলাম (রঞ্জু)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এম.এস (ইউরোলজি - ঢাকা মেডিকেল কলেজ) | কিডনি, মূত্রথলি, প্রোস্টেট, মূত্রনালী, অন্ডোকোষ, পুরুষ বন্ধ্যাত্ব, যৌনতন্ত্র রোগ বিশেষজ্ঞ ও এন্ডো-ল্যাপারোস্কপিক সার্জন | ইউরোলজিষ্ট এন্ড এ্যান্ড্রোলজিষ্ট, রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর।",
+    "specialty": "Urology",
+    "districts": [
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-update-rangpur"
+    ],
+    "schedule": "রবিবার থেকে বুধবার: বিকাল ৪.০০টা হতে রাত ৮.০০টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
   }
 ];
 

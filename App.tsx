@@ -4710,6 +4710,54 @@ export default function App() {
             districts: ['Rangpur', 'রংপুর']
           };
         }
+        if (d.id === 'dr-mostafizur-rahman-mithu') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ মোস্তাফিজুর রহমান (মিঠু)',
+            degree: 'এমবিবিএস, এমএস (ইউরোলজি) | কিডনী, মূত্রনালী, মূত্রথলী, প্রোষ্টেট, পুরুষ বন্ধ্যাত্ব, যৌনতন্ত্র রোগ বিশেষজ্ঞ ও এন্ড্রোল্যাপারোস্কপিক সার্জন | সহযোগী অধ্যাপক ও বিভাগীয় প্রধান, ইউরোলজি বিভাগ, প্রাইম মেডিকেল কলেজ ও হাসপাতাল, রংপুর | বিএমডিসি রেজি: নং: ৪৫৮৩০',
+            specialty: 'Urology',
+            schedule: 'শনিবার থেকে বৃহস্পতিবার: বিকাল ৪টা - রাত ৮টা পর্যন্ত',
+            clinics: ['c-update-rangpur'],
+            districts: ['Rangpur', 'রংপুর']
+          };
+        }
+        if (d.id === 'dr-md-nurul-hasan-babu') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ মোঃ নুরুল হাসান (বাবু)',
+            degree: 'এমবিবিএস, এমপিএইচ, এমবিএ, ডিপ্লোমা ইন মেডিকেল আল্ট্রাসাউন্ড (বিটিইবি), বিসিএস (স্বাস্থ্য), সিএমইউ | সার্টিফাইড ইন ফিটাল এ্যানোমালি স্ক্যান (লন্ডন স্কুল অব আল্ট্রাসাউন্ড) | ট্রেইন্ড ইন এন্ডোসনোগ্রাফী ডপলার এন্ড ইলাসট্রোগ্রাফী | ক্লিনিক্যাল আল্ট্রাসাউন্ড কনসালটেন্ট | বিএমডিসি রেজি: নং: ৩০৯২১',
+            specialty: 'Sonologist',
+            schedule: 'শনিবার থেকে বৃহস্পতিবার: বিকাল ৫টা হতে ৯টা পর্যন্ত',
+            clinics: ['c-update-rangpur'],
+            districts: ['Rangpur', 'রংপুর']
+          };
+        }
+        if (d.id === 'dr-alfe-sani-moudud-ahmed') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ মোঃ আলফে সানি মৌদুদ আহমেদ',
+            degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (ক্রিটিক্যাল কেয়ার মেডিসিন) (বিএমইউ) | ক্রিটিক্যাল কেয়ার মেডিসিন স্পেশালিষ্ট | সহকারী অধ্যাপক, রংপুর মেডিকেল কলেজ হাসপাতাল, রংপুর।',
+            specialty: 'Medicine',
+            schedule: 'প্রতিদিন: বিকাল ৫টা - রাত ৯টা পর্যন্ত (শুক্রবার বন্ধ)',
+            clinics: ['c-update-rangpur'],
+            districts: ['Rangpur', 'রংপুর']
+          };
+        }
+        if (d.id === 'dr-md-ruhul-amin-sarker') {
+          return {
+            ...data,
+            id: d.id,
+            name: 'ডাঃ মোঃ রুহুল আমিন সরকার',
+            degree: 'এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন) | মেডিসিন, ডায়াবেটিস ও বাত-ব্যথা বিশেষজ্ঞ | সহযোগী অধ্যাপক (মেডিসিন বিভাগ), রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর।',
+            specialty: 'Medicine',
+            schedule: 'শনিবার থেকে বৃহস্পতিবার: বিকাল ৪টা - রাত ৮টা পর্যন্ত',
+            clinics: ['c-update-rangpur'],
+            districts: ['Rangpur', 'রংপুর']
+          };
+        }
         return { id: d.id, ...data } as Doctor;
       }).filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1');
 
@@ -4803,7 +4851,31 @@ export default function App() {
             'dr-hazrat-ali-ortho',
             'dr-abdul-kadir-goni',
             'dr-billal-hossain-ped',
-            'dr-mezbah-ahmed-ent'
+            'dr-mezbah-ahmed-ent',
+            'dr-mostafizur-rahman-mithu',
+            'dr-md-nurul-hasan-babu',
+            'dr-alfe-sani-moudud-ahmed',
+            'dr-md-ruhul-amin-sarker',
+            'dr-mosammat-shamim-ara-begum',
+            'dr-bipul-kumar-saha',
+            'dr-md-mamunur-rashid-ortho',
+            'dr-k-m-mohidul-islam',
+            'dr-u-k-m-najmun-ara',
+            'dr-md-asaduzzaman-neuromedicine',
+            'dr-mahmuda-yasmin-shompa',
+            'dr-prof-shakil-gafur',
+            'dr-hasanul-islam-cardio',
+            'dr-tapash-bose-chest',
+            'dr-prof-ranjit-basak-ped',
+            'dr-syeda-shahnaz-nasrullah',
+            'dr-bablu-kumar-saha-pedsurg',
+            'dr-hasina-ferdousy-gyn',
+            'dr-nilufar-akter-nila',
+            'dr-yeasmin-dil-jannat-munni',
+            'dr-abdul-hye-rubel-physmed',
+            'dr-md-nurul-islam-khan-hep',
+            'dr-abeda-akter-ped',
+            'dr-md-rashedul-islam-ranju-uro'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -5177,6 +5249,16 @@ export default function App() {
               setDoc(doc(db, 'hospitals', peopleCareHosp.id), { name: peopleCareHosp.name, address: peopleCareHosp.address, doctors: peopleCareHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-people-care-rangpur in DB:`, e));
             }
           }
+
+          const updateRangpurDoc = hospRes.docs.find(docH => docH.id === 'c-update-rangpur');
+          const updateRangpurHosp = CLINICS.find(c => c.id === 'c-update-rangpur');
+          if (updateRangpurHosp) {
+            if (!updateRangpurDoc) {
+              setDoc(doc(db, 'hospitals', updateRangpurHosp.id), updateRangpurHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-update-rangpur in DB:`, e));
+            } else if (updateRangpurDoc.data()?.name !== updateRangpurHosp.name || updateRangpurDoc.data()?.address !== updateRangpurHosp.address) {
+              setDoc(doc(db, 'hospitals', updateRangpurHosp.id), { name: updateRangpurHosp.name, address: updateRangpurHosp.address, doctors: updateRangpurHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-update-rangpur in DB:`, e));
+            }
+          }
         }).catch(() => {});
       }
 
@@ -5253,7 +5335,31 @@ export default function App() {
         'dr-hazrat-ali-ortho',
         'dr-abdul-kadir-goni',
         'dr-billal-hossain-ped',
-        'dr-mezbah-ahmed-ent'
+        'dr-mezbah-ahmed-ent',
+        'dr-mostafizur-rahman-mithu',
+        'dr-md-nurul-hasan-babu',
+        'dr-alfe-sani-moudud-ahmed',
+        'dr-md-ruhul-amin-sarker',
+        'dr-mosammat-shamim-ara-begum',
+        'dr-bipul-kumar-saha',
+        'dr-md-mamunur-rashid-ortho',
+        'dr-k-m-mohidul-islam',
+        'dr-u-k-m-najmun-ara',
+        'dr-md-asaduzzaman-neuromedicine',
+        'dr-mahmuda-yasmin-shompa',
+        'dr-prof-shakil-gafur',
+        'dr-hasanul-islam-cardio',
+        'dr-tapash-bose-chest',
+        'dr-prof-ranjit-basak-ped',
+        'dr-syeda-shahnaz-nasrullah',
+        'dr-bablu-kumar-saha-pedsurg',
+        'dr-hasina-ferdousy-gyn',
+        'dr-nilufar-akter-nila',
+        'dr-yeasmin-dil-jannat-munni',
+        'dr-abdul-hye-rubel-physmed',
+        'dr-md-nurul-islam-khan-hep',
+        'dr-abeda-akter-ped',
+        'dr-md-rashedul-islam-ranju-uro'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -7100,7 +7206,7 @@ export default function App() {
     const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar', 'c-domar-general', 'c-pulse-domar', 'c-domar-update-hospital', 'c-golden-domar', 'c-care-hospital-domar'];
     const DIMLA_CLINIC_IDS = ['c-new-janata-dimla', 'c-dimla-update-clinic', 'c-shurokkha-dimla', 'c-doctors-dimla', 'c-life-dimla', 'c-sonar-bangla-dimla', 'c-sohel-dimla'];
     const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
-    const RANGPUR_CLINIC_IDS = ['c-popular-rangpur', 'c-people-care-rangpur'];
+    const RANGPUR_CLINIC_IDS = ['c-popular-rangpur', 'c-people-care-rangpur', 'c-update-rangpur'];
 
     const normalizeSpecialtyId = (specStr: string): string => {
       if (!specStr) return '';
@@ -7173,9 +7279,16 @@ export default function App() {
         if (deg.includes('গ্যাস্ট্রো') || deg.includes('gastro') || deg.includes('লিভার') || spec.includes('gastro') || spec.includes('গ্যাস্ট্রো')) return true;
       }
 
-      // Neurology general: if someone searches or selects "নিউরোলজি" or "neurology", match both neuromedicine and neurosurgery
+      // Neurology general: if someone searches or selects "নিউরোলজি" or "neurology", match neuromedicine, neurosurgery, and pediatric neurology
       if (targetId === 'neuromedicine' && (selectedSpecialty.toLowerCase().includes('নিউরোলজি') || selectedSpecialty.toLowerCase().includes('neurology'))) {
-        return docSpecId === 'neuromedicine' || docSpecId === 'neurosurgery';
+        return docSpecId === 'neuromedicine' || docSpecId === 'neurosurgery' || (d.specialty || '').toLowerCase().includes('neurology') || (d.degree || '').toLowerCase().includes('নিউরো');
+      }
+
+      // Pediatrics: also match pediatric neurology
+      if (targetId === 'pediatrics') {
+        const spec = (d.specialty || '').toLowerCase();
+        const deg = (d.degree || '').toLowerCase();
+        if (spec.includes('pediatric') || deg.includes('শিশু') || spec.includes('শিশু')) return true;
       }
 
       return false;
@@ -7323,7 +7436,7 @@ export default function App() {
       const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar', 'c-domar-general', 'c-pulse-domar', 'c-domar-update-hospital', 'c-golden-domar', 'c-care-hospital-domar'];
       const DIMLA_CLINIC_IDS = ['c-new-janata-dimla', 'c-dimla-update-clinic', 'c-shurokkha-dimla', 'c-doctors-dimla', 'c-life-dimla', 'c-sonar-bangla-dimla', 'c-sohel-dimla'];
       const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
-      const RANGPUR_CLINIC_IDS = ['c-popular-rangpur', 'c-people-care-rangpur'];
+      const RANGPUR_CLINIC_IDS = ['c-popular-rangpur', 'c-people-care-rangpur', 'c-update-rangpur'];
 
       list = list.filter(h => {
         const addr = (h.address || '').toLowerCase();
