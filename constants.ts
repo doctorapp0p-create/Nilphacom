@@ -378,9 +378,23 @@ export const CLINICS: Clinic[] = [
       "j-parul-gyn",
       "j-masud-med",
       "j-al-amin",
-      "dr-hanan-ashavee-sonologist"
+      "dr-hanan-ashavee-sonologist",
+      "dr-md-abdullahel-mafi-surgery"
     ],
     "image": "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-new-holy-care",
+    "name": "নিউ হলি কেয়ার ডায়াগনস্টিক সেন্টার",
+    "district": "Nilphamari",
+    "address": "সদর হাসপাতাল সড়ক, শান্তিনগর, নীলফামারী।",
+    "doctors": [
+      "dr-shamoli-akter-surg",
+      "dr-maruf-hasan-med",
+      "dr-mushfiqur-rahman-surg",
+      "dr-mosammat-mukta-akter-gyn"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   },
   {
     "id": "c-ekota",
@@ -4776,6 +4790,96 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 700
+  },
+  {
+    "id": "dr-md-abdullahel-mafi-surgery",
+    "name": "ডাঃ মোঃ আব্দুল্লাহেল মাফী",
+    "degree": "এমবিবিএস (MBBS), বিসিএস (স্বাস্থ্য), এফসিপিএস (FCPS) পার্ট-২ (সার্জারি) | পরিচালক — ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, সদর, নীলফামারী | অভিজ্ঞ সার্জন | অণ্ডকোষ-সংক্রান্ত অস্ত্রোপচার, প্রয়োজনীয় ও সাধারণ সার্জারি এবং বিভিন্ন ধরনের কাটা-ছেঁড়ার অপারেশন",
+    "specialty": "Surgery",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-janata"
+    ],
+    "schedule": "প্রতিদিন: দুপুর ২:৩০ টা থেকে রাত ৯:০০ টা পর্যন্ত (শুক্রবার বাদে)",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-shamoli-akter-surg",
+    "name": "ডাঃ শ্যামলী আক্তার",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (কোলোরেক্টাল সার্জারি)-এফপি, এমআরসিএস (এফপি) | ইনডোর মেডিকেল অফিসার (সার্জারি), এক্স-রেজিস্ট্রার, কোলোরেক্টাল সার্জারি বিভাগ, ঢাকা মেডিকেল কলেজ হাসপাতাল, ঢাকা | বিএমডিসি রেজি: নং এ-৯৬৮৫৫ | মহিলাদের স্তনজনিত ব্যথা, স্তনের ক্যান্সার, পাইলস্, ফিস্টুলা, টিউমার ও সার্জারী বিষয়ে অভিজ্ঞ",
+    "specialty": "Surgery",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-new-holy-care"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০ টা থেকে বিকাল ৪ টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1594824813633-4f9e173e3518?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-maruf-hasan-med",
+    "name": "ডাঃ মারুফ হাসান",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (মেডিসিন, জার্মানি), সিসিডি (বারডেম), এমআরএসএইচ (নিউরোলজি, ইংল্যান্ড), পিজিটি (গ্যাস্ট্রোএন্টারোলজি) | মেডিকেল অফিসার, ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী | মেডিসিন, নিউরো মেডিসিন, গ্যাস্ট্রোলিভার ও ডায়াবেটিস বিশেষজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-new-holy-care"
+    ],
+    "schedule": "রোগী দেখার সময়: প্রতিদিন বিকাল ৩ টা থেকে রাত ৮ টা পর্যন্ত (শুক্রবার বন্ধ)",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-mushfiqur-rahman-surg",
+    "name": "ডাঃ মুশফিকুর রহমান",
+    "degree": "এমবিবিএস (ডিএমসি), বিসিএস (স্বাস্থ্য), এফসিপিএস (সার্জারি) | সহকারী সার্জন, ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী | বিএমডিসি রেজি: নং এ-৮৩৮১৯ | জেনারেল ও ল্যাপারোস্কপিক সার্জন — পাইলস্, ফিস্টুলা, এনালফিসার, ব্রেস্ট টিউমার, হার্নিয়া, হাইড্রোসিল ও গলব্লাডার পাথর অপারেশন",
+    "specialty": "Surgery",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-new-holy-care"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৪ টা থেকে রাত ৯ টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-mosammat-mukta-akter-gyn",
+    "name": "ডাঃ মোছাম্মৎ মুক্তা আক্তার",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), সিএমইউ (আল্ট্রা), এফসিপিএস (গাইনী এন্ড অবস্, এফপি), ডিএমইউ | সহকারী সার্জন, ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী | বিএমডিসি রেজি: নং এ-৮৬৪২৯ | প্রসূতি, স্ত্রীরোগ বিশেষজ্ঞ ও সার্জন এবং বন্ধ্যাত্ব রোগের অভিজ্ঞ চিকিৎসক",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-new-holy-care"
+    ],
+    "schedule": "প্রতি বুধবার ও শুক্রবার বিকাল ৩ টা থেকে রাত ৮ টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
   }
 ];
 

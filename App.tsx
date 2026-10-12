@@ -4875,7 +4875,12 @@ export default function App() {
             'dr-abdul-hye-rubel-physmed',
             'dr-md-nurul-islam-khan-hep',
             'dr-abeda-akter-ped',
-            'dr-md-rashedul-islam-ranju-uro'
+            'dr-md-rashedul-islam-ranju-uro',
+            'dr-md-abdullahel-mafi-surgery',
+            'dr-shamoli-akter-surg',
+            'dr-maruf-hasan-med',
+            'dr-mushfiqur-rahman-surg',
+            'dr-mosammat-mukta-akter-gyn'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -5215,10 +5220,24 @@ export default function App() {
           const janataDoc = hospRes.docs.find(docH => docH.id === 'c-janata');
           const janataHosp = CLINICS.find(c => c.id === 'c-janata');
           if (janataHosp) {
+            const currentDocList = janataDoc?.data()?.doctors || [];
+            const hasMissingTarget = janataHosp.doctors.some(id => !currentDocList.includes(id));
             if (!janataDoc) {
               setDoc(doc(db, 'hospitals', janataHosp.id), janataHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-janata in DB:`, e));
-            } else if (janataDoc.data()?.name !== janataHosp.name || janataDoc.data()?.address !== janataHosp.address) {
+            } else if (janataDoc.data()?.name !== janataHosp.name || janataDoc.data()?.address !== janataHosp.address || hasMissingTarget) {
               setDoc(doc(db, 'hospitals', janataHosp.id), { name: janataHosp.name, address: janataHosp.address, doctors: janataHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-janata in DB:`, e));
+            }
+          }
+
+          const holyCareDoc = hospRes.docs.find(docH => docH.id === 'c-new-holy-care');
+          const holyCareHosp = CLINICS.find(c => c.id === 'c-new-holy-care');
+          if (holyCareHosp) {
+            const currentDocList = holyCareDoc?.data()?.doctors || [];
+            const hasMissingTarget = holyCareHosp.doctors.some(id => !currentDocList.includes(id));
+            if (!holyCareDoc) {
+              setDoc(doc(db, 'hospitals', holyCareHosp.id), holyCareHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-new-holy-care in DB:`, e));
+            } else if (holyCareDoc.data()?.name !== holyCareHosp.name || holyCareDoc.data()?.address !== holyCareHosp.address || hasMissingTarget) {
+              setDoc(doc(db, 'hospitals', holyCareHosp.id), { name: holyCareHosp.name, address: holyCareHosp.address, doctors: holyCareHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-new-holy-care in DB:`, e));
             }
           }
 
@@ -5359,7 +5378,12 @@ export default function App() {
         'dr-abdul-hye-rubel-physmed',
         'dr-md-nurul-islam-khan-hep',
         'dr-abeda-akter-ped',
-        'dr-md-rashedul-islam-ranju-uro'
+        'dr-md-rashedul-islam-ranju-uro',
+        'dr-md-abdullahel-mafi-surgery',
+        'dr-shamoli-akter-surg',
+        'dr-maruf-hasan-med',
+        'dr-mushfiqur-rahman-surg',
+        'dr-mosammat-mukta-akter-gyn'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
