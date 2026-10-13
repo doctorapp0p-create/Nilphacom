@@ -421,7 +421,7 @@ export const CLINICS: Clinic[] = [
   },
   {
     "id": "c-madina",
-    "name": "Madina Diagnostic Clinic & Consultation",
+    "name": "মদিনা ডায়াগনস্টিক ক্লিনিক অ্যান্ড কনসালটেশন (Madina Diagnostic)",
     "district": "Nilphamari",
     "address": "জেনারেল হাসপাতাল রোড, হাসপাতাল মোড়, নীলফামারী",
     "doctors": [
@@ -2655,19 +2655,20 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "mad-kamrul",
-    "name": "Dr. Md. Kamrul Hasan",
-    "degree": "MBBS, BCS (স্বাস্থ্য) | মেডিসিন ও জেনারেল প্রাকটিশনার",
+    "name": "ডাঃ মোঃ কামরুল হাসান",
+    "degree": "এমবিবিএস (MBBS), বিসিএস (স্বাস্থ্য), এমসিপিএস (মেডিসিন), এমআরসিপি (আমেরিকা), এমএআরসিপিএস (গ্লাসগো, ইউকে), সিসিডি (বারডেম), গোল্ড মেডেলিস্ট | মেডিসিন, নিউরো-মেডিসিন, গ্যাস্ট্রোলিভার, ডায়াবেটিস, বাত-ব্যথা, হরমোন ও বন্ধ্যত্ব বিশেষজ্ঞ",
     "specialty": "Medicine",
     "districts": [
-      "Nilphamari"
+      "Nilphamari",
+      "নীলফামারী"
     ],
     "clinics": [
       "c-madina"
     ],
-    "schedule": "প্রতি মঙ্গলবার দুপুর ২ টা থেকে রাত ৮:০০ টা পর্যন্ত",
+    "schedule": "প্রতি সোমবার, মঙ্গলবার ও বুধবার বিকাল ৩:০০ টা থেকে রাত ৮:০০ টা পর্যন্ত",
     "availableToday": true,
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
   },
   {

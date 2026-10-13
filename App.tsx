@@ -4880,13 +4880,31 @@ export default function App() {
             'dr-shamoli-akter-surg',
             'dr-maruf-hasan-med',
             'dr-mushfiqur-rahman-surg',
-            'dr-mosammat-mukta-akter-gyn'
+            'dr-mosammat-mukta-akter-gyn',
+            'mad-kamrul'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
           missingDocs.forEach(tDoc => {
             setDoc(doc(db, 'doctors', tDoc.id), tDoc, { merge: true }).catch(e => console.warn(`Auto-syncing missing ${tDoc.id} in DB:`, e));
           });
+
+          // Sync mad-kamrul name, degree, and schedule in DB
+          const kamrulDoc = docRes.docs.find(docD => docD.id === 'mad-kamrul');
+          const freshKamrul = DOCTORS.find(d => d.id === 'mad-kamrul');
+          if (kamrulDoc && freshKamrul && (kamrulDoc.data()?.name !== freshKamrul.name || kamrulDoc.data()?.schedule !== freshKamrul.schedule || kamrulDoc.data()?.degree !== freshKamrul.degree)) {
+            setDoc(doc(db, 'doctors', 'mad-kamrul'), { 
+              name: freshKamrul.name,
+              degree: freshKamrul.degree,
+              specialty: freshKamrul.specialty,
+              schedule: freshKamrul.schedule,
+              clinics: freshKamrul.clinics,
+              districts: freshKamrul.districts,
+              availableToday: freshKamrul.availableToday,
+              rating: freshKamrul.rating,
+              consultationFee: freshKamrul.consultationFee
+            }, { merge: true }).catch(e => console.warn(`Updating mad-kamrul in DB:`, e));
+          }
 
           // Clean up doctors no longer practicing at Pacific Labzone from Firestore
           ['pacific-ayesha', 'pacific-selim'].forEach(oldId => {
@@ -5241,6 +5259,18 @@ export default function App() {
             }
           }
 
+          const madinaDoc = hospRes.docs.find(docH => docH.id === 'c-madina');
+          const madinaHosp = CLINICS.find(c => c.id === 'c-madina');
+          if (madinaHosp) {
+            const currentDocList = madinaDoc?.data()?.doctors || [];
+            const hasMissingTarget = madinaHosp.doctors.some(id => !currentDocList.includes(id));
+            if (!madinaDoc) {
+              setDoc(doc(db, 'hospitals', madinaHosp.id), madinaHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-madina in DB:`, e));
+            } else if (madinaDoc.data()?.name !== madinaHosp.name || madinaDoc.data()?.address !== madinaHosp.address || hasMissingTarget) {
+              setDoc(doc(db, 'hospitals', madinaHosp.id), { name: madinaHosp.name, address: madinaHosp.address, doctors: madinaHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-madina in DB:`, e));
+            }
+          }
+
           const newlifeDoc = hospRes.docs.find(docH => docH.id === 'c-newlife');
           const newlifeHosp = CLINICS.find(c => c.id === 'c-newlife');
           if (newlifeHosp) {
@@ -5383,7 +5413,8 @@ export default function App() {
         'dr-shamoli-akter-surg',
         'dr-maruf-hasan-med',
         'dr-mushfiqur-rahman-surg',
-        'dr-mosammat-mukta-akter-gyn'
+        'dr-mosammat-mukta-akter-gyn',
+        'mad-kamrul'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
