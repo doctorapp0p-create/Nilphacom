@@ -4555,13 +4555,22 @@ export default function App() {
           };
         }
         if (d.id === 'dr-ar-rezaul-alam') {
+          const correctSchedule = 'প্রতি সোমবার বিকাল ৫ টা থেকে রাত ৯ টা পর্যন্ত';
+          const needsUpdate = data.schedule !== correctSchedule;
+          if (needsUpdate && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
+            import('firebase/firestore').then(({ doc, updateDoc }) => {
+              updateDoc(doc(db, 'doctors', d.id), {
+                schedule: correctSchedule
+              }).catch(e => console.error("Auto-correcting Dr. Rezaul Alam's schedule failed: ", e));
+            });
+          }
           return {
             ...data,
             id: d.id,
             name: 'অধ্যাপক ডা. মো. রেজাউল আলম',
             degree: 'এমবিবিএস, ডিভি (থাইল্যান্ড), এমপিএইচ (ঢাকা), সিসিএস (ইন্ডিয়া), সিসিডি (বারডেম) | অধ্যাপক ও বিভাগীয় প্রধান, চর্ম ও যৌন রোগ বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল, রংপুর | চর্ম-যৌন, এলার্জি ও কুষ্ট রোগ বিশেষজ্ঞ',
             specialty: 'Dermatology',
-            schedule: 'প্রতি সোমবার ও বৃহস্পতিবার বিকাল ৫টা থেকে রাত ৯টা পর্যন্ত',
+            schedule: correctSchedule,
             clinics: ['c-ar'],
             districts: ['Nilphamari']
           };
@@ -4769,11 +4778,17 @@ export default function App() {
         });
       }
 
-      // Check if nl-uro1 (Dr. Mohammad Mobarak Hossain) exists in Firestore and clean it up if user is admin/moderator
+      // Check if nl-uro1 (Dr. Mohammad Mobarak Hossain) or eb-rasedul-ent exists in Firestore and clean it up if user is admin/moderator
       const hasUro1InDb = docRes.docs.some(d => d.id === 'nl-uro1');
       if (hasUro1InDb && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
         import('firebase/firestore').then(({ doc, deleteDoc }) => {
           deleteDoc(doc(db, 'doctors', 'nl-uro1')).catch(e => console.error("Auto-deleting nl-uro1 failed: ", e));
+        });
+      }
+      const hasEbRasedulInDb = docRes.docs.some(d => d.id === 'eb-rasedul-ent');
+      if (hasEbRasedulInDb && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
+        import('firebase/firestore').then(({ doc, deleteDoc }) => {
+          deleteDoc(doc(db, 'doctors', 'eb-rasedul-ent')).catch(e => console.error("Auto-deleting eb-rasedul-ent failed: ", e));
         });
       }
 
@@ -4784,7 +4799,7 @@ export default function App() {
             'dr-ar-hasina-banu', 'dr-ar-shamsur', 'dr-ar-mahbubul',
             'eb-roni-ortho', 'eb-murad-med', 'eb-mostafa-med', 'eb-saiful-card', 'eb-sabur-nephro',
             'eb-firoz-ent', 'eb-nasera-gyn', 'eb-shakera-gyn', 'eb-munira', 'eb-narayan-neuro',
-            'eb-resaul-med', 'eb-mahabub-med', 'eb-kaushik-ped', 'eb-sohel-ortho', 'eb-rasedul-ent',
+            'eb-resaul-med', 'eb-mahabub-med', 'eb-kaushik-ped', 'eb-sohel-ortho', 'eb-saiful-ent',
             'eb-mezbah-uro', 'eb-tanvir-psych', 'eb-sohrab-surg', 'eb-pavel-surg',
             'pacific-ali', 'pacific-altaf', 'pacific-hafiz', 'pacific-sabuj', 'pacific-shahjada', 'pacific-alamin', 'pacific-robiul', 'pacific-sarwar', 'pacific-kayes',
             'j-rikkon', 'j-shaheen-gyn', 'j-al-amin',
@@ -4881,7 +4896,8 @@ export default function App() {
             'dr-maruf-hasan-med',
             'dr-mushfiqur-rahman-surg',
             'dr-mosammat-mukta-akter-gyn',
-            'mad-kamrul'
+            'mad-kamrul',
+            'eb-saiful-ent'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -4906,8 +4922,25 @@ export default function App() {
             }, { merge: true }).catch(e => console.warn(`Updating mad-kamrul in DB:`, e));
           }
 
-          // Clean up doctors no longer practicing at Pacific Labzone from Firestore
-          ['pacific-ayesha', 'pacific-selim'].forEach(oldId => {
+          // Sync eb-saiful-ent name, degree, and schedule in DB
+          const saifulDoc = docRes.docs.find(docD => docD.id === 'eb-saiful-ent');
+          const freshSaiful = DOCTORS.find(d => d.id === 'eb-saiful-ent');
+          if (saifulDoc && freshSaiful && (saifulDoc.data()?.name !== freshSaiful.name || saifulDoc.data()?.schedule !== freshSaiful.schedule || saifulDoc.data()?.degree !== freshSaiful.degree)) {
+            setDoc(doc(db, 'doctors', 'eb-saiful-ent'), { 
+              name: freshSaiful.name,
+              degree: freshSaiful.degree,
+              specialty: freshSaiful.specialty,
+              schedule: freshSaiful.schedule,
+              clinics: freshSaiful.clinics,
+              districts: freshSaiful.districts,
+              availableToday: freshSaiful.availableToday,
+              rating: freshSaiful.rating,
+              consultationFee: freshSaiful.consultationFee
+            }, { merge: true }).catch(e => console.warn(`Updating eb-saiful-ent in DB:`, e));
+          }
+
+          // Clean up doctors no longer practicing at clinics from Firestore
+          ['pacific-ayesha', 'pacific-selim', 'eb-rasedul-ent'].forEach(oldId => {
             if (docRes.docs.some(docD => docD.id === oldId)) {
               import('firebase/firestore').then(({ doc, deleteDoc }) => {
                 deleteDoc(doc(db, 'doctors', oldId)).catch(e => console.warn(`Auto-deleting ${oldId} from DB: `, e));
@@ -5062,6 +5095,15 @@ export default function App() {
               districts: Array.from(new Set([...(towhidDoc.data()?.districts || []), 'Nilphamari', 'নীলফামারী'])),
               schedule: "প্রতি শুক্রবার সকাল ৯টা থেকে দুপুর ২টা পর্যন্ত" 
             }, { merge: true }).catch(e => console.warn(`Updating dr-ar-towhid-hasan schedule in DB:`, e));
+          }
+
+          // Sync dr-ar-rezaul-alam schedule in DB
+          const rezaulDoc = docRes.docs.find(docD => docD.id === 'dr-ar-rezaul-alam');
+          if (rezaulDoc && (rezaulDoc.data()?.schedule !== "প্রতি সোমবার বিকাল ৫ টা থেকে রাত ৯ টা পর্যন্ত" || !rezaulDoc.data()?.clinics?.includes('c-ar'))) {
+            setDoc(doc(db, 'doctors', 'dr-ar-rezaul-alam'), { 
+              schedule: "প্রতি সোমবার বিকাল ৫ টা থেকে রাত ৯ টা পর্যন্ত",
+              clinics: ['c-ar']
+            }, { merge: true }).catch(e => console.warn(`Updating dr-ar-rezaul-alam schedule in DB:`, e));
           }
 
           // Sync dr-hanan-ashavee-sonologist clinics in DB
@@ -5308,6 +5350,23 @@ export default function App() {
               setDoc(doc(db, 'hospitals', updateRangpurHosp.id), { name: updateRangpurHosp.name, address: updateRangpurHosp.address, doctors: updateRangpurHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-update-rangpur in DB:`, e));
             }
           }
+
+          const ebadotDoc = hospRes.docs.find(docH => docH.id === 'c-ebadot');
+          const ebadotHosp = CLINICS.find(c => c.id === 'c-ebadot');
+          if (ebadotHosp) {
+            const currentDocList = (ebadotDoc?.data()?.doctors || []);
+            const hasRasedulInList = currentDocList.includes('eb-rasedul-ent');
+            const hasMissingTarget = ebadotHosp.doctors.some(id => !currentDocList.includes(id));
+            if (!ebadotDoc) {
+              setDoc(doc(db, 'hospitals', ebadotHosp.id), ebadotHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-ebadot in DB:`, e));
+            } else if (hasRasedulInList || hasMissingTarget || ebadotDoc.data()?.name !== ebadotHosp.name || ebadotDoc.data()?.address !== ebadotHosp.address) {
+              setDoc(doc(db, 'hospitals', ebadotHosp.id), { 
+                name: ebadotHosp.name, 
+                address: ebadotHosp.address, 
+                doctors: ebadotHosp.doctors 
+              }, { merge: true }).catch(e => console.warn(`Updating c-ebadot in DB:`, e));
+            }
+          }
         }).catch(() => {});
       }
 
@@ -5318,7 +5377,7 @@ export default function App() {
       const updatedDoctorTargetIds = [
         'eb-roni-ortho', 'eb-murad-med', 'eb-mostafa-med', 'eb-saiful-card', 'eb-sabur-nephro',
         'eb-firoz-ent', 'eb-nasera-gyn', 'eb-shakera-gyn', 'eb-munira', 'eb-narayan-neuro',
-        'eb-resaul-med', 'eb-mahabub-med', 'eb-kaushik-ped', 'eb-sohel-ortho', 'eb-rasedul-ent',
+        'eb-resaul-med', 'eb-mahabub-med', 'eb-kaushik-ped', 'eb-sohel-ortho', 'eb-saiful-ent',
         'eb-mezbah-uro', 'eb-tanvir-psych', 'eb-sohrab-surg', 'eb-pavel-surg',
         'pacific-ali', 'pacific-altaf', 'pacific-hafiz', 'pacific-sabuj', 'pacific-shahjada', 'pacific-alamin', 'pacific-robiul', 'pacific-sarwar', 'pacific-kayes',
         'j-rikkon', 'j-shaheen-gyn', 'j-al-amin',
@@ -5414,7 +5473,9 @@ export default function App() {
         'dr-maruf-hasan-med',
         'dr-mushfiqur-rahman-surg',
         'dr-mosammat-mukta-akter-gyn',
-        'mad-kamrul'
+        'mad-kamrul',
+        'eb-saiful-ent',
+        'dr-ar-rezaul-alam'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -5553,7 +5614,7 @@ export default function App() {
       });
 
       // Filter out deleted doctors
-      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1');
+      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'eb-rasedul-ent');
 
       // Sequential list ordering: hospital/clinic/thana doctors appear first in sequential order, and Dr. Habibur Rahman (Dentist) is placed at the very end of the list
       const sortedMergedDoctors = [...doctorsWithOverrides].sort((a, b) => {

@@ -322,7 +322,7 @@ export const CLINICS: Clinic[] = [
       "eb-mahabub-med",
       "eb-kaushik-ped",
       "eb-sohel-ortho",
-      "eb-rasedul-ent",
+      "eb-saiful-ent",
       "eb-mezbah-uro",
       "eb-tanvir-psych",
       "eb-sohrab-surg",
@@ -1061,7 +1061,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি সোমবার ও বৃহস্পতিবার বিকাল ৫টা থেকে রাত ৯টা পর্যন্ত",
+    "schedule": "প্রতি সোমবার বিকাল ৫ টা থেকে রাত ৯ টা পর্যন্ত",
     "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
@@ -1401,20 +1401,19 @@ export const DOCTORS: Doctor[] = [
     "consultationFee": 600
   },
   {
-    "id": "eb-rasedul-ent",
-    "name": "ডাঃ মোঃ রাশেদুল ইসলাম (রাশেদ)",
-    "degree": "এমবিবিএস, ডিএলও (বিএসএমএমইউ), পিজি হাসপাতাল, ঢাকা | নাক, কান, গলা, ঘাড়, থাইরয়েড রোগ বিশেষজ্ঞ ও হেড নেক সার্জন",
+    "id": "eb-saiful-ent",
+    "name": "ডাঃ মোঃ সাইফুল ইসলাম",
+    "degree": "এমবিবিএস (MBBS), ডিএলও, এফসিপিএস (ইএনটি) | সহকারী অধ্যাপক | কর্মস্থল: নীলফামারী মেডিকেল কলেজ ও হাসপাতাল, নীলফামারী (সাবেক: ঢাকা মেডিকেল কলেজ ও হাসপাতাল, ঢাকা) | নাক, কান ও গলা রোগ বিশেষজ্ঞ এবং সার্জন",
     "specialty": "ENT",
     "districts": [
-      "Nilphamari",
-      "Dhaka"
+      "Nilphamari"
     ],
     "clinics": [
       "c-ebadot"
     ],
-    "schedule": "প্রতি শনি, রবি, বুধ ও বৃহস্পতিবার দুপুর ২টা থেকে রাত ৮টা, সোমবার সকাল ১০টা থেকে দুপুর ১টা পর্যন্ত",
+    "schedule": "শনি, রবি ও বৃহস্পতিবার বিকাল ৪:০০ টা থেকে রাত ৯:০০ টা পর্যন্ত",
     "availableToday": true,
-    "rating": 4.8,
+    "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
   },
