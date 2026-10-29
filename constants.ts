@@ -298,7 +298,8 @@ export const CLINICS: Clinic[] = [
       "dr-ar-nihar-ray",
       "dr-ar-ashequr",
       "dr-ar-samiur",
-      "dr-ar-debabrata-haldar"
+      "dr-ar-debabrata-haldar",
+      "mad-sakib"
     ],
     "image": "/ar_general_hospital.png"
   },
@@ -807,6 +808,18 @@ export const CLINICS: Clinic[] = [
       "dr-abu-hena-mostafa-kamal"
     ],
     "image": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-national-jaldhaka",
+    "name": "ন্যাশনাল মেডিকেল সেন্টার, জলঢাকা",
+    "district": "Nilphamari",
+    "address": "উপজেলা রোড, জলঢাকা, নীলফামারী।",
+    "doctors": [
+      "dr-mamun-miya-surg",
+      "dr-toufiq-hasan-jishan",
+      "dr-nasir-ahmed-ortho"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   }
 ];
 
@@ -1958,17 +1971,19 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "mad-sakib",
-    "name": "Dr. Shahidul Islam (Sakib)",
-    "degree": "MBBS, BCS (Health), MD (Nephrology - Registrar) | National Institute of Kidney Diseases and Urology, Dhaka",
+    "name": "ডাঃ মোঃ শাহীদুল ইসলাম (সাকিব)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (নেফ্রোলজি) বিএমইউ, এমএসিপি (মেডিসিন, আমেরিকা), এফসিপিএস (মেডিসিন-এফপি), সিসিডি (বারডেম), এমআইএসএন (ইউএসএ), লাইফ মেম্বার (বাংলাদেশ রেনাল এসোসিয়েশন) | কুষ্টিয়া মেডিকেল কলেজ হাসপাতাল, কুষ্টিয়া | কিডনী রোগ, ডায়ালাইসিস, ডায়াবেটিস, উচ্চ রক্তচাপ, বাত-ব্যথা ও মেডিসিন বিশেষজ্ঞ",
     "specialty": "Nephrology",
     "districts": [
-      "Nilphamari"
+      "Nilphamari",
+      "নীলফামারী"
     ],
     "clinics": [
+      "c-ar",
       "c-madina"
     ],
-    "schedule": "প্রতি শুক্রবার বিকাল ৪ টা - রাত ৯ টা",
-    "availableToday": true,
+    "schedule": "প্রতি বৃহস্পতিবার বিকাল ০৪ টা থেকে রাত ০৯টা পর্যন্ত",
+    "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 800
@@ -4900,6 +4915,66 @@ export const DOCTORS: Doctor[] = [
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-mamun-miya-surg",
+    "name": "ডা. মোঃ মামুন মিয়া",
+    "degree": "এমবিবিএস (রংপুর), বিসিএস (স্বাস্থ্য), এমএস (কোর্স) জেনারেল সার্জারি, রংপুর মেডিকেল কলেজ | জেনারেল ও ল্যাপারোস্কোপিক সার্জারিতে অভিজ্ঞ",
+    "specialty": "Surgery",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী",
+      "জলঢাকা",
+      "jaldhaka"
+    ],
+    "clinics": [
+      "c-national-jaldhaka"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০ টা থেকে বিকেল ৫ টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-toufiq-hasan-jishan",
+    "name": "ডা. মোঃ তৌফিক হাসান জিসান",
+    "degree": "এমবিবিএস (এসএইচএম), বিসিএস (স্বাস্থ্য) | সহকারী সার্জন, মেডিকেল অফিসার, উপজেলা স্বাস্থ্য কমপ্লেক্স, জলঢাকা, নীলফামারী | মেডিসিন ও সার্জারি অভিজ্ঞ চিকিৎসক",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী",
+      "জলঢাকা",
+      "jaldhaka"
+    ],
+    "clinics": [
+      "c-national-jaldhaka"
+    ],
+    "schedule": "প্রতিদিন দুপুর ২ টা থেকে রাত ৯ টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
+  },
+  {
+    "id": "dr-nasir-ahmed-ortho",
+    "name": "ডা. নাসির আহমেদ",
+    "degree": "এমবিবিএস (শহীদ জিয়াউর রহমান মেডিকেল কলেজ হাসপাতাল), ডি-অর্থো (কোর্স), জাতীয় অর্থোপেডিক হাসপাতাল ও পুনর্বাসন প্রতিষ্ঠান (পঙ্গু হাসপাতাল), ঢাকা | হাড়-জোড়া, পঙ্গু ও অর্থোপেডিক বিশেষজ্ঞ",
+    "specialty": "Orthopedics",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী",
+      "জলঢাকা",
+      "jaldhaka"
+    ],
+    "clinics": [
+      "c-national-jaldhaka"
+    ],
+    "schedule": "প্রতি শুক্রবার দুপুর ২টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
   }
 ];

@@ -4898,7 +4898,10 @@ export default function App() {
             'dr-mosammat-mukta-akter-gyn',
             'mad-kamrul',
             'eb-saiful-ent',
-            'mad-jilani-hem'
+            'mad-jilani-hem',
+            'dr-mamun-miya-surg',
+            'dr-toufiq-hasan-jishan',
+            'dr-nasir-ahmed-ortho'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -4921,6 +4924,23 @@ export default function App() {
               rating: freshJilani.rating,
               consultationFee: freshJilani.consultationFee
             }, { merge: true }).catch(e => console.warn(`Updating mad-jilani-hem in DB:`, e));
+          }
+
+          // Sync mad-sakib name, degree, schedule and clinics in DB
+          const sakibDoc = docRes.docs.find(docD => docD.id === 'mad-sakib');
+          const freshSakib = DOCTORS.find(d => d.id === 'mad-sakib');
+          if (sakibDoc && freshSakib && (sakibDoc.data()?.name !== freshSakib.name || sakibDoc.data()?.schedule !== freshSakib.schedule || sakibDoc.data()?.degree !== freshSakib.degree || !sakibDoc.data()?.clinics?.includes('c-ar'))) {
+            setDoc(doc(db, 'doctors', 'mad-sakib'), { 
+              name: freshSakib.name,
+              degree: freshSakib.degree,
+              specialty: freshSakib.specialty,
+              schedule: freshSakib.schedule,
+              clinics: freshSakib.clinics,
+              districts: freshSakib.districts,
+              availableToday: freshSakib.availableToday,
+              rating: freshSakib.rating,
+              consultationFee: freshSakib.consultationFee
+            }, { merge: true }).catch(e => console.warn(`Updating mad-sakib in DB:`, e));
           }
 
           // Sync mad-kamrul name, degree, and schedule in DB
@@ -5331,6 +5351,18 @@ export default function App() {
             }
           }
 
+          const nationalDoc = hospRes.docs.find(docH => docH.id === 'c-national-jaldhaka');
+          const nationalHosp = CLINICS.find(c => c.id === 'c-national-jaldhaka');
+          if (nationalHosp) {
+            const currentDocList = nationalDoc?.data()?.doctors || [];
+            const hasMissingTarget = nationalHosp.doctors.some(id => !currentDocList.includes(id));
+            if (!nationalDoc) {
+              setDoc(doc(db, 'hospitals', nationalHosp.id), nationalHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-national-jaldhaka in DB:`, e));
+            } else if (nationalDoc.data()?.name !== nationalHosp.name || nationalDoc.data()?.address !== nationalHosp.address || hasMissingTarget) {
+              setDoc(doc(db, 'hospitals', nationalHosp.id), { name: nationalHosp.name, address: nationalHosp.address, doctors: nationalHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-national-jaldhaka in DB:`, e));
+            }
+          }
+
           const newlifeDoc = hospRes.docs.find(docH => docH.id === 'c-newlife');
           const newlifeHosp = CLINICS.find(c => c.id === 'c-newlife');
           if (newlifeHosp) {
@@ -5494,7 +5526,10 @@ export default function App() {
         'mad-kamrul',
         'eb-saiful-ent',
         'dr-ar-rezaul-alam',
-        'mad-jilani-hem'
+        'mad-jilani-hem',
+        'dr-mamun-miya-surg',
+        'dr-toufiq-hasan-jishan',
+        'dr-nasir-ahmed-ortho'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -5663,7 +5698,7 @@ export default function App() {
               }
 
               // Auto-sync c-ar hospital details in DB if user is admin/moderator or if new doctor is missing from DB
-              if (dbH.id === 'c-ar' && (!dbH.doctors?.includes('dr-ar-debabrata-haldar') || (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)))) {
+              if (dbH.id === 'c-ar' && (!dbH.doctors?.includes('mad-sakib') || !dbH.doctors?.includes('dr-ar-debabrata-haldar') || (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)))) {
                 import('firebase/firestore').then(({ doc, updateDoc }) => {
                   updateDoc(doc(db, 'hospitals', 'c-ar'), {
                     address: localC.address,
@@ -7342,6 +7377,7 @@ export default function App() {
     const DIMLA_CLINIC_IDS = ['c-new-janata-dimla', 'c-dimla-update-clinic', 'c-shurokkha-dimla', 'c-doctors-dimla', 'c-life-dimla', 'c-sonar-bangla-dimla', 'c-sohel-dimla'];
     const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
     const RANGPUR_CLINIC_IDS = ['c-popular-rangpur', 'c-people-care-rangpur', 'c-update-rangpur'];
+    const JALDHAKA_CLINIC_IDS = ['c-national-jaldhaka'];
 
     const normalizeSpecialtyId = (specStr: string): string => {
       if (!specStr) return '';
@@ -7482,7 +7518,8 @@ export default function App() {
       }
 
       if (l.includes('jaldhaka') || l.includes('জলঢাকা')) {
-        return dDistricts.includes('jaldhaka') || dDistricts.includes('জলঢাকা') ||
+        return dClinics.some((c: string) => JALDHAKA_CLINIC_IDS.includes(c)) ||
+               dDistricts.includes('jaldhaka') || dDistricts.includes('জলঢাকা') ||
                dDeg.includes('জলঢাকা') || dAddr.includes('জলঢাকা');
       }
 
@@ -7579,6 +7616,7 @@ export default function App() {
       const DIMLA_CLINIC_IDS = ['c-new-janata-dimla', 'c-dimla-update-clinic', 'c-shurokkha-dimla', 'c-doctors-dimla', 'c-life-dimla', 'c-sonar-bangla-dimla', 'c-sohel-dimla'];
       const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
       const RANGPUR_CLINIC_IDS = ['c-popular-rangpur', 'c-people-care-rangpur', 'c-update-rangpur'];
+      const JALDHAKA_CLINIC_IDS = ['c-national-jaldhaka'];
 
       list = list.filter(h => {
         const addr = (h.address || '').toLowerCase();
@@ -7592,10 +7630,12 @@ export default function App() {
             !DOMAR_CLINIC_IDS.includes(h.id) && 
             !DIMLA_CLINIC_IDS.includes(h.id) && 
             !RANGPUR_CLINIC_IDS.includes(h.id) && 
+            !JALDHAKA_CLINIC_IDS.includes(h.id) &&
             h.id !== 'c-prava-dhaka' &&
             !addr.includes('ডোমার') && 
             !addr.includes('ডিমলা') && 
             !addr.includes('রংপুর') && 
+            !addr.includes('জলঢাকা') &&
             !addr.includes('ঢাকা')
           );
         }
@@ -7606,7 +7646,7 @@ export default function App() {
           return (addr.includes('সৈয়দপুর') || addr.includes('সৈয়দপুর')) && !addr.includes('সৈয়দপুর সড়ক, নীলফামারী') && !addr.includes('সৈয়দপুর সড়ক, নীলফামারী');
         }
         if (loc.includes('dimla') || loc.includes('ডিমলা')) return DIMLA_CLINIC_IDS.includes(h.id) || addr.includes('ডিমলা') || name.includes('ডিমলা');
-        if (loc.includes('jaldhaka') || loc.includes('জলঢাকা')) return addr.includes('জলঢাকা');
+        if (loc.includes('jaldhaka') || loc.includes('জলঢাকা')) return JALDHAKA_CLINIC_IDS.includes(h.id) || addr.includes('জলঢাকা') || name.includes('জলঢাকা');
         if (loc.includes('kishoreganj') || loc.includes('kishorganj') || loc.includes('কিশোরগঞ্জ')) return addr.includes('কিশোরগঞ্জ');
         if (loc.includes('debiganj') || loc.includes('দেবিগঞ্জ')) return addr.includes('দেবিগঞ্জ');
         return true;
