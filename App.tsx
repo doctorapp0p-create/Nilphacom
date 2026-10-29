@@ -4897,13 +4897,31 @@ export default function App() {
             'dr-mushfiqur-rahman-surg',
             'dr-mosammat-mukta-akter-gyn',
             'mad-kamrul',
-            'eb-saiful-ent'
+            'eb-saiful-ent',
+            'mad-jilani-hem'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
           missingDocs.forEach(tDoc => {
             setDoc(doc(db, 'doctors', tDoc.id), tDoc, { merge: true }).catch(e => console.warn(`Auto-syncing missing ${tDoc.id} in DB:`, e));
           });
+
+          // Sync mad-jilani-hem name, degree, and schedule in DB
+          const jilaniDoc = docRes.docs.find(docD => docD.id === 'mad-jilani-hem');
+          const freshJilani = DOCTORS.find(d => d.id === 'mad-jilani-hem');
+          if (jilaniDoc && freshJilani && (jilaniDoc.data()?.name !== freshJilani.name || jilaniDoc.data()?.schedule !== freshJilani.schedule || jilaniDoc.data()?.degree !== freshJilani.degree)) {
+            setDoc(doc(db, 'doctors', 'mad-jilani-hem'), { 
+              name: freshJilani.name,
+              degree: freshJilani.degree,
+              specialty: freshJilani.specialty,
+              schedule: freshJilani.schedule,
+              clinics: freshJilani.clinics,
+              districts: freshJilani.districts,
+              availableToday: freshJilani.availableToday,
+              rating: freshJilani.rating,
+              consultationFee: freshJilani.consultationFee
+            }, { merge: true }).catch(e => console.warn(`Updating mad-jilani-hem in DB:`, e));
+          }
 
           // Sync mad-kamrul name, degree, and schedule in DB
           const kamrulDoc = docRes.docs.find(docD => docD.id === 'mad-kamrul');
@@ -5475,7 +5493,8 @@ export default function App() {
         'dr-mosammat-mukta-akter-gyn',
         'mad-kamrul',
         'eb-saiful-ent',
-        'dr-ar-rezaul-alam'
+        'dr-ar-rezaul-alam',
+        'mad-jilani-hem'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -7379,6 +7398,13 @@ export default function App() {
       if (targetId === 'medicine') {
         const deg = (d.degree || '').toLowerCase();
         if (deg.includes('মেডিসিন') || deg.includes('medicine')) return true;
+      }
+
+      // Check for Hematology
+      if (targetId === 'hematology') {
+        const deg = (d.degree || '').toLowerCase();
+        const spec = (d.specialty || '').toLowerCase();
+        if (spec.includes('hematolog') || deg.includes('হেমাটোলজি') || deg.includes('রক্তরোগ') || deg.includes('ব্লাড ক্যান্সার') || deg.includes('থ্যালাসিমিয়া') || deg.includes('রক্তজনিত')) return true;
       }
 
       // Check for Sonology / Ultrasound

@@ -435,7 +435,8 @@ export const CLINICS: Clinic[] = [
       "mad-sumi",
       "mad-ped1",
       "dr-ar-monir",
-      "mad-kamrul"
+      "mad-kamrul",
+      "mad-jilani-hem"
     ],
     "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   },
@@ -2669,6 +2670,26 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
+  },
+  {
+    "id": "mad-jilani-hem",
+    "name": "ডাঃ মোঃ আব্দুল কাদের জিলানী",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (হেমাটোলজি) | সহযোগী অধ্যাপক ও বিভাগীয় প্রধান, হেমাটোলজি বিভাগ, রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | ব্লাড ক্যান্সার, থ্যালাসিমিয়া, লিমফোমা, রক্তশূন্যতা, হিমোফিলিয়া, জন্ডিস, অস্বাভাবিক রক্তক্ষরণ সহ সর্বপ্রকার রক্তজনিত রোগের বিশেষজ্ঞ চিকিৎসক",
+    "specialty": "Hematology",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী",
+      "Rangpur",
+      "রংপুর"
+    ],
+    "clinics": [
+      "c-madina"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১১:০০ টা থেকে রাত ৯:০০ টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
   },
   {
     "id": "j-shaheen-gyn",
