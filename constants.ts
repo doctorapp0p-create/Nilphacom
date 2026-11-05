@@ -275,9 +275,9 @@ export const EMERGENCY_SERVICES = [
 export const CLINICS: Clinic[] = [
   {
     "id": "c-ar",
-    "name": "এ.আর জেনারেল হসপিটাল",
+    "name": "এ.আর হেলথ সিটি",
     "district": "Nilphamari",
-    "address": "সদর হাসপাতাল সড়ক (আধুনিক সদর হাসপাতালের বিপরীতে), নীলফামারী",
+    "address": "শান্তি নগর (কানছিড়ার মোড়), সদর হাসপাতাল সড়ক, নীলফামারী।",
     "doctors": [
       "dr-ar-rupayan-das",
       "dr-ar-raisul-alam",
@@ -299,7 +299,8 @@ export const CLINICS: Clinic[] = [
       "dr-ar-ashequr",
       "dr-ar-samiur",
       "dr-ar-debabrata-haldar",
-      "mad-sakib"
+      "mad-sakib",
+      "dr-allama-iqbal-uro"
     ],
     "image": "/ar_general_hospital.png"
   },
@@ -818,6 +819,17 @@ export const CLINICS: Clinic[] = [
       "dr-mamun-miya-surg",
       "dr-toufiq-hasan-jishan",
       "dr-nasir-ahmed-ortho"
+    ],
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "id": "c-basunia-nilphamari",
+    "name": "বসুনিয়া হসপিটাল এন্ড ডায়াগনস্টিক ল্যাব",
+    "district": "Nilphamari",
+    "address": "মমতাজ মহল সিনেমা হলের বিপরীতে ও স্টাফ কোয়ার্টার মসজিদ সংলগ্ন, সৈয়দপুর সড়ক, নীলফামারী।",
+    "doctors": [
+      "dr-lutful-kabir-med",
+      "dr-papri-saha-gyn"
     ],
     "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   }
@@ -4976,6 +4988,62 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
+  },
+  {
+    "id": "dr-lutful-kabir-med",
+    "name": "ডাঃ মোঃ লুৎফুল কবীর",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমআরসিপি (লন্ডন, UK) | হাইপ্রেসার ও মেডিসিন বিশেষজ্ঞ | মেডিসিন, নিউরোমেডিসিন, গ্যাষ্ট্রোএন্টারোলজি, হৃদরোগ, বক্ষব্যাধি, শ্বাসকষ্ট, এ্যাজমা, প্যারালাইসিস, স্ট্রোক, বাত-ব্যথা, হাটুব্যথা, কোমড় ব্যথা, মেরুদন্ড ব্যথা, ঘাড় ব্যথা, চর্ম-যৌন, এ্যালার্জি ও ক্যান্সার রোগ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-basunia-nilphamari"
+    ],
+    "schedule": "প্রতি শুক্রবার সকাল ১০.০০ টা থেকে রাত্রি ৯.০০ টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-papri-saha-gyn",
+    "name": "ডাঃ পাপড়ী সাহা",
+    "degree": "এমবিবিএস, এফসিপিএস (গাইনী এন্ড অবস্), এমসিপিএস (গাইনী এন্ড অবস্), সিসিডি (বারডেম), ডিএমইউ (আল্ট্রা) | রেজিস্ট্রার (গাইনী ও প্রসূতি বিভাগ), রংপুর প্রাইম মেডিকেল কলেজ হাসপাতাল | বিএমডিসি রেজিঃ নং: এ-৫৭৮৫১ | গাইনী, প্রসূতি, বন্ধ্যাত্ব এবং মহিলা রোগ বিশেষজ্ঞ ও সার্জন",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী",
+      "Rangpur"
+    ],
+    "clinics": [
+      "c-basunia-nilphamari"
+    ],
+    "schedule": "প্রতি মঙ্গলবার বিকাল ৩.০০ থেকে রাত্রী ৯.০০ টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1594824813511-1e967a1c7c98?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-allama-iqbal-uro",
+    "name": "ডাঃ মোঃ আল্লামা ইকবাল (বাপ্পি)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমএস (ইউরোলজি) | ইউরোলজি ও এড্রোলজি বিশেষজ্ঞ ও সার্জন, ঢাকা মেডিকেল কলেজ হাসপাতাল, ঢাকা | ইউরোলজী, মূত্রনালী, মূত্রথলী, প্রোস্টেট, প্রসাবের রাস্তা, অন্ডকোষ, পুরুষাঙ্গ ও যৌনরোগ বিশেষজ্ঞ ও সার্জন",
+    "specialty": "Urology",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-ar"
+    ],
+    "schedule": "প্রতি সোমবার, বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
   }
 ];
 
@@ -4985,7 +5053,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Hb%",
     "price": 200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "হিমোগ্লোবিন পরীক্ষা"
   },
   {
@@ -4993,7 +5061,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "CBC & ESR",
     "price": 600,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সম্পূর্ণ রক্ত কণিকা ও ইএসআর পরীক্ষা"
   },
   {
@@ -5001,7 +5069,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Peripheral Blood Film (PBF)",
     "price": 800,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "পেরিফেরাল ব্লাড ফিল্ম"
   },
   {
@@ -5009,7 +5077,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Blood Grouping & Rh Factor",
     "price": 100,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "রক্তের গ্রুপ ও আরএইচ ফ্যাক্টর"
   },
   {
@@ -5017,7 +5085,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Fasting Blood Sugar (FBS)",
     "price": 200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "খালি পেটে রক্তের শর্করা/ডায়াবেটিস"
   },
   {
@@ -5025,7 +5093,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "FBS / 2Hrs AFB / RBS",
     "price": 200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "খাবার ২ ঘণ্টা পর ডায়াবেটিস পরীক্ষা"
   },
   {
@@ -5033,7 +5101,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "RBS & CUS",
     "price": 200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "র্যান্ডম ব্লাড সুগার"
   },
   {
@@ -5041,7 +5109,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Blood Urea",
     "price": 600,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ব্লাড ইউরিয়া (কিডনি পরীক্ষা)"
   },
   {
@@ -5049,7 +5117,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "OGTT (including 75gm glucose)",
     "price": 600,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "গ্লুকোজ টলারেন্স টেস্ট"
   },
   {
@@ -5057,7 +5125,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Serum Creatinine",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সিরাম ক্রিয়েটিনিন (কিডনি ফাকশন)"
   },
   {
@@ -5065,7 +5133,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Serum Uric Acid",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সিরাম ইউরিক এসিড (বাত ব্যথা)"
   },
   {
@@ -5073,7 +5141,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Lipid Profile / F.Lipid Profile",
     "price": 1200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "রক্তের চর্বি/লিপিড প্রোফাইল"
   },
   {
@@ -5081,7 +5149,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "S. Bilirubin Total / Direct / Indirect",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সিরাম বিলিরুবিন (জন্ডিস পরীক্ষা)"
   },
   {
@@ -5089,7 +5157,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "SGOT (AST)",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "এসজিওটি (লিভার এনজাইম)"
   },
   {
@@ -5097,7 +5165,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "SGPT (ALT)",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "এসজিপিটি (লিভার ফাংশন)"
   },
   {
@@ -5105,7 +5173,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Serum Albumin",
     "price": 600,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সিরাম অ্যালবুমিন"
   },
   {
@@ -5113,7 +5181,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Serum Amylase",
     "price": 1400,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সিরাম অ্যামাইলেজ (অগ্ন্যাশয়)"
   },
   {
@@ -5121,7 +5189,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Serum Calcium",
     "price": 800,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সিরাম ক্যালসিয়াম"
   },
   {
@@ -5129,7 +5197,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Serum Electrolytes",
     "price": 1200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ইলেক্ট্রোলাইটস (সোডিয়াম, পটাশিয়াম)"
   },
   {
@@ -5137,7 +5205,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "HbA1c",
     "price": 1200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "৩ মাসের গড় ডায়াবেটিস"
   },
   {
@@ -5145,7 +5213,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "RA Test (Quantitative)",
     "price": 800,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "আরএ টেস্ট (বাতের পরীক্ষা)"
   },
   {
@@ -5153,7 +5221,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "VDRL",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ভিডিআরএল স্ক্রিনিং"
   },
   {
@@ -5161,7 +5229,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Widal Test",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "টাইফয়েড জরের উইডাল টেস্ট"
   },
   {
@@ -5169,7 +5237,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "ANA / ANF",
     "price": 1600,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "এএনএ / এএনএফ"
   },
   {
@@ -5177,7 +5245,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Urine Pregnancy Test",
     "price": 100,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "প্রস্রাবে গর্ভধারণ পরীক্ষা"
   },
   {
@@ -5185,7 +5253,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "HIV (ICT)",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "এইচআইভি টেস্ট"
   },
   {
@@ -5193,7 +5261,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "S.IgE",
     "price": 1500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "এলার্জি পরীক্ষা (Serum IgE)"
   },
   {
@@ -5201,7 +5269,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Semen Analysis",
     "price": 800,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "বীর্য বিশ্লেষণ পরীক্ষা"
   },
   {
@@ -5209,7 +5277,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "T3, T4, TSH Profile",
     "price": 3000,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "থাইরয়েড প্রোফাইল"
   },
   {
@@ -5217,7 +5285,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "FT3",
     "price": 1200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ফ্রি টি-৩ (থাইরয়েড)"
   },
   {
@@ -5225,7 +5293,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "FT4",
     "price": 1200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ফ্রি টি-৪ (থাইরয়েড)"
   },
   {
@@ -5233,7 +5301,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Prolactin",
     "price": 1200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সিরাম প্রোল্যাকটিন হরমোন"
   },
   {
@@ -5241,7 +5309,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Testosterone",
     "price": 1200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "টেস্টোস্টেরন হরমোন"
   },
   {
@@ -5249,7 +5317,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Serum Beta HCG",
     "price": 1200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "বিটা এইচসিজি"
   },
   {
@@ -5257,7 +5325,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "ASO Titre",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "এএসও টাইটার (বাতের সংক্রমণ)"
   },
   {
@@ -5265,7 +5333,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Urine For R/M/E",
     "price": 200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ইউরিন সাধারণ পরীক্ষা"
   },
   {
@@ -5273,7 +5341,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Stool R/S",
     "price": 400,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "মল পরীক্ষা"
   },
   {
@@ -5281,7 +5349,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Stool OBT",
     "price": 400,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "স্টুল ওবিটি"
   },
   {
@@ -5289,7 +5357,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "HCV (ICT)",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "হেপাটাইটিস সি ভাইরাস স্ক্রিনিং"
   },
   {
@@ -5297,7 +5365,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Malaria ICT (MP)",
     "price": 800,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ম্যালেরিয়া আইসিটি"
   },
   {
@@ -5305,7 +5373,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "T3",
     "price": 1000,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "থাইরয়েড টি-৩"
   },
   {
@@ -5313,7 +5381,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "T4",
     "price": 1000,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "থাইরয়েড টি-৪"
   },
   {
@@ -5321,7 +5389,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "TSH",
     "price": 1000,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "থাইরয়েড টিএসএইচ"
   },
   {
@@ -5329,7 +5397,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "CRP ICT / Latex",
     "price": 800,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সি-রিয়েক্টিভ প্রোটিন"
   },
   {
@@ -5337,7 +5405,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "HBsAg (ICT)",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "হেপাটাইটিস বি স্ক্রিনিং"
   },
   {
@@ -5345,7 +5413,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Troponin-I",
     "price": 1200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ট্রোপোনিন-আই (হার্ট অ্যাটাক)"
   },
   {
@@ -5353,7 +5421,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "BT, CT",
     "price": 400,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ব্লিডিং টাইম ও ক্লটিং টাইম"
   },
   {
@@ -5361,7 +5429,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "HB% Electrophoresis",
     "price": 2000,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "থ্যালাসেমিয়া ও হিমোগ্লোবিন ইলেক্ট্রোফোরসিস"
   },
   {
@@ -5369,7 +5437,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "S. Iron",
     "price": 1200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সিরাম আয়রন"
   },
   {
@@ -5377,7 +5445,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Vitamin D",
     "price": 3000,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ভিটামিন ডি পরীক্ষা"
   },
   {
@@ -5385,7 +5453,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Vitamin B-12",
     "price": 3000,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ভিটামিন বি-১২ পরীক্ষা"
   },
   {
@@ -5393,7 +5461,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Vitamin D-3 Level",
     "price": 3000,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ভিটামিন ডি-৩ লেভেল"
   },
   {
@@ -5401,7 +5469,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Hematocrit",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "হেমাটোক্রিট"
   },
   {
@@ -5409,7 +5477,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "TB Test",
     "price": 600,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "যক্ষ্মা/টিবি পরীক্ষা"
   },
   {
@@ -5417,7 +5485,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Iron Profile",
     "price": 3000,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "আয়রন প্রোফাইল"
   },
   {
@@ -5425,7 +5493,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Urine Albumin",
     "price": 200,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ইউরিন অ্যালবুমিন"
   },
   {
@@ -5433,7 +5501,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Filaria ICT",
     "price": 800,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ফাইলেরিয়া পরীক্ষা"
   },
   {
@@ -5441,7 +5509,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Dengue-NS1",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ডেঙ্গু এনএস১ এন্টিজেন"
   },
   {
@@ -5449,7 +5517,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Dengue-IgG, IgM",
     "price": 500,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ডেঙ্গু আইজিজি ও আইজিএম"
   },
   {
@@ -5457,7 +5525,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "S. Cholesterol",
     "price": 300,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সিরাম কোলেস্টেরল"
   },
   {
@@ -5465,7 +5533,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Serum TG",
     "price": 300,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সিরাম ট্রাইগ্লিসারাইড"
   },
   {
@@ -5473,7 +5541,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Serum HDL",
     "price": 300,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "সিরাম এইচডিএল"
   },
   {
@@ -5481,7 +5549,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Urine for C/S",
     "price": 1400,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ইউরিন কালচার ও সেনসিটিভিটি"
   },
   {
@@ -5489,7 +5557,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Pus for C/S",
     "price": 1400,
     "category": "Pathology",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "পুঁজ কালচার ও সেনসিটিভিটি"
   },
   {
@@ -5497,7 +5565,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG of Whole Abdomen",
     "price": 750,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "পেটের আলট্রাসনোগ্রাম (হোল অ্যাবডোমেন)"
   },
   {
@@ -5505,7 +5573,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG of Upper Abdomen",
     "price": 750,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "উচ্চ পেটের আলট্রাসনোগ্রাম"
   },
   {
@@ -5513,7 +5581,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG of Lower Abdomen",
     "price": 750,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "নিম্ন পেটের আলট্রাসনোগ্রাম"
   },
   {
@@ -5521,7 +5589,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG of KUB / HBS",
     "price": 750,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "কেইউবি / এইচবিএস আলট্রাসনোগ্রাম"
   },
   {
@@ -5529,7 +5597,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG of Pregnancy Profile",
     "price": 750,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "গর্ভবতী মায়েদের আলট্রাসনোগ্রাম"
   },
   {
@@ -5537,7 +5605,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG of Pelvic Organ",
     "price": 750,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "পেলভিক অর্গান আলট্রাসনোগ্রাম"
   },
   {
@@ -5545,7 +5613,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG of Both Breast",
     "price": 1500,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "উভয় স্তনের আলট্রাসনোগ্রাম"
   },
   {
@@ -5553,7 +5621,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG of Both Testis",
     "price": 1500,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "উভয় অণ্ডকোষের আলট্রাসনোগ্রাম"
   },
   {
@@ -5561,7 +5629,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG of TVS",
     "price": 1500,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ট্রান্সভ্যাজাইনাল সোনোগ্রাফি (TVS)"
   },
   {
@@ -5569,7 +5637,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG of Whole Abdomen With MCC + PVR",
     "price": 1500,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "এমসিসি ও পিভিআর সহ পেটের আলট্রাসনোগ্রাম"
   },
   {
@@ -5577,7 +5645,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG Neck",
     "price": 1500,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "গলার/নেকের আলট্রাসনোগ্রাম"
   },
   {
@@ -5585,7 +5653,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "USG of Whole Abdomen with PVR",
     "price": 1500,
     "category": "Ultrasonogram",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "পিভিআর সহ সম্পূর্ণ পেটের আলট্রাসনোগ্রাম"
   },
   {
@@ -5593,7 +5661,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray PNS O/M View",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ডিজিটাল এক্স-রে পিএনএস"
   },
   {
@@ -5601,7 +5669,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Skull B/V",
     "price": 900,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "মাথার খুলির ডিজিটাল এক্স-রে"
   },
   {
@@ -5609,7 +5677,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Chest Left/Right View",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "বুকের ডিজিটাল এক্স-রে"
   },
   {
@@ -5617,7 +5685,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Chest P/A View With Oblique",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "বুকের ডিজিটাল এক্স-রে (অব্লিক ভিউ সহ)"
   },
   {
@@ -5625,7 +5693,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray KUB",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "কেইউবি ডিজিটাল এক্স-রে"
   },
   {
@@ -5633,7 +5701,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Cervical Spine (B/V)",
     "price": 900,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "গলার মেরুদণ্ডের ডিজিটাল এক্স-রে"
   },
   {
@@ -5641,7 +5709,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Dorso Lumbar Spine (B/V)",
     "price": 900,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "পিঠের মেরুদণ্ডের ডিজিটাল এক্স-রে"
   },
   {
@@ -5649,7 +5717,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray L/S Spine (B/V)",
     "price": 900,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "কোমরের মেরুদণ্ডের ডিজিটাল এক্স-রে (L/S Spine)"
   },
   {
@@ -5657,7 +5725,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Pelvis with Both Hip Joint (V/P)",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "পেলভিস ও নিতম্বের জয়েন্টের এক্স-রে"
   },
   {
@@ -5665,7 +5733,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Pelvis (A/P) view",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "পেলভিস এ/পি ভিউ এক্স-রে"
   },
   {
@@ -5673,7 +5741,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Leg B/V",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "পায়ের ডিজিটাল এক্স-রে"
   },
   {
@@ -5681,7 +5749,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Thigh Hip B/V",
     "price": 900,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ঊরু ও হিপ জয়েন্টের ডিজিটাল এক্স-রে"
   },
   {
@@ -5689,7 +5757,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Ankle Joint B/V",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "গোড়ালির জয়েন্টের ডিজিটাল এক্স-রে"
   },
   {
@@ -5697,7 +5765,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Wrist (B/V)",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "কব্জির ডিজিটাল এক্স-রে"
   },
   {
@@ -5705,7 +5773,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Elbow Joint (B/V)",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "কনুইয়ের জয়েন্টের ডিজিটাল এক্স-রে"
   },
   {
@@ -5713,7 +5781,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Shoulder Joint Right (B/V)",
     "price": 900,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "কাঁধের জয়েন্টের ডিজিটাল এক্স-রে"
   },
   {
@@ -5721,7 +5789,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Hand (B/V)",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "হাতের তালু/আঙুলের এক্স-রে"
   },
   {
@@ -5729,7 +5797,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray HIP Joint (B/V)",
     "price": 900,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "হিপ জয়েন্টের এক্স-রে"
   },
   {
@@ -5737,7 +5805,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Foot (B/V)",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "পায়ের পাতার এক্স-রে"
   },
   {
@@ -5745,7 +5813,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Arm (B/V)",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "বাহুর এক্স-রে"
   },
   {
@@ -5753,7 +5821,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Neck (B/V)",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "গলার এক্স-রে"
   },
   {
@@ -5761,7 +5829,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Neck Lateral View",
     "price": 900,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "গলার ল্যাটারাল ভিউ এক্স-রে"
   },
   {
@@ -5769,7 +5837,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Ba-meal Stomach",
     "price": 1800,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "বেরিয়াম মিল পাকস্থলী এক্স-রে"
   },
   {
@@ -5777,7 +5845,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Knee Joint (B/V)",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "হাঁটুর জয়েন্টের ডিজিটাল এক্স-রে"
   },
   {
@@ -5785,7 +5853,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Both Knee joint (B/V)",
     "price": 1200,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "উভয় হাঁটুর ডিজিটাল এক্স-রে"
   },
   {
@@ -5793,7 +5861,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Mastoid / T.V",
     "price": 600,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "ম্যাস্টয়েড এক্স-রে"
   },
   {
@@ -5801,7 +5869,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Digital X-Ray Dental (Each Film)",
     "price": 150,
     "category": "X-Ray",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "দাঁতের ডিজিটাল এক্স-রে"
   },
   {
@@ -5809,7 +5877,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "ECG (12 Channel)",
     "price": 400,
     "category": "ECG & Echo",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "১২ চ্যানেল ডিজিটাল ইসিজি"
   },
   {
@@ -5817,7 +5885,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "ECG (6 Channel)",
     "price": 300,
     "category": "ECG & Echo",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "৬ চ্যানেল ইসিজি"
   },
   {
@@ -5825,7 +5893,7 @@ export const LAB_TESTS: LabTest[] = [
     "name": "Echocardiogram (2D) Colour Doppler",
     "price": 1800,
     "category": "ECG & Echo",
-    "hospital_name": "এ.আর জেনারেল হসপিটাল",
+    "hospital_name": "এ.আর হেলথ সিটি",
     "description": "টু-ডি কালার ডপলার ইকোকার্ডিওগ্রাম"
   }
 ];

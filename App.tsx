@@ -791,7 +791,8 @@ const AdminDashboard: React.FC<{
   onToggleAllTests?: (active: boolean) => Promise<void>,
   onCouponsUpdated?: () => void,
   onChangeDoctorPhoto?: (doctor: Doctor) => void,
-}> = ({ profile, onLogout, ticker, setTicker, onUpdateTicker, doctors, hospitals, labTests, orders, profiles, appointments, onAdd, onEdit, onDelete, onRefreshAdminData, onUpdateAppointmentStatus, onUpdateOrderStatus, quizzes = [], submissions = [], withdrawals = [], onAddQuiz, onUpdateSubmissionStatus, onUpdateWithdrawalStatus, isLabTestsServiceEnabled = true, onToggleGlobalLabTestsService, onToggleTestActive, onToggleAllTests, onCouponsUpdated, onChangeDoctorPhoto }) => {
+  onViewWebsite?: () => void,
+}> = ({ profile, onLogout, ticker, setTicker, onUpdateTicker, doctors, hospitals, labTests, orders, profiles, appointments, onAdd, onEdit, onDelete, onRefreshAdminData, onUpdateAppointmentStatus, onUpdateOrderStatus, quizzes = [], submissions = [], withdrawals = [], onAddQuiz, onUpdateSubmissionStatus, onUpdateWithdrawalStatus, isLabTestsServiceEnabled = true, onToggleGlobalLabTestsService, onToggleTestActive, onToggleAllTests, onCouponsUpdated, onChangeDoctorPhoto, onViewWebsite }) => {
   const [activeSubTab, setActiveSubTab] = useState<'today_apps' | 'overview' | 'doctors' | 'orders' | 'hospitals' | 'labtests' | 'coupons' | 'billing' | 'referrals' | 'patients' | 'quizzes' | 'withdrawals' | 'free_doctors' | 'maternity_donation' | 'subscriptions' | 'doctor_portal' | 'employees' | 'backup'>('today_apps');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedDocId, setExpandedDocId] = useState<string | null>(null);
@@ -1339,9 +1340,21 @@ const AdminDashboard: React.FC<{
             <h1 className="text-xl font-black uppercase tracking-tighter">Admin Panel</h1>
             <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">{profile.full_name}</p>
           </div>
-          <button onClick={onLogout} className="bg-white/10 p-3 rounded-2xl hover:bg-white/20 transition-all active:scale-90">
-             <X size={20} />
-          </button>
+          <div className="flex items-center gap-2">
+            {onViewWebsite && (
+              <button 
+                type="button"
+                onClick={onViewWebsite}
+                className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+                title="মূল ওয়েবসাইটের হোম পেজে যান"
+              >
+                🌐 মূল ওয়েবসাইট দেখুন
+              </button>
+            )}
+            <button onClick={onLogout} className="bg-white/10 p-3 rounded-2xl hover:bg-white/20 transition-all active:scale-90" title="লগআউট">
+               <X size={20} />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -3948,6 +3961,20 @@ const HOME_SERVICES_CATEGORIES = [
 export default function App() {
   const [showLanding, setShowLanding] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
+  const [adminViewMode, setAdminViewMode] = useState<'admin' | 'website'>(() => {
+    const saved = localStorage.getItem('jb_admin_view_mode');
+    return saved === 'admin' ? 'admin' : 'website';
+  });
+
+  const handleSwitchAdminViewMode = (mode: 'admin' | 'website') => {
+    setAdminViewMode(mode);
+    localStorage.setItem('jb_admin_view_mode', mode);
+    if (mode === 'website') {
+      setActiveTab('home');
+      setHomeSubCategory('doctors');
+    }
+  };
+
   const [homeSubCategory, setHomeSubCategory] = useState<'doctors' | 'live_doctor' | 'govt_health' | 'blood_donation' | 'hospitals' | 'dental' | 'labtests' | 'emergency' | 'buy_medicine' | 'medical_accessories' | 'medical_records' | 'free_doctors' | 'maternity_donation' | 'donation' | 'subscriptions'>('doctors');
   const [showLiveDoctorModal, setShowLiveDoctorModal] = useState(false);
   const [liveDoctorSelectedDoc, setLiveDoctorSelectedDoc] = useState<Doctor | null>(null);
@@ -4901,13 +4928,67 @@ export default function App() {
             'mad-jilani-hem',
             'dr-mamun-miya-surg',
             'dr-toufiq-hasan-jishan',
-            'dr-nasir-ahmed-ortho'
+            'dr-nasir-ahmed-ortho',
+            'dr-lutful-kabir-med',
+            'dr-papri-saha-gyn',
+            'dr-allama-iqbal-uro'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
           missingDocs.forEach(tDoc => {
             setDoc(doc(db, 'doctors', tDoc.id), tDoc, { merge: true }).catch(e => console.warn(`Auto-syncing missing ${tDoc.id} in DB:`, e));
           });
+
+          // Sync dr-lutful-kabir-med name, degree, schedule and clinics in DB
+          const lutfulDoc = docRes.docs.find(docD => docD.id === 'dr-lutful-kabir-med');
+          const freshLutful = DOCTORS.find(d => d.id === 'dr-lutful-kabir-med');
+          if (lutfulDoc && freshLutful && (lutfulDoc.data()?.name !== freshLutful.name || lutfulDoc.data()?.schedule !== freshLutful.schedule || lutfulDoc.data()?.degree !== freshLutful.degree || !lutfulDoc.data()?.clinics?.includes('c-basunia-nilphamari'))) {
+            setDoc(doc(db, 'doctors', 'dr-lutful-kabir-med'), { 
+              name: freshLutful.name,
+              degree: freshLutful.degree,
+              specialty: freshLutful.specialty,
+              schedule: freshLutful.schedule,
+              clinics: freshLutful.clinics,
+              districts: freshLutful.districts,
+              availableToday: freshLutful.availableToday,
+              rating: freshLutful.rating,
+              consultationFee: freshLutful.consultationFee
+            }, { merge: true }).catch(e => console.warn(`Updating dr-lutful-kabir-med in DB:`, e));
+          }
+
+          // Sync dr-papri-saha-gyn name, degree, schedule and clinics in DB
+          const papriDoc = docRes.docs.find(docD => docD.id === 'dr-papri-saha-gyn');
+          const freshPapri = DOCTORS.find(d => d.id === 'dr-papri-saha-gyn');
+          if (papriDoc && freshPapri && (papriDoc.data()?.name !== freshPapri.name || papriDoc.data()?.schedule !== freshPapri.schedule || papriDoc.data()?.degree !== freshPapri.degree || !papriDoc.data()?.clinics?.includes('c-basunia-nilphamari'))) {
+            setDoc(doc(db, 'doctors', 'dr-papri-saha-gyn'), { 
+              name: freshPapri.name,
+              degree: freshPapri.degree,
+              specialty: freshPapri.specialty,
+              schedule: freshPapri.schedule,
+              clinics: freshPapri.clinics,
+              districts: freshPapri.districts,
+              availableToday: freshPapri.availableToday,
+              rating: freshPapri.rating,
+              consultationFee: freshPapri.consultationFee
+            }, { merge: true }).catch(e => console.warn(`Updating dr-papri-saha-gyn in DB:`, e));
+          }
+
+          // Sync dr-allama-iqbal-uro name, degree, schedule and clinics in DB
+          const allamaDoc = docRes.docs.find(docD => docD.id === 'dr-allama-iqbal-uro');
+          const freshAllama = DOCTORS.find(d => d.id === 'dr-allama-iqbal-uro');
+          if (allamaDoc && freshAllama && (allamaDoc.data()?.name !== freshAllama.name || allamaDoc.data()?.schedule !== freshAllama.schedule || allamaDoc.data()?.degree !== freshAllama.degree || !allamaDoc.data()?.clinics?.includes('c-ar'))) {
+            setDoc(doc(db, 'doctors', 'dr-allama-iqbal-uro'), { 
+              name: freshAllama.name,
+              degree: freshAllama.degree,
+              specialty: freshAllama.specialty,
+              schedule: freshAllama.schedule,
+              clinics: freshAllama.clinics,
+              districts: freshAllama.districts,
+              availableToday: freshAllama.availableToday,
+              rating: freshAllama.rating,
+              consultationFee: freshAllama.consultationFee
+            }, { merge: true }).catch(e => console.warn(`Updating dr-allama-iqbal-uro in DB:`, e));
+          }
 
           // Sync mad-jilani-hem name, degree, and schedule in DB
           const jilaniDoc = docRes.docs.find(docD => docD.id === 'mad-jilani-hem');
@@ -5363,6 +5444,30 @@ export default function App() {
             }
           }
 
+          const basuniaDoc = hospRes.docs.find(docH => docH.id === 'c-basunia-nilphamari');
+          const basuniaHosp = CLINICS.find(c => c.id === 'c-basunia-nilphamari');
+          if (basuniaHosp) {
+            const currentDocList = basuniaDoc?.data()?.doctors || [];
+            const hasMissingTarget = basuniaHosp.doctors.some(id => !currentDocList.includes(id));
+            if (!basuniaDoc) {
+              setDoc(doc(db, 'hospitals', basuniaHosp.id), basuniaHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-basunia-nilphamari in DB:`, e));
+            } else if (basuniaDoc.data()?.name !== basuniaHosp.name || basuniaDoc.data()?.address !== basuniaHosp.address || hasMissingTarget) {
+              setDoc(doc(db, 'hospitals', basuniaHosp.id), { name: basuniaHosp.name, address: basuniaHosp.address, doctors: basuniaHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-basunia-nilphamari in DB:`, e));
+            }
+          }
+
+          const arDoc = hospRes.docs.find(docH => docH.id === 'c-ar');
+          const arHosp = CLINICS.find(c => c.id === 'c-ar');
+          if (arHosp) {
+            const currentDocList = arDoc?.data()?.doctors || [];
+            const hasMissingTarget = arHosp.doctors.some(id => !currentDocList.includes(id));
+            if (!arDoc) {
+              setDoc(doc(db, 'hospitals', arHosp.id), arHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-ar in DB:`, e));
+            } else if (arDoc.data()?.name !== arHosp.name || arDoc.data()?.address !== arHosp.address || hasMissingTarget) {
+              setDoc(doc(db, 'hospitals', arHosp.id), { name: arHosp.name, address: arHosp.address, doctors: arHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-ar in DB:`, e));
+            }
+          }
+
           const newlifeDoc = hospRes.docs.find(docH => docH.id === 'c-newlife');
           const newlifeHosp = CLINICS.find(c => c.id === 'c-newlife');
           if (newlifeHosp) {
@@ -5529,7 +5634,10 @@ export default function App() {
         'mad-jilani-hem',
         'dr-mamun-miya-surg',
         'dr-toufiq-hasan-jishan',
-        'dr-nasir-ahmed-ortho'
+        'dr-nasir-ahmed-ortho',
+        'dr-lutful-kabir-med',
+        'dr-papri-saha-gyn',
+        'dr-allama-iqbal-uro'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -5698,9 +5806,10 @@ export default function App() {
               }
 
               // Auto-sync c-ar hospital details in DB if user is admin/moderator or if new doctor is missing from DB
-              if (dbH.id === 'c-ar' && (!dbH.doctors?.includes('mad-sakib') || !dbH.doctors?.includes('dr-ar-debabrata-haldar') || (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)))) {
+              if (dbH.id === 'c-ar' && (dbH.name !== localC.name || dbH.address !== localC.address || !dbH.doctors?.includes('dr-allama-iqbal-uro') || !dbH.doctors?.includes('mad-sakib') || !dbH.doctors?.includes('dr-ar-debabrata-haldar') || (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)))) {
                 import('firebase/firestore').then(({ doc, updateDoc }) => {
                   updateDoc(doc(db, 'hospitals', 'c-ar'), {
+                    name: localC.name,
                     address: localC.address,
                     doctors: localC.doctors
                   }).catch(e => console.warn("Auto-syncing c-ar in DB: ", e));
@@ -7375,7 +7484,7 @@ export default function App() {
     // Area and Clinic ID constants for accurate location filtering
     const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar', 'c-domar-general', 'c-pulse-domar', 'c-domar-update-hospital', 'c-golden-domar', 'c-care-hospital-domar'];
     const DIMLA_CLINIC_IDS = ['c-new-janata-dimla', 'c-dimla-update-clinic', 'c-shurokkha-dimla', 'c-doctors-dimla', 'c-life-dimla', 'c-sonar-bangla-dimla', 'c-sohel-dimla'];
-    const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
+    const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental', 'c-basunia-nilphamari'];
     const RANGPUR_CLINIC_IDS = ['c-popular-rangpur', 'c-people-care-rangpur', 'c-update-rangpur'];
     const JALDHAKA_CLINIC_IDS = ['c-national-jaldhaka'];
 
@@ -7614,7 +7723,7 @@ export default function App() {
       const loc = selectedLocation.toLowerCase().trim();
       const DOMAR_CLINIC_IDS = ['c-siddhika-domar', 'c-seven-star-domar', 'c-padma-domar', 'c-al-madina-domar', 'c-domar-general', 'c-pulse-domar', 'c-domar-update-hospital', 'c-golden-domar', 'c-care-hospital-domar'];
       const DIMLA_CLINIC_IDS = ['c-new-janata-dimla', 'c-dimla-update-clinic', 'c-shurokkha-dimla', 'c-doctors-dimla', 'c-life-dimla', 'c-sonar-bangla-dimla', 'c-sohel-dimla'];
-      const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental'];
+      const SADAR_CLINIC_IDS = ['c-ar', 'c-ebadot', 'c-moun', 'c-pacific', 'c-janata', 'c-ekota', 'c-madina', 'c-greensign', 'c-newlife', 'c-evercare-spec', 'c-roots', 'c-doctors-dental', 'c-basunia-nilphamari'];
       const RANGPUR_CLINIC_IDS = ['c-popular-rangpur', 'c-people-care-rangpur', 'c-update-rangpur'];
       const JALDHAKA_CLINIC_IDS = ['c-national-jaldhaka'];
 
@@ -8164,7 +8273,7 @@ export default function App() {
 
         {/* Main App Experience */}
         <Route path="*" element={
-          isAdmin ? (
+          (isAdmin && adminViewMode === 'admin') ? (
             <>
                <AdminDashboard 
                 profile={profile!} 
@@ -8206,6 +8315,7 @@ export default function App() {
                 onToggleAllTests={handleToggleAllTests}
                 onCouponsUpdated={fetchCouponsList}
                 onChangeDoctorPhoto={(doc) => setPhotoModalDoctor(doc)}
+                onViewWebsite={() => handleSwitchAdminViewMode('website')}
               />
 
               <AdminDataModal
@@ -8234,6 +8344,22 @@ export default function App() {
             </>
           ) : (
             <>
+              {isAdmin && (
+                <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white px-4 py-2 border-b border-indigo-500/30 flex items-center justify-between text-xs font-bold sticky top-0 z-50 shadow-md">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-amber-400 text-slate-950 text-[10px] uppercase font-black px-2 py-0.5 rounded-md flex items-center gap-1 shadow-xs">
+                      👑 এডমিন ভিউ
+                    </span>
+                    <span className="text-slate-200 text-xs hidden sm:inline">আপনি বর্তমানে মূল ওয়েবসাইটের হোম পেজে আছেন</span>
+                  </div>
+                  <button
+                    onClick={() => handleSwitchAdminViewMode('admin')}
+                    className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-3.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer active:scale-95"
+                  >
+                    🛠️ এডমিন ড্যাশবোর্ডে যান
+                  </button>
+                </div>
+              )}
               <AnimatePresence>
                 {showLanding && (
                   <LandingPage onStart={() => {
@@ -8288,6 +8414,15 @@ export default function App() {
                    <button onClick={handleShare} className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 border-2 border-slate-50 active:scale-90 transition-all" title="Share App">
                      <Share2 size={16} />
                    </button>
+                   {isAdmin && (
+                     <button 
+                       onClick={() => handleSwitchAdminViewMode('admin')} 
+                       className="bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-black px-2.5 py-1.5 rounded-xl transition-all shadow-sm shadow-amber-500/20 active:scale-95 cursor-pointer whitespace-nowrap flex items-center gap-1"
+                       title="এডমিন প্যানেলে প্রবেশ করুন"
+                     >
+                       🛠️ এডমিন
+                     </button>
+                   )}
                    {user ? (
                      <button onClick={() => { setActiveTab('profile'); navigate('/'); }} className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-[11px] font-black border-2 border-blue-50">
                        {profile?.full_name?.[0].toUpperCase() || '👤'}
@@ -10294,7 +10429,7 @@ export default function App() {
                 )}
               </main>
 
-              {profile?.role !== UserRole.ADMIN && (
+              {(profile?.role !== UserRole.ADMIN || adminViewMode === 'website') && (
                 <nav className="fixed bottom-6 left-6 right-6 z-50 bg-slate-900/95 backdrop-blur-2xl flex justify-around items-center py-5 rounded-[40px] shadow-2xl border border-white/10 overflow-hidden">
                   <button onClick={() => { setActiveTab('home'); setHomeSubCategory('doctors'); setSelectedHospitalId(null); setSelectedSpecialty(null); setSelectedDay(null); setSelectedLocation(null); navigate('/'); }} className={`flex flex-col items-center gap-1 transition-all duration-300 ${activeTab === 'home' ? 'text-blue-400 scale-125' : 'text-slate-500 opacity-60'}`}>
                     <span className="text-2xl">🏠</span>
@@ -10308,6 +10443,12 @@ export default function App() {
                     <button onClick={() => { setActiveTab('staff_portal'); navigate('/'); }} className={`flex flex-col items-center gap-1 transition-all duration-300 ${activeTab === 'staff_portal' ? 'text-violet-400 scale-125' : 'text-slate-500 opacity-60'}`}>
                       <span className="text-2xl">💼</span>
                       <span className="text-[8px] font-black uppercase tracking-[0.2em]">স্টাফ</span>
+                    </button>
+                  )}
+                  {isAdmin && (
+                    <button onClick={() => handleSwitchAdminViewMode('admin')} className="flex flex-col items-center gap-1 transition-all duration-300 text-amber-400 hover:scale-125 cursor-pointer">
+                      <span className="text-2xl">🛠️</span>
+                      <span className="text-[8px] font-black uppercase tracking-[0.2em]">Admin</span>
                     </button>
                   )}
                   <button onClick={() => { setActiveTab('profile'); navigate('/'); }} className={`flex flex-col items-center gap-1 transition-all duration-300 ${activeTab === 'profile' ? 'text-fuchsia-400 scale-125' : 'text-slate-500 opacity-60'}`}>
