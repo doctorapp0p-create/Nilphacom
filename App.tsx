@@ -4818,6 +4818,12 @@ export default function App() {
           deleteDoc(doc(db, 'doctors', 'eb-rasedul-ent')).catch(e => console.error("Auto-deleting eb-rasedul-ent failed: ", e));
         });
       }
+      const hasMadSkin1InDb = docRes.docs.some(d => d.id === 'mad-skin1');
+      if (hasMadSkin1InDb && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
+        import('firebase/firestore').then(({ doc, deleteDoc }) => {
+          deleteDoc(doc(db, 'doctors', 'mad-skin1')).catch(e => console.error("Auto-deleting mad-skin1 failed: ", e));
+        });
+      }
 
       // Auto-sync missing target doctors in DB only if they DO NOT exist yet in DB and user is admin/moderator
       if (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
@@ -5010,7 +5016,7 @@ export default function App() {
           // Sync mad-sakib name, degree, schedule and clinics in DB
           const sakibDoc = docRes.docs.find(docD => docD.id === 'mad-sakib');
           const freshSakib = DOCTORS.find(d => d.id === 'mad-sakib');
-          if (sakibDoc && freshSakib && (sakibDoc.data()?.name !== freshSakib.name || sakibDoc.data()?.schedule !== freshSakib.schedule || sakibDoc.data()?.degree !== freshSakib.degree || !sakibDoc.data()?.clinics?.includes('c-ar'))) {
+          if (sakibDoc && freshSakib && (sakibDoc.data()?.name !== freshSakib.name || sakibDoc.data()?.schedule !== freshSakib.schedule || sakibDoc.data()?.degree !== freshSakib.degree || sakibDoc.data()?.clinics?.includes('c-madina') || !sakibDoc.data()?.clinics?.includes('c-ar'))) {
             setDoc(doc(db, 'doctors', 'mad-sakib'), { 
               name: freshSakib.name,
               degree: freshSakib.degree,
@@ -5059,7 +5065,7 @@ export default function App() {
           }
 
           // Clean up doctors no longer practicing at clinics from Firestore
-          ['pacific-ayesha', 'pacific-selim', 'eb-rasedul-ent'].forEach(oldId => {
+          ['pacific-ayesha', 'pacific-selim', 'eb-rasedul-ent', 'mad-skin1'].forEach(oldId => {
             if (docRes.docs.some(docD => docD.id === oldId)) {
               import('firebase/firestore').then(({ doc, deleteDoc }) => {
                 deleteDoc(doc(db, 'doctors', oldId)).catch(e => console.warn(`Auto-deleting ${oldId} from DB: `, e));
@@ -5425,9 +5431,11 @@ export default function App() {
           if (madinaHosp) {
             const currentDocList = madinaDoc?.data()?.doctors || [];
             const hasMissingTarget = madinaHosp.doctors.some(id => !currentDocList.includes(id));
+            const hasSakibInMadina = currentDocList.includes('mad-sakib');
+            const hasSkin1InMadina = currentDocList.includes('mad-skin1');
             if (!madinaDoc) {
               setDoc(doc(db, 'hospitals', madinaHosp.id), madinaHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-madina in DB:`, e));
-            } else if (madinaDoc.data()?.name !== madinaHosp.name || madinaDoc.data()?.address !== madinaHosp.address || hasMissingTarget) {
+            } else if (madinaDoc.data()?.name !== madinaHosp.name || madinaDoc.data()?.address !== madinaHosp.address || hasMissingTarget || hasSakibInMadina || hasSkin1InMadina) {
               setDoc(doc(db, 'hospitals', madinaHosp.id), { name: madinaHosp.name, address: madinaHosp.address, doctors: madinaHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-madina in DB:`, e));
             }
           }
@@ -5776,7 +5784,7 @@ export default function App() {
       });
 
       // Filter out deleted doctors
-      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'eb-rasedul-ent');
+      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'eb-rasedul-ent' && d.id !== 'mad-skin1');
 
       // Sequential list ordering: hospital/clinic/thana doctors appear first in sequential order, and Dr. Habibur Rahman (Dentist) is placed at the very end of the list
       const sortedMergedDoctors = [...doctorsWithOverrides].sort((a, b) => {
@@ -5791,11 +5799,20 @@ export default function App() {
         ? dbHospitals.map(dbH => {
             const localC = CLINICS.find(c => c.id === dbH.id);
             if (localC) {
-              const combinedDoctors = (dbH.id === 'c-ar' || dbH.id === 'c-ebadot' || dbH.id === 'c-pacific')
+              const combinedDoctors = (dbH.id === 'c-ar' || dbH.id === 'c-ebadot' || dbH.id === 'c-pacific' || dbH.id === 'c-madina')
                 ? (localC.doctors || [])
                 : Array.from(new Set([...(dbH.doctors || []), ...(localC.doctors || [])]))
-                    .filter(id => id !== 'moun-biplab' && !(dbH.id === 'c-greensign' && id === 'pacific-shahjada'));
+                    .filter(id => id !== 'moun-biplab' && !(dbH.id === 'c-greensign' && id === 'pacific-shahjada') && !(dbH.id === 'c-madina' && (id === 'mad-sakib' || id === 'mad-skin1')));
               
+              // If c-madina hospital has mad-sakib or mad-skin1 in its DB doctors array, auto-correct the database
+              if (dbH.id === 'c-madina' && (dbH.doctors?.includes('mad-sakib') || dbH.doctors?.includes('mad-skin1') || (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)))) {
+                import('firebase/firestore').then(({ doc, updateDoc }) => {
+                  updateDoc(doc(db, 'hospitals', 'c-madina'), {
+                    doctors: localC.doctors
+                  }).catch(e => console.warn("Auto-syncing c-madina in DB: ", e));
+                });
+              }
+
               // If c-moun hospital has moun-biplab in its DB doctors array, and active user is admin, auto-correct the database
               if (dbH.id === 'c-moun' && dbH.doctors?.includes('moun-biplab') && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
                 import('firebase/firestore').then(({ doc, updateDoc }) => {

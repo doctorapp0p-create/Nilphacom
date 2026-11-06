@@ -427,9 +427,7 @@ export const CLINICS: Clinic[] = [
     "district": "Nilphamari",
     "address": "জেনারেল হাসপাতাল রোড, হাসপাতাল মোড়, নীলফামারী",
     "doctors": [
-      "mad-sakib",
       "mad-card1",
-      "mad-skin1",
       "mad-ent1",
       "mad-med1",
       "mad-orth1",
@@ -1991,8 +1989,7 @@ export const DOCTORS: Doctor[] = [
       "নীলফামারী"
     ],
     "clinics": [
-      "c-ar",
-      "c-madina"
+      "c-ar"
     ],
     "schedule": "প্রতি বৃহস্পতিবার বিকাল ০৪ টা থেকে রাত ০৯টা পর্যন্ত",
     "availableToday": false,
@@ -2016,23 +2013,6 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 700
-  },
-  {
-    "id": "mad-skin1",
-    "name": "Dr. Md. Abdul Kuddus",
-    "degree": "MBBS, BCS (Health), CCD (Diabetology), MCPS (Dermatology & VD) | Assistant Professor, Dinajpur Medical College",
-    "specialty": "Dermatology",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-madina"
-    ],
-    "schedule": "রবিবার বিকাল ৩:টা – রাত ৮:টা",
-    "availableToday": true,
-    "rating": 4.7,
-    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 600
   },
   {
     "id": "mad-ent1",
@@ -2692,7 +2672,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-madina"
     ],
-    "schedule": "প্রতি সোমবার, মঙ্গলবার ও বুধবার বিকাল ৩:০০ টা থেকে রাত ৮:০০ টা পর্যন্ত",
+    "schedule": "প্রতি সোমবার দুপুর ২:০০ টা থেকে রাত ৮:০০ টা পর্যন্ত",
     "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
