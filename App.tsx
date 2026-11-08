@@ -5241,6 +5241,22 @@ export default function App() {
             }, { merge: true }).catch(e => console.warn(`Updating dr-hanan-ashavee-sonologist clinics in DB:`, e));
           }
 
+          // Sync dr-pradip-kumar-roy clinics and schedule in DB
+          const pradipDoc = docRes.docs.find(docD => docD.id === 'dr-pradip-kumar-roy');
+          const localPradip = DOCTORS.find(d => d.id === 'dr-pradip-kumar-roy');
+          if (localPradip && pradipDoc && (!pradipDoc.data()?.clinics?.includes('c-ar') || pradipDoc.data()?.schedule !== localPradip.schedule || pradipDoc.data()?.degree !== localPradip.degree)) {
+            const updatedClinics = Array.from(new Set([...(pradipDoc.data()?.clinics || []), 'c-ar']));
+            setDoc(doc(db, 'doctors', 'dr-pradip-kumar-roy'), {
+              name: localPradip.name,
+              degree: localPradip.degree,
+              specialty: localPradip.specialty,
+              clinics: updatedClinics,
+              districts: Array.from(new Set([...(pradipDoc.data()?.districts || []), 'Nilphamari', 'নীলফামারী'])),
+              schedule: localPradip.schedule,
+              consultationFee: localPradip.consultationFee
+            }, { merge: true }).catch(e => console.warn(`Updating dr-pradip-kumar-roy in DB:`, e));
+          }
+
           // Also auto-sync or update hospital in DB
           const siddhikaDoc = hospRes.docs.find(docH => docH.id === 'c-siddhika-domar');
           const siddhikaHosp = CLINICS.find(c => c.id === 'c-siddhika-domar');
@@ -5742,6 +5758,19 @@ export default function App() {
                   schedule: "প্রতি মঙ্গলবার বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত"
                 };
               }
+              if (dbD.id === 'dr-pradip-kumar-roy') {
+                const localDoc = DOCTORS.find(d => d.id === 'dr-pradip-kumar-roy');
+                return {
+                  ...dbD,
+                  name: localDoc?.name || "ডাঃ প্রদীপ কুমার রায়",
+                  degree: localDoc?.degree || dbD.degree,
+                  specialty: localDoc?.specialty || "Endocrinology",
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-ar'])),
+                  schedule: localDoc?.schedule || "প্রতি শনিবার থেকে বৃহস্পতিবার বিকাল ০৪টা থেকে রাত ১০টা পর্যন্ত",
+                  districts: Array.from(new Set([...(dbD.districts || []), 'Nilphamari', 'নীলফামারী'])),
+                  consultationFee: localDoc?.consultationFee || 600
+                };
+              }
               return dbD;
             }),
             ...DOCTORS.filter(d => !dbDoctors.some(dbD => dbD.id === d.id))
@@ -5823,7 +5852,7 @@ export default function App() {
               }
 
               // Auto-sync c-ar hospital details in DB if user is admin/moderator or if new doctor is missing from DB
-              if (dbH.id === 'c-ar' && (dbH.name !== localC.name || dbH.address !== localC.address || !dbH.doctors?.includes('dr-allama-iqbal-uro') || !dbH.doctors?.includes('mad-sakib') || !dbH.doctors?.includes('dr-ar-debabrata-haldar') || (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)))) {
+              if (dbH.id === 'c-ar' && (dbH.name !== localC.name || dbH.address !== localC.address || !dbH.doctors?.includes('dr-allama-iqbal-uro') || !dbH.doctors?.includes('mad-sakib') || !dbH.doctors?.includes('dr-ar-debabrata-haldar') || !dbH.doctors?.includes('dr-pradip-kumar-roy') || (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)))) {
                 import('firebase/firestore').then(({ doc, updateDoc }) => {
                   updateDoc(doc(db, 'hospitals', 'c-ar'), {
                     name: localC.name,
@@ -8570,13 +8599,10 @@ export default function App() {
                     )}
 
                     <div className="space-y-6">
-                       <div className="flex justify-between items-center bg-slate-100/50 p-2 rounded-2xl">
-                           <h2 className="text-[11px] font-black text-slate-800 uppercase ml-2 tracking-wide">
-                            {homeSubCategory === 'doctors' 
-                              ? (selectedHospitalId 
-                                  ? hospitals.find(h => h.id === selectedHospitalId)?.name 
-                                  : 'বিশেষজ্ঞ ডক্টর') 
-                              : (homeSubCategory === 'blood_donation' ? '🩸 ব্লাড ডোনেট ও জরুরি রক্তদাতা ডিরেক্টরি' : homeSubCategory === 'live_doctor' ? '🔴 লাইভ ডক্টর — ভিডিও কল কনসালটেশন' : homeSubCategory === 'govt_health' ? '🏛️ সরকারি হাসপাতাল স্বাস্থ্যসেবা ও ই-টিকিট পোর্টাল (আমার স্বাস্থ্য)' : homeSubCategory === 'free_doctors' ? '🎁 আজকের ফ্রি ডাক্তার সেবা ও ডিসকাউন্ট' : homeSubCategory === 'maternity_donation' ? '🤰 গরিব গর্ভবতী মায়েদের সিজার ডেলিভারি অনুদান (৳২,০০০)' : homeSubCategory === 'donation' ? '🤲 মানবতার কল্যাণে ডোনেশন ফান্ড ও ডোনার পোর্টাল' : homeSubCategory === 'hospitals' ? 'হাসপাতাল লিস্ট' : homeSubCategory === 'dental' ? 'ডেন্টাল চেম্বার ও দন্তরোগ সেবা' : homeSubCategory === 'labtests' ? 'ল্যাব টেস্ট' : homeSubCategory === 'buy_medicine' ? 'ঔষধ পণ্য' : homeSubCategory === 'medical_accessories' ? 'মেডিকেল এক্সেসরিজ' : homeSubCategory === 'medical_records' ? '📁 চিকিৎসা পত্র জমা করুন (ডিজিটাল প্রেসক্রিপশন ভল্ট)' : 'জরুরি SOS সেবা')}
+                      {homeSubCategory !== 'doctors' && (
+                        <div className="flex justify-between items-center bg-slate-100/50 p-2 rounded-2xl">
+                            <h2 className="text-[11px] font-black text-slate-800 uppercase ml-2 tracking-wide">
+                             {homeSubCategory === 'blood_donation' ? '🩸 ব্লাড ডোনেট ও জরুরি রক্তদাতা ডিরেক্টরি' : homeSubCategory === 'live_doctor' ? '🔴 লাইভ ডক্টর — ভিডিও কল কনসালটেশন' : homeSubCategory === 'govt_health' ? '🏛️ সরকারি হাসপাতাল স্বাস্থ্যসেবা ও ই-টিকিট পোর্টাল (আমার স্বাস্থ্য)' : homeSubCategory === 'free_doctors' ? '🎁 আজকের ফ্রি ডাক্তার সেবা ও ডিসকাউন্ট' : homeSubCategory === 'maternity_donation' ? '🤰 গরিব গর্ভবতী মায়েদের সিজার ডেলিভারি অনুদান (৳২,০০০)' : homeSubCategory === 'donation' ? '🤲 মানবতার কল্যাণে ডোনেশন ফান্ড ও ডোনার পোর্টাল' : homeSubCategory === 'hospitals' ? 'হাসপাতাল লিস্ট' : homeSubCategory === 'dental' ? 'ডেন্টাল চেম্বার ও দন্তরোগ সেবা' : homeSubCategory === 'labtests' ? 'ল্যাব টেস্ট' : homeSubCategory === 'buy_medicine' ? 'ঔষধ পণ্য' : homeSubCategory === 'medical_accessories' ? 'মেডিকেল এক্সেসরিজ' : homeSubCategory === 'medical_records' ? '📁 চিকিৎসা পত্র জমা করুন (ডিজিটাল প্রেসক্রিপশন ভল্ট)' : 'জরুরি SOS সেবা'}
                           </h2>
                           <div className="relative">
                             <input 
@@ -8588,7 +8614,8 @@ export default function App() {
                             />
                             <span className="absolute right-2 top-2 text-slate-300 text-[10px]">🔍</span>
                           </div>
-                       </div>
+                        </div>
+                      )}
 
                        {homeSubCategory !== 'doctors' && (
                          <div className="space-y-2.5 mb-2 animate-in fade-in">
@@ -8797,57 +8824,105 @@ export default function App() {
                             </div>
 
                             <div className="space-y-4">
-                               <div className="flex justify-between items-center bg-white p-3.5 rounded-2xl border border-slate-100 shadow-2xs gap-2 flex-wrap">
-                                 <div className="flex items-center gap-2 flex-wrap">
-                                   <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
-                                     🩺 {selectedSpecialty ? `${SPECIALTIES.find(s => s.name.toLowerCase() === selectedSpecialty.toLowerCase() || s.id.toLowerCase() === selectedSpecialty.toLowerCase() || s.bnName.toLowerCase() === selectedSpecialty.toLowerCase())?.bnName || selectedSpecialty} বিশেষজ্ঞ তালিকা` : 'সকল বিশেষজ্ঞ ডাক্তার তালিকা'} ({filteredDoctors.length} জন)
-                                   </span>
-                                   {selectedLocation && (
-                                     <span className="text-[10px] font-black bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200 inline-flex items-center gap-1">
-                                       📍 {selectedLocation === 'নীলফামারী' ? 'নীলফামারী সদর' : selectedLocation}
+                               {/* Search Bar directly above doctor list on the left side of page */}
+                               <div className="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+                                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                                   <div className="relative flex-1 max-w-full sm:max-w-md">
+                                     <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                     <input 
+                                       type="text" 
+                                       placeholder="ডাক্তারের নাম, পদবি, হাসপাতাল বা রোগ দিয়ে খুঁজুন..." 
+                                       value={searchTerm} 
+                                       onChange={(e) => setSearchTerm(sanitizeInput(e.target.value))} 
+                                       className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-8 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400 placeholder:text-[11px]" 
+                                     />
+                                     {searchTerm && (
                                        <button 
-                                         type="button" 
-                                         onClick={() => setSelectedLocation(null)} 
-                                         className="hover:text-emerald-900 ml-0.5"
-                                         title="এলাকা ফিল্টার সরান"
+                                         type="button"
+                                         onClick={() => setSearchTerm('')} 
+                                         className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs w-5 h-5 flex items-center justify-center rounded-full hover:bg-slate-200 transition-colors"
+                                         title="মুছে ফেলুন"
                                        >
                                          ✕
                                        </button>
+                                     )}
+                                   </div>
+
+                                   <button
+                                     type="button"
+                                     onClick={() => downloadDoctorsCSV(filteredDoctors, hospitals)}
+                                     className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-black px-3 py-2 rounded-xl flex items-center justify-center gap-1 transition-all active:scale-95 shrink-0 self-end sm:self-auto cursor-pointer"
+                                   >
+                                     <Download size={12} /> ডাউনলোড CSV
+                                   </button>
+                                 </div>
+
+                                 <div className="flex items-center justify-between gap-2 flex-wrap border-t border-slate-100 pt-2.5">
+                                   <div className="flex items-center gap-2 flex-wrap">
+                                     <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                                       🩺 {selectedSpecialty ? `${SPECIALTIES.find(s => s.name.toLowerCase() === selectedSpecialty.toLowerCase() || s.id.toLowerCase() === selectedSpecialty.toLowerCase() || s.bnName.toLowerCase() === selectedSpecialty.toLowerCase())?.bnName || selectedSpecialty} বিশেষজ্ঞ তালিকা` : (selectedHospitalId ? `${hospitals.find(h => h.id === selectedHospitalId)?.name || 'হাসপাতাল'} ডাক্তার তালিকা` : 'সকল বিশেষজ্ঞ ডাক্তার তালিকা')} ({filteredDoctors.length} জন)
                                      </span>
-                                   )}
-                                   {selectedSpecialty && (
-                                     <span className="text-[10px] font-black bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full border border-blue-200 inline-flex items-center gap-1">
-                                       🩺 {SPECIALTIES.find(s => s.name.toLowerCase() === selectedSpecialty.toLowerCase() || s.id.toLowerCase() === selectedSpecialty.toLowerCase() || s.bnName.toLowerCase() === selectedSpecialty.toLowerCase())?.bnName || selectedSpecialty}
+                                     {searchTerm && (
+                                       <span className="text-[10px] font-black bg-amber-50 text-amber-800 px-2.5 py-0.5 rounded-full border border-amber-200 inline-flex items-center gap-1">
+                                         🔍 &quot;{searchTerm}&quot;
+                                         <button type="button" onClick={() => setSearchTerm('')} className="hover:text-amber-950 ml-0.5 font-bold cursor-pointer">✕</button>
+                                       </span>
+                                     )}
+                                     {selectedLocation && (
+                                       <span className="text-[10px] font-black bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200 inline-flex items-center gap-1">
+                                         📍 {selectedLocation === 'নীলফামারী' ? 'নীলফামারী সদর' : selectedLocation}
+                                         <button 
+                                           type="button" 
+                                           onClick={() => setSelectedLocation(null)} 
+                                           className="hover:text-emerald-900 ml-0.5 font-bold cursor-pointer"
+                                           title="এলাকা ফিল্টার সরান"
+                                         >
+                                           ✕
+                                         </button>
+                                       </span>
+                                     )}
+                                     {selectedSpecialty && (
+                                       <span className="text-[10px] font-black bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full border border-blue-200 inline-flex items-center gap-1">
+                                         🩺 {SPECIALTIES.find(s => s.name.toLowerCase() === selectedSpecialty.toLowerCase() || s.id.toLowerCase() === selectedSpecialty.toLowerCase() || s.bnName.toLowerCase() === selectedSpecialty.toLowerCase())?.bnName || selectedSpecialty}
+                                         <button
+                                           type="button"
+                                           onClick={() => setSelectedSpecialty(null)}
+                                           className="hover:text-blue-900 ml-0.5 font-bold cursor-pointer"
+                                           title="বিশেষজ্ঞ ফিল্টার সরান"
+                                         >
+                                           ✕
+                                         </button>
+                                       </span>
+                                     )}
+                                     {selectedHospitalId && (
+                                       <span className="text-[10px] font-black bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-full border border-indigo-200 inline-flex items-center gap-1">
+                                         🏥 {hospitals.find(h => h.id === selectedHospitalId)?.name}
+                                         <button
+                                           type="button"
+                                           onClick={() => setSelectedHospitalId(null)}
+                                           className="hover:text-indigo-900 ml-0.5 font-bold cursor-pointer"
+                                           title="হাসপাতাল ফিল্টার সরান"
+                                         >
+                                           ✕
+                                         </button>
+                                       </span>
+                                     )}
+                                     {(selectedSpecialty || selectedLocation || selectedHospitalId || searchTerm) && (
                                        <button
                                          type="button"
-                                         onClick={() => setSelectedSpecialty(null)}
-                                         className="hover:text-blue-900 ml-0.5"
-                                         title="বিশেষজ্ঞ ফিল্টার সরান"
+                                         onClick={() => {
+                                           setSelectedSpecialty(null);
+                                           setSelectedLocation(null);
+                                           setSelectedHospitalId(null);
+                                           setSearchTerm('');
+                                         }}
+                                         className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline ml-1 cursor-pointer"
                                        >
-                                         ✕
+                                         সব মুছুন
                                        </button>
-                                     </span>
-                                   )}
-                                   {(selectedSpecialty || selectedLocation) && (
-                                     <button
-                                       type="button"
-                                       onClick={() => {
-                                         setSelectedSpecialty(null);
-                                         setSelectedLocation(null);
-                                       }}
-                                       className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline ml-1"
-                                     >
-                                       সব মুছুন
-                                     </button>
-                                   )}
+                                     )}
+                                   </div>
                                  </div>
-                                 <button
-                                   type="button"
-                                   onClick={() => downloadDoctorsCSV(filteredDoctors, hospitals)}
-                                   className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-black px-3 py-1.5 rounded-xl flex items-center gap-1 transition-all active:scale-95"
-                                 >
-                                   <Download size={12} /> ডাউনলোড CSV
-                                 </button>
                                </div>
 
                                {filteredDoctors.length === 0 ? (

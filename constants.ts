@@ -300,7 +300,8 @@ export const CLINICS: Clinic[] = [
       "dr-ar-samiur",
       "dr-ar-debabrata-haldar",
       "mad-sakib",
-      "dr-allama-iqbal-uro"
+      "dr-allama-iqbal-uro",
+      "dr-pradip-kumar-roy"
     ],
     "image": "/ar_general_hospital.png"
   },
@@ -4168,21 +4169,23 @@ export const DOCTORS: Doctor[] = [
   {
     "id": "dr-pradip-kumar-roy",
     "name": "ডাঃ প্রদীপ কুমার রায়",
-    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন), এমডি (ডায়াবেটিস) | মেডিসিন ও ডায়াবেটিস বিশেষজ্ঞ",
-    "specialty": "Medicine",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), সিসিডি (বারডেম), ডিইএম (এন্ডোক্রাইনোলজি এন্ড মেটাবলিজম) বিএমইউ, ঢাকা, এফসিপিএস (মেডিসিন - এফপি) | মেডিকেল অফিসার, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | মেডিসিন, ডায়াবেটিস, থাইরয়েড ও হরমোন রোগ বিশেষজ্ঞ",
+    "specialty": "Endocrinology",
     "districts": [
       "Nilphamari",
+      "নীলফামারী",
       "Dimla",
       "ডিমলা"
     ],
     "clinics": [
+      "c-ar",
       "c-sohel-dimla"
     ],
-    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে সন্ধ্যা ৬টা পর্যন্ত",
-    "availableToday": false,
+    "schedule": "প্রতি শনিবার থেকে বৃহস্পতিবার বিকাল ০৪টা থেকে রাত ১০টা পর্যন্ত",
+    "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
-    "consultationFee": 500
+    "consultationFee": 600
   },
   {
     "id": "dr-khandakar-shafiqur-rahman",
