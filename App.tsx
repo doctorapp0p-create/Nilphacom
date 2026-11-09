@@ -4938,7 +4938,9 @@ export default function App() {
             'dr-lutful-kabir-med',
             'dr-papri-saha-gyn',
             'dr-allama-iqbal-uro',
-            'dr-abdullah-al-mamun-hematology'
+            'dr-abdullah-al-mamun-hematology',
+            'dr-irfan-rashid-med',
+            'dr-sojib-hossain-med'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -5256,6 +5258,20 @@ export default function App() {
               schedule: localPradip.schedule,
               consultationFee: localPradip.consultationFee
             }, { merge: true }).catch(e => console.warn(`Updating dr-pradip-kumar-roy in DB:`, e));
+          }
+          // Sync dr-maruf-hasan-med schedule and details in DB
+          const marufDoc = docRes.docs.find(docD => docD.id === 'dr-maruf-hasan-med');
+          const localMaruf = DOCTORS.find(d => d.id === 'dr-maruf-hasan-med');
+          if (localMaruf && marufDoc && (marufDoc.data()?.schedule !== localMaruf.schedule || marufDoc.data()?.degree !== localMaruf.degree || !marufDoc.data()?.clinics?.includes('c-new-holy-care'))) {
+            setDoc(doc(db, 'doctors', 'dr-maruf-hasan-med'), {
+              name: localMaruf.name,
+              degree: localMaruf.degree,
+              specialty: localMaruf.specialty,
+              clinics: Array.from(new Set([...(marufDoc.data()?.clinics || []), 'c-new-holy-care'])),
+              districts: Array.from(new Set([...(marufDoc.data()?.districts || []), 'Nilphamari', 'নীলফামারী', 'Rangpur'])),
+              schedule: localMaruf.schedule,
+              consultationFee: localMaruf.consultationFee
+            }, { merge: true }).catch(e => console.warn(`Updating dr-maruf-hasan-med in DB:`, e));
           }
 
           // Also auto-sync or update hospital in DB
@@ -5663,7 +5679,9 @@ export default function App() {
         'dr-lutful-kabir-med',
         'dr-papri-saha-gyn',
         'dr-allama-iqbal-uro',
-        'dr-abdullah-al-mamun-hematology'
+        'dr-abdullah-al-mamun-hematology',
+        'dr-irfan-rashid-med',
+        'dr-sojib-hossain-med'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -5786,6 +5804,45 @@ export default function App() {
                   consultationFee: localDoc?.consultationFee || 800
                 };
               }
+              if (dbD.id === 'dr-maruf-hasan-med') {
+                const localDoc = DOCTORS.find(d => d.id === 'dr-maruf-hasan-med');
+                return {
+                  ...dbD,
+                  name: localDoc?.name || "ডাঃ মারুফ হাসান",
+                  degree: localDoc?.degree || dbD.degree,
+                  specialty: localDoc?.specialty || "Medicine",
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-new-holy-care'])),
+                  schedule: localDoc?.schedule || "প্রতিদিন বিকাল ৪:০০ থেকে রাত ৯:০০ টা পর্যন্ত",
+                  districts: Array.from(new Set([...(dbD.districts || []), 'Nilphamari', 'নীলফামারী', 'Rangpur'])),
+                  consultationFee: localDoc?.consultationFee || 600
+                };
+              }
+              if (dbD.id === 'dr-irfan-rashid-med') {
+                const localDoc = DOCTORS.find(d => d.id === 'dr-irfan-rashid-med');
+                return {
+                  ...dbD,
+                  name: localDoc?.name || "ডাঃ ইরফান রশীদ",
+                  degree: localDoc?.degree || dbD.degree,
+                  specialty: localDoc?.specialty || "Medicine",
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-new-holy-care'])),
+                  schedule: localDoc?.schedule || "প্রতিদিন বিকাল ৪:০০ থেকে রাত ৯:০০ টা পর্যন্ত",
+                  districts: Array.from(new Set([...(dbD.districts || []), 'Nilphamari', 'নীলফামারী'])),
+                  consultationFee: localDoc?.consultationFee || 600
+                };
+              }
+              if (dbD.id === 'dr-sojib-hossain-med') {
+                const localDoc = DOCTORS.find(d => d.id === 'dr-sojib-hossain-med');
+                return {
+                  ...dbD,
+                  name: localDoc?.name || "ডাঃ সজীব হোসেন",
+                  degree: localDoc?.degree || dbD.degree,
+                  specialty: localDoc?.specialty || "Medicine",
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-new-holy-care'])),
+                  schedule: localDoc?.schedule || "প্রতি শনি, সোম ও বুধবার সকাল ১০টা থেকে বিকাল ২টা পর্যন্ত",
+                  districts: Array.from(new Set([...(dbD.districts || []), 'Nilphamari', 'নীলফামারী'])),
+                  consultationFee: localDoc?.consultationFee || 500
+                };
+              }
               return dbD;
             }),
             ...DOCTORS.filter(d => !dbDoctors.some(dbD => dbD.id === d.id))
@@ -5843,7 +5900,7 @@ export default function App() {
         ? dbHospitals.map(dbH => {
             const localC = CLINICS.find(c => c.id === dbH.id);
             if (localC) {
-              const combinedDoctors = (dbH.id === 'c-ar' || dbH.id === 'c-ebadot' || dbH.id === 'c-pacific' || dbH.id === 'c-madina')
+              const combinedDoctors = (dbH.id === 'c-ar' || dbH.id === 'c-ebadot' || dbH.id === 'c-pacific' || dbH.id === 'c-madina' || dbH.id === 'c-new-holy-care')
                 ? (localC.doctors || [])
                 : Array.from(new Set([...(dbH.doctors || []), ...(localC.doctors || [])]))
                     .filter(id => id !== 'moun-biplab' && !(dbH.id === 'c-greensign' && id === 'pacific-shahjada') && !(dbH.id === 'c-madina' && (id === 'mad-sakib' || id === 'mad-skin1')));

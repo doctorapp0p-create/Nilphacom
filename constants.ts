@@ -392,8 +392,10 @@ export const CLINICS: Clinic[] = [
     "district": "Nilphamari",
     "address": "সদর হাসপাতাল সড়ক, শান্তিনগর, নীলফামারী।",
     "doctors": [
-      "dr-shamoli-akter-surg",
+      "dr-irfan-rashid-med",
+      "dr-sojib-hossain-med",
       "dr-maruf-hasan-med",
+      "dr-shamoli-akter-surg",
       "dr-mushfiqur-rahman-surg",
       "dr-mosammat-mukta-akter-gyn"
     ],
@@ -4862,16 +4864,17 @@ export const DOCTORS: Doctor[] = [
   {
     "id": "dr-maruf-hasan-med",
     "name": "ডাঃ মারুফ হাসান",
-    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (মেডিসিন, জার্মানি), সিসিডি (বারডেম), এমআরএসএইচ (নিউরোলজি, ইংল্যান্ড), পিজিটি (গ্যাস্ট্রোএন্টারোলজি) | মেডিকেল অফিসার, ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী | মেডিসিন, নিউরো মেডিসিন, গ্যাস্ট্রোলিভার ও ডায়াবেটিস বিশেষজ্ঞ",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (মেডিসিন), পিজিটি (গ্যাস্ট্রোএন্টারোলজি), সিসিডি (বারডেম), এমআরএসএইচ (নিউরোলজি, ইংল্যান্ড) | বিএমডিসি রেজিঃ এ-৪১০৭৪ | রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | মেডিসিন, নিউরো মেডিসিন, গ্যাস্ট্রোলিভার ও ডায়াবেটিস বিশেষজ্ঞ",
     "specialty": "Medicine",
     "districts": [
       "Nilphamari",
-      "নীলফামারী"
+      "নীলফামারী",
+      "Rangpur"
     ],
     "clinics": [
       "c-new-holy-care"
     ],
-    "schedule": "রোগী দেখার সময়: প্রতিদিন বিকাল ৩ টা থেকে রাত ৮ টা পর্যন্ত (শুক্রবার বন্ধ)",
+    "schedule": "প্রতিদিন বিকাল ৪:০০ থেকে রাত ৯:০০ টা পর্যন্ত",
     "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
@@ -5046,6 +5049,42 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 800
+  },
+  {
+    "id": "dr-irfan-rashid-med",
+    "name": "ডাঃ ইরফান রশীদ",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (পেলিয়েটিভ মেডিসিন), এফসিপিএস-মেডিসিন (এফপি) | বিএমডিসি রেজি: এ-৫৪৮১১ | আধুনিক সদর হাসপাতাল, নীলফামারী | মেডিসিন, উচ্চরক্তচাপ, বাতজ্বর-ব্যথা ও ডায়াবেটিস বিশেষজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-new-holy-care"
+    ],
+    "schedule": "প্রতিদিন বিকাল ৪:০০ থেকে রাত ৯:০০ টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 600
+  },
+  {
+    "id": "dr-sojib-hossain-med",
+    "name": "ডাঃ সজীব হোসেন",
+    "degree": "এমবিবিএস (স্যার সলিমুল্লাহ মেডিকেল কলেজ, ঢাকা), এফসিপিএস-মেডিসিন (এফপি) | মেডিকেল অফিসার, ওব্যাট কানাডা হেল্থ ক্লিনিক | বিএমডিসি রেজি নং: ১১৮৯০২ | হৃদরোগ, উচ্চরক্তচাপ, বাতজ্বর-ব্যথা, শ্বাসকষ্ট ও ডায়াবেটিস বিশেষজ্ঞ",
+    "specialty": "Medicine",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-new-holy-care"
+    ],
+    "schedule": "প্রতি শনি, সোম ও বুধবার সকাল ১০টা থেকে বিকাল ২টা পর্যন্ত",
+    "availableToday": true,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 500
   }
 ];
 
