@@ -4937,7 +4937,8 @@ export default function App() {
             'dr-nasir-ahmed-ortho',
             'dr-lutful-kabir-med',
             'dr-papri-saha-gyn',
-            'dr-allama-iqbal-uro'
+            'dr-allama-iqbal-uro',
+            'dr-abdullah-al-mamun-hematology'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -5661,7 +5662,8 @@ export default function App() {
         'dr-nasir-ahmed-ortho',
         'dr-lutful-kabir-med',
         'dr-papri-saha-gyn',
-        'dr-allama-iqbal-uro'
+        'dr-allama-iqbal-uro',
+        'dr-abdullah-al-mamun-hematology'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -5769,6 +5771,19 @@ export default function App() {
                   schedule: localDoc?.schedule || "প্রতি শনিবার থেকে বৃহস্পতিবার বিকাল ০৪টা থেকে রাত ১০টা পর্যন্ত",
                   districts: Array.from(new Set([...(dbD.districts || []), 'Nilphamari', 'নীলফামারী'])),
                   consultationFee: localDoc?.consultationFee || 600
+                };
+              }
+              if (dbD.id === 'dr-abdullah-al-mamun-hematology') {
+                const localDoc = DOCTORS.find(d => d.id === 'dr-abdullah-al-mamun-hematology');
+                return {
+                  ...dbD,
+                  name: localDoc?.name || "ডাঃ মোঃ আব্দুল্লা আল মামুন প্রধান",
+                  degree: localDoc?.degree || dbD.degree,
+                  specialty: localDoc?.specialty || "Hematology",
+                  clinics: Array.from(new Set([...(dbD.clinics || []), 'c-newlife'])),
+                  schedule: localDoc?.schedule || "প্রতি বৃহস্পতিবার দুপুর ২ টা থেকে রাত ৯ টা পর্যন্ত",
+                  districts: Array.from(new Set([...(dbD.districts || []), 'Nilphamari', 'নীলফামারী'])),
+                  consultationFee: localDoc?.consultationFee || 800
                 };
               }
               return dbD;

@@ -478,7 +478,8 @@ export const CLINICS: Clinic[] = [
       "j-atiur",
       "dr-sohanur-rahman-sohag",
       "dr-md-abu-sayeed-gastro",
-      "dr-md-najmus-sakib-bari"
+      "dr-md-najmus-sakib-bari",
+      "dr-abdullah-al-mamun-hematology"
     ],
     "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   },
@@ -5027,6 +5028,24 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 700
+  },
+  {
+    "id": "dr-abdullah-al-mamun-hematology",
+    "name": "ডাঃ মোঃ আব্দুল্লা আল মামুন প্রধান",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (হেমাটোলজি), এমআরসিপি ইউকে (পেসেস), সিসিডি (বারডেম) | বাংলাদেশ মেডিকেল বিশ্ববিদ্যালয় (সাবেক পিজি হাসপাতাল) | রক্তরোগ এবং ব্লাড ক্যান্সার ও থ্যালাসেমিয়া রোগ বিশেষজ্ঞ",
+    "specialty": "Hematology",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-newlife"
+    ],
+    "schedule": "প্রতি বৃহস্পতিবার দুপুর ২ টা থেকে রাত ৯ টা পর্যন্ত",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 800
   }
 ];
 
