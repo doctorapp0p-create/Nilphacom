@@ -74,6 +74,7 @@ interface BuyMedicineSectionProps {
   db: any;
   onOpenAuth: () => void;
   initialCategory?: 'all' | 'medicine' | 'equipment';
+  onOpenWhatsAppOrder?: (type: 'medicine' | 'accessories', itemName?: string) => void;
 }
 
 export type ProductItem = DetailedMedicine;
@@ -83,7 +84,7 @@ interface CartItem {
   quantity: number;
 }
 
-export function BuyMedicineSection({ user, profile, db, onOpenAuth, initialCategory = 'all' }: BuyMedicineSectionProps) {
+export function BuyMedicineSection({ user, profile, db, onOpenAuth, initialCategory = 'all', onOpenWhatsAppOrder }: BuyMedicineSectionProps) {
   // Navigation tabs within Section
   const [subTab, setSubTab] = useState<'browse' | 'shops' | 'register'>('browse');
   
@@ -630,15 +631,20 @@ export function BuyMedicineSection({ user, profile, db, onOpenAuth, initialCateg
                 </p>
               </div>
               
-              <a
-                href="https://wa.me/8801352669100?text=%E0%A6%B9%E0%A7%8D%E0%A6%AF%E0%A6%BE%E0%A6%B2%E0%A7%8B%20%E0%A6%A8%E0%A6%BF%E0%A6%B2%E0%A6%AB%E0%A6%BE%20%E0%A6%B9%E0%A7%87%E0%A6%B2%E0%A7%8D%E0%A6%A5%E0%A6%95%E0%A7%87%E0%A6%AF%E0%A6%BC%E0%A6%BE%E0%A6%B0%2C%20%E0%A6%86%E0%A6%AE%E0%A6%BF%20%E0%A6%AA%E0%A7%8D%E0%A6%B0%E0%A7%87%E0%A6%B8%E0%A6%95%E0%A7%8D%E0%A6%B0%E0%A6%BF%E0%A6%AA%E0%A6%B6%E0%A6%A8%2F%E0%A6%99%E0%A6%B7%E0%A6%A0%E0%A7%87%E0%A6%B0%20%E0%A6%9B%E0%A6%AB%E0%A6%BF%20%E0%A6%AA%E0%A6%BE%E0%A6%A0%E0%A6%BF%E0%A6%AF%E0%A6%BC%E0%A7%87%20%E0%A6%93%E0%A6%B7%E0%A6%A0%20%E0%A6%85%E0%A6%B0%E0%A7%8D%E0%A6%A1%E0%A6%BE%E0%A6%B0%20%E0%A6%95%E0%A6%B0%E0%A6%A4%E0%A7%87%20%E0%A6%9A%E0%A6%BE%E0%A6%88%E0%A7%8B"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-white hover:bg-emerald-50 text-emerald-800 px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-wide shadow-md hover:scale-[1.02] active:scale-95 transition-all shrink-0 border border-emerald-100"
+              <button
+                type="button"
+                onClick={() => {
+                  if (onOpenWhatsAppOrder) {
+                    onOpenWhatsAppOrder(initialCategory === 'equipment' ? 'accessories' : 'medicine');
+                  } else {
+                    window.open("https://wa.me/8801352669100", "_blank");
+                  }
+                }}
+                className="inline-flex items-center justify-center gap-2 bg-white hover:bg-emerald-50 text-emerald-800 px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-wide shadow-md hover:scale-[1.02] active:scale-95 transition-all shrink-0 border border-emerald-100 cursor-pointer"
               >
                 <span className="text-base">💬</span>
-                <span>প্রেসক্রিপশনের ছবি পাঠান (01352669100)</span>
-              </a>
+                <span>{initialCategory === 'equipment' ? 'হোয়াটসঅ্যাপে এক্সেসরিজ অর্ডার ফর্ম' : 'প্রেসক্রিপশন/ওষুধ অর্ডার ফর্ম'}</span>
+              </button>
             </div>
           </div>
           
@@ -796,15 +802,20 @@ export function BuyMedicineSection({ user, profile, db, onOpenAuth, initialCateg
                 ওয়েবসাইটে সব ওষুধের তালিকা না থাকলেও কোনো সমস্যা নেই! আপনার প্রয়োজনীয় ওষুধের বিবরণ বা প্রেসক্রিপশনের ছবি সরাসরি আমাদের হোয়াটসঅ্যাপে পাঠিয়ে দিন।
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                <a
-                  href="https://wa.me/8801352669100?text=%E0%A6%B9%E0%A7%8D%E0%A6%AF%E0%A6%BE%E0%A6%B2%E0%A7%8B%20%E0%A6%A8%E0%A6%BF%E0%A6%B2%E0%A6%AB%E0%A6%BE%20%E0%A6%B9%E0%A7%87%E0%A6%B2%E0%A7%8D%E0%A6%A5%E0%A6%95%E0%A7%87%E0%A6%AF%E0%A6%BC%E0%A6%BE%E0%A6%B0%2C%20%E0%A6%86%E0%A6%AE%E0%A6%BF%20%E0%A6%AA%E0%A7%8D%E0%A6%B0%E0%A7%87%E0%A6%B8%E0%A6%95%E0%A7%8D%E0%A6%B0%E0%A6%BF%E0%A6%AA%E0%A6%B6%E0%A6%A8%E0%A7%87%E0%A6%B0%20%E0%A6%9B%E0%A6%AB%E0%A6%BF%20%E0%A6%AA%E0%A6%BE%E0%A6%A0%E0%A6%BF%E0%A6%AF%E0%A6%BC%E0%A7%87%20%E0%A6%93%E0%A6%B7%E0%A6%A0%20%E0%A6%85%E0%A6%B0%E0%A7%8D%E0%A6%A1%E0%A6%BE%E0%A6%B0%20%E0%A6%95%E0%A6%B0%E0%A6%A4%E0%A7%87%20%E0%A6%9A%E0%A6%BE%E0%A6%88%E0%A7%8B"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-md transition-all"
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onOpenWhatsAppOrder) {
+                      onOpenWhatsAppOrder(initialCategory === 'equipment' ? 'accessories' : 'medicine', searchQuery || '');
+                    } else {
+                      window.open("https://wa.me/8801352669100", "_blank");
+                    }
+                  }}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
                 >
                   <span>💬</span>
-                  <span>হোয়াটসঅ্যাপে ছবি পাঠান (01352669100)</span>
-                </a>
+                  <span>{initialCategory === 'equipment' ? 'হোয়াটসঅ্যাপে এক্সেসরিজ অর্ডার ফর্ম' : 'হোয়াটসঅ্যাপে ঔষধ অর্ডার ফর্ম'} (01352669100)</span>
+                </button>
                 <button 
                   onClick={() => { setSelectedCompany('all'); setSelectedType('all'); setSearchQuery(''); }}
                   className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold transition-all"

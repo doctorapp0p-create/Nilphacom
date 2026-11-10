@@ -1217,17 +1217,17 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
       {/* ---------------------------------------------------- */}
       <AnimatePresence>
         {showUploadModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 p-5 sm:p-6 space-y-4"
+              className="bg-white rounded-3xl max-w-lg w-full max-h-[92dvh] sm:max-h-[88vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden"
             >
-              {/* Modal Header */}
-              <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
+              {/* Modal Header (Fixed at top) */}
+              <div className="flex justify-between items-center border-b border-slate-100 p-4 sm:px-6 sm:py-3.5 bg-white shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0">
                     <FilePlus size={22} />
                   </div>
                   <div>
@@ -1235,35 +1235,38 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                     <p className="text-[10px] text-slate-400">মোবাইল নাম্বারে সুরক্ষিত রাখা হবে</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setShowUploadModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
-                >
-                  <X size={18} />
-                </button>
+
+                <div className="flex items-center gap-2">
+                  {/* Top quick save button for easy reach on desktop and mobile */}
+                  <button
+                    type="button"
+                    disabled={isSubmitting || isProcessingFiles}
+                    onClick={() => {
+                      const form = document.getElementById('medical-record-form') as HTMLFormElement;
+                      if (form) form.requestSubmit();
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-sm transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                    title="সংরক্ষণ নিশ্চিত করুন"
+                  >
+                    {isSubmitting ? <RefreshCw size={13} className="animate-spin" /> : <Check size={13} />}
+                    <span>সংরক্ষণ</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowUploadModal(false)}
+                    className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
               </div>
 
-              {/* Form */}
-              <form onSubmit={handleSubmitRecord} className="space-y-3.5">
-                {/* Visit Date */}
-                <div>
-                  <label className="block text-xs font-black text-slate-700 mb-1 flex items-center gap-1">
-                    <Calendar size={13} className="text-emerald-600" />
-                    ডাক্তার দেখানোর তারিখ: <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={formVisitDate}
-                    onChange={(e) => setFormVisitDate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
-                    required
-                  />
-                </div>
-
-                {/* Document Type */}
+              {/* Form (Scrollable body) */}
+              <form id="medical-record-form" onSubmit={handleSubmitRecord} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+                {/* 1. Document Type */}
                 <div>
                   <label className="block text-xs font-black text-slate-700 mb-1">
-                    ডকুমেন্টের ধরণ:
+                    কাগজ / ডকুমেন্টের ধরণ:
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
                     {RECORD_TYPES.map(t => (
@@ -1284,98 +1287,16 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                   </div>
                 </div>
 
-                {/* Doctor Name & Specialty */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  <div>
-                    <label className="block text-xs font-black text-slate-700 mb-1">
-                      ডাক্তারের নাম:
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="যেমন: ডাঃ এম. এ. রহিম"
-                      value={formDoctorName}
-                      onChange={(e) => setFormDoctorName(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-black text-slate-700 mb-1">
-                      বিশেষজ্ঞ ধরণ:
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="যেমন: মেডিসিন / হৃদরোগ"
-                      value={formDoctorSpecialty}
-                      onChange={(e) => setFormDoctorSpecialty(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Hospital / Clinic */}
-                <div>
-                  <label className="block text-xs font-black text-slate-700 mb-1">
-                    হাসপাতাল / চেম্বার / ক্লিনিক:
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="যেমন: নীলফামারী আধুনিক ডায়াগনস্টিক সেন্টার"
-                    value={formHospitalName}
-                    onChange={(e) => setFormHospitalName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
-                  />
-                </div>
-
-                {/* Patient Name & Diagnosis */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  <div>
-                    <label className="block text-xs font-black text-slate-700 mb-1">
-                      রোগীর নাম:
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="রোগীর নাম"
-                      value={formPatientName}
-                      onChange={(e) => setFormPatientName(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-black text-slate-700 mb-1">
-                      রোগের লক্ষণ / সমস্যা:
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="যেমন: জ্বর ও শ্বাসকষ্ট"
-                      value={formDiagnosis}
-                      onChange={(e) => setFormDiagnosis(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Advice / Notes */}
-                <div>
-                  <label className="block text-xs font-black text-slate-700 mb-1">
-                    অতিরিক্ত নোট বা পরামর্শ (ঐচ্ছিক):
-                  </label>
-                  <textarea
-                    rows={2}
-                    placeholder="ঔষধের নিয়ম বা টেস্টের নির্দেশাবলী..."
-                    value={formNotes}
-                    onChange={(e) => setFormNotes(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:bg-white focus:border-emerald-500 outline-none resize-none"
-                  />
-                </div>
-
-                {/* File Upload Area */}
-                <div>
-                  <label className="block text-xs font-black text-slate-700 mb-1 flex items-center justify-between">
-                    <span className="flex items-center gap-1">
-                      <UploadCloud size={13} className="text-emerald-600" />
+                {/* 2. File Upload Area (Front & Center!) */}
+                <div className="bg-emerald-50/50 p-3 sm:p-4 rounded-2xl border border-emerald-200/80 space-y-2.5">
+                  <label className="block text-xs font-black text-slate-800 mb-0.5 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <UploadCloud size={16} className="text-emerald-600" />
                       প্রেসক্রিপশন বা রিপোর্টের ছবি/ফাইল: <span className="text-rose-500">*</span>
                     </span>
-                    <span className="text-[10px] text-slate-400 font-normal">একাধিক ছবি যোগ করা যাবে</span>
+                    <span className="text-[10px] text-emerald-700 font-bold bg-white px-2 py-0.5 rounded-full border border-emerald-200">
+                      একাধিক ছবি যোগ করা যাবে
+                    </span>
                   </label>
 
                   {/* Hidden file inputs for high compatibility across all mobile & desktop browsers */}
@@ -1399,14 +1320,14 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                   />
 
                   {/* Upload Actions: Camera & Gallery / File */}
-                  <div className="grid grid-cols-2 gap-2 mb-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       disabled={isProcessingFiles}
                       onClick={() => cameraInputRef.current?.click()}
-                      className="flex items-center justify-center gap-2 py-3 px-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl text-emerald-800 text-xs font-black transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                      className="flex items-center justify-center gap-2 py-3 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition-all cursor-pointer active:scale-95 shadow-md shadow-emerald-200 disabled:opacity-50"
                     >
-                      <Camera size={16} className="text-emerald-700" />
+                      <Camera size={16} />
                       <span>ক্যামেরা দিয়ে ছবি তুলুন</span>
                     </button>
 
@@ -1414,22 +1335,19 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                       type="button"
                       disabled={isProcessingFiles}
                       onClick={() => fileInputRef.current?.click()}
-                      className="flex items-center justify-center gap-2 py-3 px-3 bg-blue-50 hover:bg-blue-100 border border-blue-300 rounded-xl text-blue-800 text-xs font-black transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                      className="flex items-center justify-center gap-2 py-3 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black transition-all cursor-pointer active:scale-95 shadow-md shadow-blue-200 disabled:opacity-50"
                     >
-                      <Upload size={16} className="text-blue-700" />
-                      <span>গ্যালারি / ফাইল থেকে বেছে নিন</span>
+                      <Upload size={16} />
+                      <span>গ্যালারি / ফাইল থেকে নিন</span>
                     </button>
                   </div>
 
                   {/* Drag and drop / Tap box as additional intuitive target */}
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-2xl p-3.5 text-center bg-slate-50/60 hover:bg-slate-50 transition-all cursor-pointer group"
+                    className="border-2 border-dashed border-emerald-300 hover:border-emerald-500 rounded-xl p-3 text-center bg-white hover:bg-slate-50/80 transition-all cursor-pointer group"
                   >
-                    <div className="space-y-1">
-                      <div className="w-9 h-9 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center mx-auto group-hover:scale-105 transition-transform">
-                        <UploadCloud size={18} />
-                      </div>
+                    <div className="space-y-0.5">
                       <p className="text-xs font-black text-slate-700">
                         {isProcessingFiles ? 'ফাইল প্রসেস হচ্ছে...' : 'ক্লিক করে ছবি বা প্রেসক্রিপশন সিলেক্ট করুন'}
                       </p>
@@ -1441,24 +1359,24 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
 
                   {/* Upload Error Banner */}
                   {uploadErrorMsg && (
-                    <div className="mt-2 p-2.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-bold flex items-center gap-2">
+                    <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-bold flex items-center gap-2">
                       <AlertCircle size={14} className="shrink-0 text-rose-600" />
                       <span>{uploadErrorMsg}</span>
                     </div>
                   )}
 
-                  {/* Attached Files Preview */}
+                  {/* Attached Files Preview & Immediate Inline Confirm Action */}
                   {formFiles.length > 0 && (
-                    <div className="mt-2.5 space-y-1">
-                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-600 px-1">
+                    <div className="space-y-2 pt-1">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 px-1">
                         <span>সংযুক্ত ফাইল ({formFiles.length}টি)</span>
-                        <span className="text-emerald-600">আপলোডের জন্য প্রস্তুত</span>
+                        <span className="text-emerald-700 font-black">আপলোডের জন্য প্রস্তুত</span>
                       </div>
                       <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
                         {formFiles.map((file, idx) => (
                           <div
                             key={idx}
-                            className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-emerald-500/40 bg-white shrink-0 group flex items-center justify-center shadow-xs"
+                            className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-emerald-500 bg-white shrink-0 group flex items-center justify-center shadow-xs"
                           >
                             {file.isPdf ? (
                               <div className="flex flex-col items-center justify-center p-1 text-center">
@@ -1486,8 +1404,122 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                           </div>
                         ))}
                       </div>
+
+                      {/* Immediate Inline Confirm Button right next to uploaded photos */}
+                      <div className="p-2.5 bg-emerald-100 border border-emerald-300 rounded-xl flex items-center justify-between gap-2 shadow-xs">
+                        <div className="text-[11px] font-bold text-emerald-950 leading-tight">
+                          🎉 {formFiles.length}টি ছবি যুক্ত হয়েছে!
+                        </div>
+                        <button
+                          type="submit"
+                          disabled={isSubmitting || isProcessingFiles}
+                          className="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-black flex items-center gap-1 shadow-sm active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                        >
+                          <Check size={13} />
+                          <span>এখনই নিশ্চিত করুন</span>
+                        </button>
+                      </div>
                     </div>
                   )}
+                </div>
+
+                {/* 3. Visit Date */}
+                <div>
+                  <label className="block text-xs font-black text-slate-700 mb-1 flex items-center gap-1">
+                    <Calendar size={13} className="text-emerald-600" />
+                    ডাক্তার দেখানোর তারিখ: <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={formVisitDate}
+                    onChange={(e) => setFormVisitDate(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                    required
+                  />
+                </div>
+
+                {/* 4. Doctor Name & Specialty (Optional details) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block text-xs font-black text-slate-700 mb-1">
+                      ডাক্তারের নাম (যদি জানা থাকে):
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="যেমন: ডাঃ এম. এ. রহিম"
+                      value={formDoctorName}
+                      onChange={(e) => setFormDoctorName(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-black text-slate-700 mb-1">
+                      বিশেষজ্ঞ ধরণ:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="যেমন: মেডিসিন / হৃদরোগ"
+                      value={formDoctorSpecialty}
+                      onChange={(e) => setFormDoctorSpecialty(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* 5. Hospital / Clinic */}
+                <div>
+                  <label className="block text-xs font-black text-slate-700 mb-1">
+                    হাসপাতাল / চেম্বার / ক্লিনিক:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="যেমন: নীলফামারী আধুনিক ডায়াগনস্টিক সেন্টার"
+                    value={formHospitalName}
+                    onChange={(e) => setFormHospitalName(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                  />
+                </div>
+
+                {/* 6. Patient Name & Diagnosis */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block text-xs font-black text-slate-700 mb-1">
+                      রোগীর নাম:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="রোগীর নাম"
+                      value={formPatientName}
+                      onChange={(e) => setFormPatientName(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-black text-slate-700 mb-1">
+                      রোগের লক্ষণ / সমস্যা:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="যেমন: জ্বর ও শ্বাসকষ্ট"
+                      value={formDiagnosis}
+                      onChange={(e) => setFormDiagnosis(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* 7. Advice / Notes */}
+                <div>
+                  <label className="block text-xs font-black text-slate-700 mb-1">
+                    অতিরিক্ত নোট বা পরামর্শ (ঐচ্ছিক):
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="ঔষধের নিয়ম বা টেস্টের নির্দেশাবলী..."
+                    value={formNotes}
+                    onChange={(e) => setFormNotes(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:bg-white focus:border-emerald-500 outline-none resize-none"
+                  />
                 </div>
 
                 {/* Progress message if uploading */}
@@ -1497,28 +1529,40 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                     <span>{uploadProgressText}</span>
                   </div>
                 )}
-
-                {/* Submit button */}
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || isProcessingFiles}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white py-3 px-4 rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-200 transition-all cursor-pointer disabled:opacity-50"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <RefreshCw size={16} className="animate-spin" />
-                        <span>{uploadProgressText || 'সংরক্ষণ করা হচ্ছে...'}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Check size={16} />
-                        <span>চিকিৎসা পত্র ক্লাউডে সংরক্ষণ করুন</span>
-                      </>
-                    )}
-                  </button>
-                </div>
               </form>
+
+              {/* 8. Sticky Action Footer (ALWAYS VISIBLE on Desktop & Mobile Viewports) */}
+              <div className="p-3 sm:p-4 bg-slate-50/95 backdrop-blur-md border-t border-slate-200 flex items-center gap-2.5 shrink-0 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
+                <button
+                  type="button"
+                  onClick={() => setShowUploadModal(false)}
+                  className="px-4 py-3 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-black rounded-xl transition-all cursor-pointer"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  form="medical-record-form"
+                  disabled={isSubmitting || isProcessingFiles}
+                  className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-[0.98] text-white py-3 px-4 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-200 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <RefreshCw size={16} className="animate-spin" />
+                      <span className="truncate">{uploadProgressText || 'সংরক্ষণ করা হচ্ছে...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check size={18} />
+                      <span>
+                        {formFiles.length > 0
+                          ? `✅ কনফার্ম করুন (${formFiles.length}টি ফাইল সংরক্ষণ)`
+                          : 'চিকিৎসা পত্র ক্লাউডে সংরক্ষণ করুন'}
+                      </span>
+                    </>
+                  )}
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

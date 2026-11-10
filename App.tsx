@@ -44,6 +44,7 @@ import { SecurityGuard, sanitizeInput } from './src/components/SecurityGuard';
 import { AdminLabBillBuilder } from './src/components/AdminLabBillBuilder';
 import { AuthModal } from './src/components/AuthModal';
 import { BuyMedicineSection } from './src/components/BuyMedicineSection';
+import { ServiceWhatsAppOrderModal, ServiceType } from './src/components/ServiceWhatsAppOrderModal';
 import { MedicalRecordsSection } from './src/components/MedicalRecordsSection';
 import { AdminDataModal } from './src/components/AdminDataModal';
 import { DoctorPhotoModal, compressDoctorImage, dataURLToBlob } from './src/components/DoctorPhotoModal';
@@ -4011,6 +4012,16 @@ export default function App() {
   const [selectedHospitalId, setSelectedHospitalId] = useState<string | null>(null);
 
   // Modals & Auth
+  const [serviceWhatsAppModalOpen, setServiceWhatsAppModalOpen] = useState(false);
+  const [selectedServiceWhatsAppType, setSelectedServiceWhatsAppType] = useState<ServiceType>('medicine');
+  const [selectedServiceWhatsAppItemName, setSelectedServiceWhatsAppItemName] = useState('');
+
+  const handleOpenServiceWhatsAppOrder = (type: ServiceType = 'medicine', itemName: string = '') => {
+    setSelectedServiceWhatsAppType(type);
+    setSelectedServiceWhatsAppItemName(itemName);
+    setServiceWhatsAppModalOpen(true);
+  };
+
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'moderator'>('login');
   const [authErrorMessage, setAuthErrorMessage] = useState('');
@@ -8609,15 +8620,15 @@ export default function App() {
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                           {/* WhatsApp Button */}
                           <button 
-                            onClick={() => window.open(`https://wa.me/88${HOTLINE_CONTACT}?text=Hello,%20I%20want%20to%20know%20more%20about%20doctors`, '_blank')}
-                            title="ডাক্তার সম্পর্কিত জানতে WhatsApp করুন"
+                            onClick={() => handleOpenServiceWhatsAppOrder('medicine')}
+                            title="হোয়াটসঅ্যাপে ঔষধ, ল্যাব টেস্ট, এক্সেসরিজ ও জরুরি সেবা অর্ডার করুন"
                             className="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-2 rounded-xl font-bold text-[11px] shadow-xs active:scale-95 transition-all flex items-center justify-between gap-1.5 border border-emerald-500/30 cursor-pointer"
                           >
                             <span className="flex items-center gap-1.5 truncate">
                               <span className="text-sm leading-none shrink-0">💬</span>
-                              <span className="truncate">ডাক্তার জানতে WhatsApp</span>
+                              <span className="truncate">হোয়াটসঅ্যাপ সেবা অর্ডার</span>
                             </span>
-                            <span className="text-[9px] bg-emerald-700 px-1.5 py-0.5 rounded font-black shrink-0">মেসেজ</span>
+                            <span className="text-[9px] bg-emerald-700 px-1.5 py-0.5 rounded font-black shrink-0">ফর্ম</span>
                           </button>
 
                           {/* Direct Call Hotline Button */}
@@ -9535,6 +9546,7 @@ export default function App() {
                            db={db}
                            onOpenAuth={() => setShowAuthModal(true)}
                            initialCategory={homeSubCategory === 'medical_accessories' ? 'equipment' : 'all'}
+                           onOpenWhatsAppOrder={(type, itemName) => handleOpenServiceWhatsAppOrder(type, itemName || '')}
                          />
                        )}
 
@@ -9639,6 +9651,31 @@ export default function App() {
 
                        {homeSubCategory === 'emergency' && (
                          <div className="space-y-6">
+                           {/* WhatsApp Emergency Service Order Banner */}
+                           <div className="bg-gradient-to-r from-emerald-600 via-teal-700 to-slate-900 rounded-3xl p-4 sm:p-5 text-white shadow-lg border border-emerald-400/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-left">
+                             <div className="flex items-center gap-3">
+                               <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-inner">
+                                 💬
+                               </div>
+                               <div className="space-y-0.5">
+                                 <div className="flex items-center gap-2">
+                                   <span className="bg-emerald-400 text-slate-950 font-black text-[9px] px-2 py-0.5 rounded-md uppercase">Nilpha.com হোয়াটসঅ্যাপ সার্ভিস</span>
+                                   <span className="text-xs font-black text-white">জরুরী সেবা সরাসরি অর্ডার করুন</span>
+                                 </div>
+                                 <p className="text-[11px] text-emerald-100 font-medium">
+                                   অ্যাম্বুলেন্স, অক্সিজেন সিলিন্ডার বা হোম নার্সিং সেবার দ্রুত বুকিং ফর্ম পূরণ করে WhatsApp-এ পাঠান।
+                                 </p>
+                               </div>
+                             </div>
+                             <button
+                               onClick={() => handleOpenServiceWhatsAppOrder('emergency')}
+                               className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white font-black text-xs rounded-xl shadow-md active:scale-95 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
+                             >
+                               <span>💬</span>
+                               <span>জরুরি সেবা অর্ডার ফর্ম</span>
+                             </button>
+                           </div>
+
                            {/* Emergency Blood Support Quick Action Banner */}
                            <div className="bg-gradient-to-r from-red-600 via-rose-700 to-slate-900 rounded-3xl p-4 sm:p-5 text-white shadow-lg border border-red-400/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-left">
                              <div className="flex items-center gap-3">
@@ -9780,6 +9817,19 @@ export default function App() {
                                  <p className="text-[11px] leading-relaxed text-blue-100">
                                    টেস্ট অর্ডার করার সময় আপনার পছন্দের হাসপাতাল সিলেক্ট করতে পারবেন। <span className="font-bold text-amber-200">পপুলার ডায়াগনস্টিক সেন্টার (রংপুর)</span> অথবা <span className="font-bold text-amber-200">ঢাকা প্রাভা হেলথ কেয়ার (ঢাকা)</span> থেকে রিপোর্ট করাতে ৩ থেকে ৫ দিন সময় লাগবে।
                                  </p>
+                               </div>
+
+                               <div className="mt-4 pt-3 border-t border-white/20 flex flex-wrap items-center justify-between gap-3">
+                                 <div className="text-xs text-blue-100 font-medium">
+                                   📸 প্রেসক্রিপশন বা টেস্টের ছবি সরাসরি হোয়াটসঅ্যাপে পাঠিয়ে অর্ডার করতে চান?
+                                 </div>
+                                 <button
+                                   onClick={() => handleOpenServiceWhatsAppOrder('labtests')}
+                                   className="bg-emerald-500 hover:bg-emerald-400 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
+                                 >
+                                   <span>💬</span>
+                                   <span>হোয়াটসঅ্যাপে টেস্ট অর্ডার ফর্ম</span>
+                                 </button>
                                </div>
                              </div>
                            </div>
@@ -11103,6 +11153,21 @@ export default function App() {
           if (subTarget) subTarget.scrollIntoView({ behavior: 'smooth' });
         }}
         onDoctorSelect={(doc) => setLiveDoctorSelectedDoc(doc)}
+      />
+
+      <ServiceWhatsAppOrderModal
+        isOpen={serviceWhatsAppModalOpen}
+        onClose={() => setServiceWhatsAppModalOpen(false)}
+        initialServiceType={selectedServiceWhatsAppType}
+        initialItemName={selectedServiceWhatsAppItemName}
+        whatsappNumber={WHATSAPP_NUMBER}
+        userProfile={profile ? {
+          full_name: profile.name,
+          phone: profile.phone,
+          district: profile.district,
+          address: profile.address
+        } : null}
+        db={db}
       />
 
       <AuthModal

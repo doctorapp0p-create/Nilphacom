@@ -1165,9 +1165,9 @@ export const MaternityDonationSection: React.FC<MaternityDonationSectionProps> =
 
       {/* Application Form Modal */}
       {showApplyModal && (
-        <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-2xl rounded-[32px] shadow-2xl p-6 sm:p-7 space-y-5 text-left my-8 animate-in zoom-in-95 border border-rose-100">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+        <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden text-left my-auto animate-in zoom-in-95 border border-rose-100 flex flex-col max-h-[92dvh] sm:max-h-[88vh]">
+            <div className="flex justify-between items-center border-b border-slate-100 p-4 sm:p-5 bg-white shrink-0">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">🤰</span>
                 <div>
@@ -1179,15 +1179,30 @@ export const MaternityDonationSection: React.FC<MaternityDonationSectionProps> =
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setShowApplyModal(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"
-              >
-                <X size={16} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => {
+                    const form = document.getElementById('maternity-apply-form') as HTMLFormElement;
+                    if (form) form.requestSubmit();
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-black shadow-sm transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                  title="আবেদন জমা দিন"
+                >
+                  {submitting ? <RefreshCw size={13} className="animate-spin" /> : <Send size={13} />}
+                  <span>জমা দিন</span>
+                </button>
+                <button
+                  onClick={() => setShowApplyModal(false)}
+                  className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmitApplication} className="space-y-4 max-h-[72vh] overflow-y-auto pr-1 no-scrollbar">
+            <form id="maternity-apply-form" onSubmit={handleSubmitApplication} className="space-y-4 flex-1 overflow-y-auto p-4 sm:p-6 no-scrollbar">
               {/* Mother Name & Guardian */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
@@ -1530,25 +1545,27 @@ export const MaternityDonationSection: React.FC<MaternityDonationSectionProps> =
                 />
               </div>
 
-              {/* Submit Buttons */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowApplyModal(false)}
-                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs rounded-xl"
-                >
-                  বাতিল
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="px-6 py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white font-black text-xs rounded-xl shadow-lg flex items-center gap-1.5 disabled:opacity-50"
-                >
-                  {submitting ? <RefreshCw size={14} className="animate-spin" /> : <Send size={14} />}
-                  <span>আবেদন জমা দিন (Submit)</span>
-                </button>
-              </div>
             </form>
+
+            {/* Sticky Bottom Submit Footer */}
+            <div className="p-3 sm:p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3 shrink-0 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
+              <button
+                type="button"
+                onClick={() => setShowApplyModal(false)}
+                className="px-4 py-2.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-black text-xs rounded-xl"
+              >
+                বাতিল
+              </button>
+              <button
+                type="submit"
+                form="maternity-apply-form"
+                disabled={submitting}
+                className="px-6 py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+              >
+                {submitting ? <RefreshCw size={14} className="animate-spin" /> : <Send size={14} />}
+                <span>আবেদন জমা দিন (Submit)</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
