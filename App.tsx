@@ -4593,7 +4593,7 @@ export default function App() {
           };
         }
         if (d.id === 'dr-ar-rezaul-alam') {
-          const correctSchedule = 'প্রতি সোমবার বিকাল ৫ টা থেকে রাত ৯ টা পর্যন্ত';
+          const correctSchedule = 'প্রতি সোমবার বিকাল ৫টা থেকে রাত ৯টা পর্যন্ত।';
           const needsUpdate = data.schedule !== correctSchedule;
           if (needsUpdate && profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
             import('firebase/firestore').then(({ doc, updateDoc }) => {
@@ -4606,7 +4606,7 @@ export default function App() {
             ...data,
             id: d.id,
             name: 'অধ্যাপক ডা. মো. রেজাউল আলম',
-            degree: 'এমবিবিএস, ডিভি (থাইল্যান্ড), এমপিএইচ (ঢাকা), সিসিএস (ইন্ডিয়া), সিসিডি (বারডেম) | অধ্যাপক ও বিভাগীয় প্রধান, চর্ম ও যৌন রোগ বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল, রংপুর | চর্ম-যৌন, এলার্জি ও কুষ্ট রোগ বিশেষজ্ঞ',
+            degree: 'এমবিবিএস, ডিডি (থাইল্যান্ড), এমপিএইচ (ঢাকা), সিসিএল (ইন্ডিয়া), সিসিডি (বারডেম) | অধ্যাপক ও বিভাগীয় প্রধান, চর্ম ও যৌন রোগ বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল, রংপুর | চর্ম-যৌন, এলার্জি ও কুষ্ট রোগ বিশেষজ্ঞ',
             specialty: 'Dermatology',
             schedule: correctSchedule,
             clinics: ['c-ar'],
@@ -4617,10 +4617,10 @@ export default function App() {
           return {
             ...data,
             id: d.id,
-            name: 'ডা. মোছা. হাসিনা বানু (Dr. Mst. Hasina Banu)',
-            degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), এমসিপিএস (গাইনী এন্ড অবস), এফসিপিএস (গাইনী এন্ড অবস) | সহকারী অধ্যাপক (গাইনী এন্ড অবস্), ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | স্ত্রীরোগ ও প্রসূতি বিদ্যা বিশেষজ্ঞ ও সার্জন',
+            name: 'ডা. মোছা. হাসিনা বানু',
+            degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), এমসিপিএস (গাইনী এন্ড অবস্), এফসিপিএস (গাইনী এন্ড অবস্) | সহকারী অধ্যাপক (গাইনী এন্ড অবস্), ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | স্ত্রীরোগ ও প্রসূতি বিদ্যা বিশেষজ্ঞ',
             specialty: 'Gynecology',
-            schedule: 'প্রতিদিন বিকাল ৪টা থেকে রাত ১০টা পর্যন্ত, প্রতি শুক্রবার দুপুর ১ টা - রাত ১০ টা পর্যন্ত।',
+            schedule: 'শনি থেকে বৃহস্পতিবার বিকাল ৪টা থেকে রাত ১০টা পর্যন্ত। শুক্রবার সকাল ১০ টা থেকে রাত ১০ টা পর্যন্ত।',
             clinics: ['c-ar'],
             districts: ['Nilphamari']
           };
@@ -4629,10 +4629,10 @@ export default function App() {
           return {
             ...data,
             id: d.id,
-            name: 'ডা. মো. শামসুর রহমান (Dr. Md. Shamsur Rahman)',
+            name: 'ডা. মো. শামসুর রহমান',
             degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (ফিজিক্যাল মেডিসিন এন্ড রিহ্যাবিলিটেশন) | কনসালটেন্ট, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | বাত-ব্যথা, প্যারালাইসিস, স্পোর্টস, মেডিসিন এন্ড রিহ্যাবিলিটেশন বিশেষজ্ঞ',
             specialty: 'Physical Medicine',
-            schedule: 'প্রতি রবি, সোম ও বুধবার বিকাল ৪টা - রাত ৯টা পর্যন্ত।',
+            schedule: 'প্রতি রবি, সোম ও বুধবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত।',
             clinics: ['c-ar'],
             districts: ['Nilphamari']
           };
@@ -4641,10 +4641,10 @@ export default function App() {
           return {
             ...data,
             id: d.id,
-            name: 'ডা. মো: মাহবুবুল আলম চৌধুরী (Dr. Md. Mahbubul Alam Chowdhury)',
-            degree: 'এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এমসিপিএস, ডিএলও (ইএনটি) | সহযোগী অধ্যাপক- ইএনটি, নীলফামারী মেডিকেল কলেজ, নীলফামারী | নাক, কান, গলা রোগ বিশেষজ্ঞ ও হেড নেক সার্জন',
+            name: 'ডা. মো. মাহবুবুল আলম চৌধুরী',
+            degree: 'এমবিবিএস, এমসিপিএস, ডিএলও (ই.এন.টি) | সহযোগী অধ্যাপক (ই.এন.টি), নীলফামারী মেডিকেল কলেজ ও হাসপাতাল, নীলফামারী | নাক, কান, গলা রোগ বিশেষজ্ঞ ও হেড-নেক সার্জন',
             specialty: 'ENT',
-            schedule: 'প্রতি মঙ্গলবার ও শুক্রবার বিকাল ০৪টা থেকে রাত ০৯ টা পর্যন্ত।',
+            schedule: 'প্রতি শুক্রবার ও মঙ্গলবার বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত।',
             clinics: ['c-ar'],
             districts: ['Nilphamari']
           };
@@ -4653,7 +4653,7 @@ export default function App() {
           return {
             ...data,
             id: d.id,
-            name: 'ডাঃ এস.এম. তৌহিদ হাসান',
+            name: 'ডা. এস.এম. তৌহিদ হাসান',
             degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), ডিইএম (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম) বিএমইউ, এফসিপিএস (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম-০৬), এডভান্সড কোর্স ইন এন্ডোক্রাইনোলজী (মায়ো ক্লিনিক-আমেরিকা) | ডায়াবেটিস, থাইরয়েড, হরমোন ও মেডিসিন রোগ বিশেষজ্ঞ',
             specialty: 'Endocrinology',
             schedule: 'প্রতি শুক্রবার সকাল ৯টা থেকে দুপুর ২টা পর্যন্ত',
@@ -4840,14 +4840,19 @@ export default function App() {
       if (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
         ensureFirebaseAuthSession().then(() => {
           const targetDoctorSyncIds = [
-            'dr-ar-hasina-banu', 'dr-ar-shamsur', 'dr-ar-mahbubul',
+            'dr-ar-abdul-matin', 'dr-ar-moinul', 'dr-ar-samiur', 'dr-ar-deb-dulal-ray',
+            'dr-ar-minhaj', 'dr-ar-rezaul-alam', 'dr-ar-monir', 'dr-ar-shamsur',
+            'dr-ar-ashequr', 'dr-ar-mahbubul', 'dr-ar-rupayan-das', 'dr-ar-raisul-alam',
+            'dr-ar-nihar-ray', 'dr-ar-rezaul-karim', 'dr-ar-ruhul-amin', 'dr-ar-hasina-banu',
+            'dr-ar-abdul-awal', 'dr-ar-towhid-hasan', 'dr-ar-debabrata-haldar',
+            'dr-pradip-kumar-roy', 'dr-allama-iqbal-uro',
             'eb-roni-ortho', 'eb-murad-med', 'eb-mostafa-med', 'eb-saiful-card', 'eb-sabur-nephro',
             'eb-firoz-ent', 'eb-nasera-gyn', 'eb-shakera-gyn', 'eb-munira', 'eb-narayan-neuro',
             'eb-resaul-med', 'eb-mahabub-med', 'eb-kaushik-ped', 'eb-sohel-ortho', 'eb-saiful-ent',
             'eb-mezbah-uro', 'eb-tanvir-psych', 'eb-sohrab-surg', 'eb-pavel-surg',
             'pacific-ali', 'pacific-altaf', 'pacific-hafiz', 'pacific-sabuj', 'pacific-shahjada', 'pacific-alamin', 'pacific-robiul', 'pacific-sarwar', 'pacific-kayes',
             'j-rikkon', 'j-shaheen-gyn', 'j-al-amin',
-            'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
+            'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card',
             'ev-asad', 'ev-nripen', 'ek-gyn1',
             'dr-shariful-islam-ratan', 'dr-soheli-binte-mostafa', 'dr-gopal-chandra-roy',
             'dr-rashed-menon-ent', 'dr-mithun-chandra-bhowmik',
@@ -4857,7 +4862,6 @@ export default function App() {
             'dr-mahmudul-hasan-domar', 'dr-nihar-ranjan-saha', 'dr-gaosul-alam-mostakin',
             'dr-kallol-kumar-kundu', 'dr-paramita-roy', 'dr-md-abu-taher-gyn', 'dr-aleya-khatun-gyn',
             'dr-anwarur-rahman-anon', 'dr-tapan-kumar-roy-med', 'dr-ashim-roy-chowdhury-ortho', 'dr-tahmina-sultana-toma-gyn', 'dr-fahim-kiswal-skin',
-            'dr-ar-debabrata-haldar',
             'dr-aratul-akter-biva',
             'dr-sarwar-alam-pulse',
             'dr-asduzzaman-shah-ortho',
@@ -5027,23 +5031,6 @@ export default function App() {
             }, { merge: true }).catch(e => console.warn(`Updating mad-jilani-hem in DB:`, e));
           }
 
-          // Sync mad-sakib name, degree, schedule and clinics in DB
-          const sakibDoc = docRes.docs.find(docD => docD.id === 'mad-sakib');
-          const freshSakib = DOCTORS.find(d => d.id === 'mad-sakib');
-          if (sakibDoc && freshSakib && (sakibDoc.data()?.name !== freshSakib.name || sakibDoc.data()?.schedule !== freshSakib.schedule || sakibDoc.data()?.degree !== freshSakib.degree || sakibDoc.data()?.clinics?.includes('c-madina') || !sakibDoc.data()?.clinics?.includes('c-ar'))) {
-            setDoc(doc(db, 'doctors', 'mad-sakib'), { 
-              name: freshSakib.name,
-              degree: freshSakib.degree,
-              specialty: freshSakib.specialty,
-              schedule: freshSakib.schedule,
-              clinics: freshSakib.clinics,
-              districts: freshSakib.districts,
-              availableToday: freshSakib.availableToday,
-              rating: freshSakib.rating,
-              consultationFee: freshSakib.consultationFee
-            }, { merge: true }).catch(e => console.warn(`Updating mad-sakib in DB:`, e));
-          }
-
           // Sync mad-kamrul name, degree, and schedule in DB
           const kamrulDoc = docRes.docs.find(docD => docD.id === 'mad-kamrul');
           const freshKamrul = DOCTORS.find(d => d.id === 'mad-kamrul');
@@ -5060,6 +5047,42 @@ export default function App() {
               consultationFee: freshKamrul.consultationFee
             }, { merge: true }).catch(e => console.warn(`Updating mad-kamrul in DB:`, e));
           }
+
+          // Sync all 21 A.R. Health City (c-ar) doctors in DB
+          const arDoctorIds = [
+            'dr-ar-abdul-matin', 'dr-ar-moinul', 'dr-ar-samiur', 'dr-ar-deb-dulal-ray',
+            'dr-ar-minhaj', 'dr-ar-rezaul-alam', 'dr-ar-monir', 'dr-ar-shamsur',
+            'dr-ar-ashequr', 'dr-ar-mahbubul', 'dr-ar-rupayan-das', 'dr-ar-raisul-alam',
+            'dr-ar-nihar-ray', 'dr-ar-rezaul-karim', 'dr-ar-ruhul-amin', 'dr-ar-hasina-banu',
+            'dr-ar-abdul-awal', 'dr-ar-towhid-hasan', 'dr-ar-debabrata-haldar',
+            'dr-pradip-kumar-roy', 'dr-allama-iqbal-uro'
+          ];
+          arDoctorIds.forEach(arDocId => {
+            const dbDoc = docRes.docs.find(docD => docD.id === arDocId);
+            const freshDoc = DOCTORS.find(d => d.id === arDocId);
+            if (dbDoc && freshDoc) {
+              const dbData = dbDoc.data();
+              const needsSync =
+                dbData?.name !== freshDoc.name ||
+                dbData?.degree !== freshDoc.degree ||
+                dbData?.specialty !== freshDoc.specialty ||
+                dbData?.schedule !== freshDoc.schedule ||
+                !dbData?.clinics?.includes('c-ar');
+              if (needsSync) {
+                setDoc(doc(db, 'doctors', arDocId), {
+                  name: freshDoc.name,
+                  degree: freshDoc.degree,
+                  specialty: freshDoc.specialty,
+                  schedule: freshDoc.schedule,
+                  clinics: Array.from(new Set([...(freshDoc.clinics || []), ...(dbData?.clinics || []).filter((c: string) => c !== 'c-madina' || arDocId === 'dr-ar-monir')])),
+                  districts: freshDoc.districts,
+                  availableToday: freshDoc.availableToday,
+                  rating: freshDoc.rating,
+                  consultationFee: freshDoc.consultationFee
+                }, { merge: true }).catch(e => console.warn(`Updating ${arDocId} in DB:`, e));
+              }
+            }
+          });
 
           // Sync eb-saiful-ent name, degree, and schedule in DB
           const saifulDoc = docRes.docs.find(docD => docD.id === 'eb-saiful-ent');
@@ -5079,7 +5102,7 @@ export default function App() {
           }
 
           // Clean up doctors no longer practicing at clinics from Firestore
-          ['pacific-ayesha', 'pacific-selim', 'eb-rasedul-ent', 'mad-skin1'].forEach(oldId => {
+          ['pacific-ayesha', 'pacific-selim', 'eb-rasedul-ent', 'mad-skin1', 'dr-ar-muhid', 'mad-sakib'].forEach(oldId => {
             if (docRes.docs.some(docD => docD.id === oldId)) {
               import('firebase/firestore').then(({ doc, deleteDoc }) => {
                 deleteDoc(doc(db, 'doctors', oldId)).catch(e => console.warn(`Auto-deleting ${oldId} from DB: `, e));
@@ -5222,29 +5245,6 @@ export default function App() {
             }, { merge: true }).catch(e => console.warn(`Updating j-al-amin schedule in DB:`, e));
           }
 
-          // Sync dr-ar-towhid-hasan schedule and details in DB
-          const towhidDoc = docRes.docs.find(docD => docD.id === 'dr-ar-towhid-hasan');
-          if (towhidDoc && (towhidDoc.data()?.schedule !== "প্রতি শুক্রবার সকাল ৯টা থেকে দুপুর ২টা পর্যন্ত" || !towhidDoc.data()?.clinics?.includes('c-ar') || towhidDoc.data()?.specialty !== "Endocrinology")) {
-            const updatedClinics = Array.from(new Set([...(towhidDoc.data()?.clinics || []), 'c-ar']));
-            setDoc(doc(db, 'doctors', 'dr-ar-towhid-hasan'), { 
-              name: "ডাঃ এস.এম. তৌহিদ হাসান",
-              degree: "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডিইএম (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম) বিএমইউ, এফসিপিএস (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম-০৬), এডভান্সড কোর্স ইন এন্ডোক্রাইনোলজী (মায়ো ক্লিনিক-আমেরিকা) | ডায়াবেটিস, থাইরয়েড, হরমোন ও মেডিসিন রোগ বিশেষজ্ঞ",
-              specialty: "Endocrinology",
-              clinics: updatedClinics,
-              districts: Array.from(new Set([...(towhidDoc.data()?.districts || []), 'Nilphamari', 'নীলফামারী'])),
-              schedule: "প্রতি শুক্রবার সকাল ৯টা থেকে দুপুর ২টা পর্যন্ত" 
-            }, { merge: true }).catch(e => console.warn(`Updating dr-ar-towhid-hasan schedule in DB:`, e));
-          }
-
-          // Sync dr-ar-rezaul-alam schedule in DB
-          const rezaulDoc = docRes.docs.find(docD => docD.id === 'dr-ar-rezaul-alam');
-          if (rezaulDoc && (rezaulDoc.data()?.schedule !== "প্রতি সোমবার বিকাল ৫ টা থেকে রাত ৯ টা পর্যন্ত" || !rezaulDoc.data()?.clinics?.includes('c-ar'))) {
-            setDoc(doc(db, 'doctors', 'dr-ar-rezaul-alam'), { 
-              schedule: "প্রতি সোমবার বিকাল ৫ টা থেকে রাত ৯ টা পর্যন্ত",
-              clinics: ['c-ar']
-            }, { merge: true }).catch(e => console.warn(`Updating dr-ar-rezaul-alam schedule in DB:`, e));
-          }
-
           // Sync dr-hanan-ashavee-sonologist clinics in DB
           const hananDoc = docRes.docs.find(docD => docD.id === 'dr-hanan-ashavee-sonologist');
           if (hananDoc && (!hananDoc.data()?.clinics?.includes('c-pacific') || !hananDoc.data()?.clinics?.includes('c-janata'))) {
@@ -5253,22 +5253,6 @@ export default function App() {
               clinics: updatedClinics,
               specialty: "Sonologist"
             }, { merge: true }).catch(e => console.warn(`Updating dr-hanan-ashavee-sonologist clinics in DB:`, e));
-          }
-
-          // Sync dr-pradip-kumar-roy clinics and schedule in DB
-          const pradipDoc = docRes.docs.find(docD => docD.id === 'dr-pradip-kumar-roy');
-          const localPradip = DOCTORS.find(d => d.id === 'dr-pradip-kumar-roy');
-          if (localPradip && pradipDoc && (!pradipDoc.data()?.clinics?.includes('c-ar') || pradipDoc.data()?.schedule !== localPradip.schedule || pradipDoc.data()?.degree !== localPradip.degree)) {
-            const updatedClinics = Array.from(new Set([...(pradipDoc.data()?.clinics || []), 'c-ar']));
-            setDoc(doc(db, 'doctors', 'dr-pradip-kumar-roy'), {
-              name: localPradip.name,
-              degree: localPradip.degree,
-              specialty: localPradip.specialty,
-              clinics: updatedClinics,
-              districts: Array.from(new Set([...(pradipDoc.data()?.districts || []), 'Nilphamari', 'নীলফামারী'])),
-              schedule: localPradip.schedule,
-              consultationFee: localPradip.consultationFee
-            }, { merge: true }).catch(e => console.warn(`Updating dr-pradip-kumar-roy in DB:`, e));
           }
           // Sync dr-maruf-hasan-med schedule and details in DB
           const marufDoc = docRes.docs.find(docD => docD.id === 'dr-maruf-hasan-med');
@@ -5512,10 +5496,10 @@ export default function App() {
           const arHosp = CLINICS.find(c => c.id === 'c-ar');
           if (arHosp) {
             const currentDocList = arDoc?.data()?.doctors || [];
-            const hasMissingTarget = arHosp.doctors.some(id => !currentDocList.includes(id));
+            const listChanged = JSON.stringify(currentDocList) !== JSON.stringify(arHosp.doctors);
             if (!arDoc) {
               setDoc(doc(db, 'hospitals', arHosp.id), arHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-ar in DB:`, e));
-            } else if (arDoc.data()?.name !== arHosp.name || arDoc.data()?.address !== arHosp.address || hasMissingTarget) {
+            } else if (arDoc.data()?.name !== arHosp.name || arDoc.data()?.address !== arHosp.address || listChanged) {
               setDoc(doc(db, 'hospitals', arHosp.id), { name: arHosp.name, address: arHosp.address, doctors: arHosp.doctors }, { merge: true }).catch(e => console.warn(`Updating c-ar in DB:`, e));
             }
           }
@@ -5588,9 +5572,14 @@ export default function App() {
         'eb-mezbah-uro', 'eb-tanvir-psych', 'eb-sohrab-surg', 'eb-pavel-surg',
         'pacific-ali', 'pacific-altaf', 'pacific-hafiz', 'pacific-sabuj', 'pacific-shahjada', 'pacific-alamin', 'pacific-robiul', 'pacific-sarwar', 'pacific-kayes',
         'j-rikkon', 'j-shaheen-gyn', 'j-al-amin',
-        'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card', 'mad-sakib',
+        'gs-obayda', 'gs-fahim', 'gs-nuruzzaman', 'gs-asad-card',
+        'dr-ar-abdul-matin', 'dr-ar-moinul', 'dr-ar-samiur', 'dr-ar-deb-dulal-ray',
+        'dr-ar-minhaj', 'dr-ar-rezaul-alam', 'dr-ar-monir', 'dr-ar-shamsur',
+        'dr-ar-ashequr', 'dr-ar-mahbubul', 'dr-ar-rupayan-das', 'dr-ar-raisul-alam',
+        'dr-ar-nihar-ray', 'dr-ar-rezaul-karim', 'dr-ar-ruhul-amin', 'dr-ar-hasina-banu',
+        'dr-ar-abdul-awal', 'dr-ar-towhid-hasan', 'dr-ar-debabrata-haldar',
+        'dr-pradip-kumar-roy', 'dr-allama-iqbal-uro',
         'ev-asad', 'ev-nripen', 'ek-gyn1',
-        'dr-ar-debabrata-haldar',
         'dr-aratul-akter-biva',
         'dr-sarwar-alam-pulse',
         'dr-asduzzaman-shah-ortho',
@@ -5793,11 +5782,11 @@ export default function App() {
                 const localDoc = DOCTORS.find(d => d.id === 'dr-pradip-kumar-roy');
                 return {
                   ...dbD,
-                  name: localDoc?.name || "ডাঃ প্রদীপ কুমার রায়",
+                  name: localDoc?.name || "ডা. প্রদীপ কুমার রায়",
                   degree: localDoc?.degree || dbD.degree,
                   specialty: localDoc?.specialty || "Endocrinology",
                   clinics: Array.from(new Set([...(dbD.clinics || []), 'c-ar'])),
-                  schedule: localDoc?.schedule || "প্রতি শনিবার থেকে বৃহস্পতিবার বিকাল ০৪টা থেকে রাত ১০টা পর্যন্ত",
+                  schedule: localDoc?.schedule || "প্রতি শনিবার থেকে বৃহস্পতিবার বিকাল ৪টা থেকে রাত ১০টা পর্যন্ত",
                   districts: Array.from(new Set([...(dbD.districts || []), 'Nilphamari', 'নীলফামারী'])),
                   consultationFee: localDoc?.consultationFee || 600
                 };
@@ -5896,7 +5885,7 @@ export default function App() {
       });
 
       // Filter out deleted doctors
-      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'eb-rasedul-ent' && d.id !== 'mad-skin1');
+      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'eb-rasedul-ent' && d.id !== 'mad-skin1' && d.id !== 'dr-ar-muhid' && d.id !== 'mad-sakib');
 
       // Sequential list ordering: hospital/clinic/thana doctors appear first in sequential order, and Dr. Habibur Rahman (Dentist) is placed at the very end of the list
       const sortedMergedDoctors = [...doctorsWithOverrides].sort((a, b) => {
@@ -5934,8 +5923,8 @@ export default function App() {
                 });
               }
 
-              // Auto-sync c-ar hospital details in DB if user is admin/moderator or if new doctor is missing from DB
-              if (dbH.id === 'c-ar' && (dbH.name !== localC.name || dbH.address !== localC.address || !dbH.doctors?.includes('dr-allama-iqbal-uro') || !dbH.doctors?.includes('mad-sakib') || !dbH.doctors?.includes('dr-ar-debabrata-haldar') || !dbH.doctors?.includes('dr-pradip-kumar-roy') || (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)))) {
+              // Auto-sync c-ar hospital details in DB if user is admin/moderator or if doctor list differs from the exact 21 doctors
+              if (dbH.id === 'c-ar' && (dbH.name !== localC.name || dbH.address !== localC.address || JSON.stringify(dbH.doctors || []) !== JSON.stringify(localC.doctors) || (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)))) {
                 import('firebase/firestore').then(({ doc, updateDoc }) => {
                   updateDoc(doc(db, 'hospitals', 'c-ar'), {
                     name: localC.name,

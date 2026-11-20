@@ -402,12 +402,35 @@
         "userId": { "type": "string" }
       },
       "required": ["id", "patientPhone", "visitDate"]
+    },
+    "ServiceInquiry": {
+      "title": "ServiceInquiry",
+      "description": "WhatsApp service order inquiries with optional prescription or photo attachments",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "service_type": { "type": "string", "enum": ["medicine", "labtests", "accessories", "emergency"] },
+        "patient_name": { "type": "string" },
+        "age": { "type": "string" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "item_name": { "type": "string" },
+        "attachment_urls": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "completed", "cancelled"] },
+        "channel": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["service_type", "patient_name", "address", "phone", "item_name", "status", "channel"]
     }
   },
   "firestore": {
     "/medical_records/{recordId}": {
       "schema": "MedicalRecord",
       "description": "Patient medical records, prescriptions and lab reports"
+    },
+    "/service_inquiries/{inquiryId}": {
+      "schema": "ServiceInquiry",
+      "description": "WhatsApp service order inquiries with uploaded photo attachment URLs"
     },
     "/coupons/{couponId}": {
       "schema": "Coupon",

@@ -49,6 +49,16 @@ service firebase.storage {
       (request.resource.contentType.matches('image/.*') || request.resource.contentType == 'application/pdf');
     }
 
+    // WhatsApp service order attachments (prescriptions, lab test orders, product photos):
+    // - Public read access so uploaded image URLs open seamlessly from WhatsApp messages
+    // - Authenticated write (including service auth session) with image-only & 10MB limit
+    match /whatsapp_orders/{sessionId}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null &&
+        request.resource.size < 10 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+    }
+
     // Default catch-all rule:
     // Prohibit unauthenticated access
     match /{allPaths=**} {

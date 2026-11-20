@@ -279,29 +279,27 @@ export const CLINICS: Clinic[] = [
     "district": "Nilphamari",
     "address": "শান্তি নগর (কানছিড়ার মোড়), সদর হাসপাতাল সড়ক, নীলফামারী।",
     "doctors": [
+      "dr-ar-abdul-matin",
+      "dr-ar-moinul",
+      "dr-ar-samiur",
+      "dr-ar-deb-dulal-ray",
+      "dr-ar-minhaj",
+      "dr-ar-rezaul-alam",
+      "dr-ar-monir",
+      "dr-ar-shamsur",
+      "dr-ar-ashequr",
+      "dr-ar-mahbubul",
       "dr-ar-rupayan-das",
       "dr-ar-raisul-alam",
-      "dr-ar-towhid-hasan",
-      "dr-ar-abdul-awal",
-      "dr-ar-ruhul-amin",
-      "dr-ar-rezaul-alam",
-      "dr-ar-deb-dulal-ray",
-      "dr-ar-abdul-matin",
-      "dr-ar-hasina-banu",
-      "dr-ar-shamsur",
-      "dr-ar-mahbubul",
-      "dr-ar-monir",
-      "dr-ar-moinul",
-      "dr-ar-minhaj",
-      "dr-ar-muhid",
-      "dr-ar-rezaul-karim",
       "dr-ar-nihar-ray",
-      "dr-ar-ashequr",
-      "dr-ar-samiur",
+      "dr-ar-rezaul-karim",
+      "dr-ar-ruhul-amin",
+      "dr-ar-hasina-banu",
+      "dr-ar-abdul-awal",
+      "dr-ar-towhid-hasan",
       "dr-ar-debabrata-haldar",
-      "mad-sakib",
-      "dr-allama-iqbal-uro",
-      "dr-pradip-kumar-roy"
+      "dr-pradip-kumar-roy",
+      "dr-allama-iqbal-uro"
     ],
     "image": "/ar_general_hospital.png"
   },
@@ -840,8 +838,8 @@ export const CLINICS: Clinic[] = [
 export const DOCTORS: Doctor[] = [
   {
     "id": "dr-ar-rupayan-das",
-    "name": "ডাঃ রুপায়ন দাশ",
-    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডি-অর্থো (অর্থোপেডিক্স) | কনসালটেন্ট - অর্থো সার্জারী, উপজেলা স্বাস্থ্য কমপ্লেক্স, কিশোরগঞ্জ, নীলফামারী | হাড়-জোড়া, বাত-ব্যথা, ট্রমা বিশেষজ্ঞ ও সার্জন",
+    "name": "ডা. রুপায়ন দাশ",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডি-অর্থো (অর্থোপেডিক্স) | সহকারী অধ্যাপক, রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | হাড়-জোড়া, বাত-ব্যথা, ট্রমা বিশেষজ্ঞ ও সার্জন",
     "specialty": "Orthopedics",
     "districts": [
       "Nilphamari"
@@ -849,7 +847,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি শুক্রবার দুপুর ০২টা থেকে রাত ০৮টা পর্যন্ত",
+    "schedule": "প্রতি শুক্রবার বিকাল ৪ টা থেকে রাত ৯ টা পর্যন্ত।",
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
@@ -858,7 +856,7 @@ export const DOCTORS: Doctor[] = [
   {
     "id": "dr-ar-raisul-alam",
     "name": "ডাঃ রাইসুল আলম শুভ",
-    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এমডি (হেপাটলজি, বিএসএমএমইউ) | ইন্টারভেনশন হেপাটলজিস্ট ও গ্যাস্ট্রোএন্টেরোলজিস্ট, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | লিভার ও পরিপাকতন্ত্র বিশেষজ্ঞ",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এমডি (হেপাটলজি) বিএমইউ সাবেক পিজি হাসপাতাল, ঢাকা | ইন্টারভেনশন হেপাটলজিস্ট ও গ্যাস্ট্রোএন্টেরোলজি, সহকারী রেজিস্টার, হেপাটোলজি ডিপার্টমেন্ট, দিনাজপুর মেডিকেল কলেজ, দিনাজপুর | লিভার ও পরিপাকতন্ত্র বিশেষজ্ঞ",
     "specialty": "Gastroenterology",
     "districts": [
       "Nilphamari"
@@ -866,7 +864,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি শুক্রবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত",
+    "schedule": "প্রতি শুক্রবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -874,7 +872,7 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-towhid-hasan",
-    "name": "ডাঃ এস.এম. তৌহিদ হাসান",
+    "name": "ডা. এস.এম. তৌহিদ হাসান",
     "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), ডিইএম (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম) বিএমইউ, এফসিপিএস (এন্ডোক্রাইনোলজী এন্ড মেটাবলিজম-০৬), এডভান্সড কোর্স ইন এন্ডোক্রাইনোলজী (মায়ো ক্লিনিক-আমেরিকা) | ডায়াবেটিস, থাইরয়েড, হরমোন ও মেডিসিন রোগ বিশেষজ্ঞ",
     "specialty": "Endocrinology",
     "districts": [
@@ -901,7 +899,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতিদিন বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত, শুক্রবার দুপুর ২টা থেকে রাত ৯টা পর্যন্ত",
+    "schedule": "প্রতিদিন বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত। শুক্রবার দুপুর ২টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=200",
@@ -909,8 +907,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-ruhul-amin",
-    "name": "ডাঃ মোঃ রুহুল আমিন",
-    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (নিউরোলজী) | সহযোগী অধ্যাপক - নিউরোলজী, রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | নিউরোলজি মেডিসিন বিশেষজ্ঞ",
+    "name": "ডা. মো. রুহুল আমিন",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (নিউরোলজি) | সহকারী অধ্যাপক (নিউরোলজি), রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | ব্রেন, নার্ভ, স্পাইন, মৃগী, মাথা ব্যথা ও স্ট্রোক রোগ বিশেষজ্ঞ | নিউরোমেডিসিন ও মেডিসিন বিশেষজ্ঞ",
     "specialty": "Neuromedicine",
     "districts": [
       "Nilphamari"
@@ -918,7 +916,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি মঙ্গলবার বিকাল ০৪টা থেকে রাত ০১টা এবং শুক্রবার সকাল ১০:০০টা থেকে রাত ১১টা পর্যন্ত",
+    "schedule": "প্রতি মঙ্গলবার বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত। শুক্রবার সকাল ১০টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
@@ -926,8 +924,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-deb-dulal-ray",
-    "name": "ডাঃ দেব দুলাল রায়",
-    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), সিসিডি (বারডেম), এমডি (সাইকিয়াট্রি) বাংলাদেশ মেডিকেল বিশ্ববিদ্যালয় (সাবেক পিজি হাসপাতাল, ঢাকা) এবং রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | মানসিক রোগ, মাথা ব্যথা, মাদকাসক্তি, যৌন স্বাস্থ্য বিশেষজ্ঞ",
+    "name": "ডা. দেব দুলাল রায়",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), সিসিডি (বারডেম), পিজিটি (কার্ডিওলজী), এমডি (সাইকিয়াট্রি) বাংলাদেশ মেডিকেল বিশ্ববিদ্যালয় | রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | মানসিক রোগ, মাথা ব্যথা, মাদকাসক্তি, যৌন স্বাস্থ্য বিশেষজ্ঞ",
     "specialty": "Psychiatry",
     "districts": [
       "Nilphamari"
@@ -935,7 +933,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি বৃহস্পতিবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত",
+    "schedule": "প্রতি বৃহস্পতিবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -943,8 +941,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-abdul-matin",
-    "name": "ডাঃ মোঃ আব্দুল মতিন",
-    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য) | সহকারী অধ্যাপক - মেডিসিন বিভাগ, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | মেডিসিন বিশেষজ্ঞ",
+    "name": "ডা. মো. আব্দুল মতিন",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন), এম.ডি (মেডিসিন), এমএসিপি (ইউএসএ) | কনসালটেন্ট (মেডিসিন), ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | মেডিসিন বিশেষজ্ঞ",
     "specialty": "Medicine",
     "districts": [
       "Nilphamari"
@@ -952,7 +950,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি শনি থেকে বৃহস্পতিবার বিকাল ০৪টা থেকে রাত ০৯টা পর্যন্ত",
+    "schedule": "প্রতি শনিবার থেকে বৃহস্পতিবার বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
@@ -960,8 +958,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-monir",
-    "name": "Dr. Md. Moniruzzaman Moni",
-    "degree": "MBBS, BCS (Health), CCD (BIRDEM), MS (Gynae & Obs) | Consultant Gynecologist & Surgeon, 250 Bed General Hospital, Nilphamari.",
+    "name": "ডা. মোঃ মনিরুজ্জামান (মনি)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), সিসিডি (বারডেম), এমএস (গাইনী ও অবস্) বিএমইউ (সাবেক পিজি হাসপাতাল) ঢাকা | কনসালটেন্ট গাইনোকোলজিস্ট ও সার্জন, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | নিঃসন্তান দম্পতি এবং ঝুঁকিপূর্ণ প্রসূতি মায়ের চিকিৎসক | প্রসূতি, বন্ধ্যাত্ব, স্ত্রীরোগ বিশেষজ্ঞ ও সার্জন",
     "specialty": "Gynecology",
     "districts": [
       "Nilphamari"
@@ -970,7 +968,7 @@ export const DOCTORS: Doctor[] = [
       "c-ar",
       "c-madina"
     ],
-    "schedule": "প্রতিদিন দুপুর ০৩টা থেকে রাত ০৯টা পর্যন্ত।",
+    "schedule": "প্রতিদিন বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
@@ -978,8 +976,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-hasina-banu",
-    "name": "ডা. মোছা. হাসিনা বানু (Dr. Mst. Hasina Banu)",
-    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমসিপিএস (গাইনী এন্ড অবস), এফসিপিএস (গাইনী এন্ড অবস) | সহকারী অধ্যাপক (গাইনী এন্ড অবস্), ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | স্ত্রীরোগ ও প্রসূতি বিদ্যা বিশেষজ্ঞ ও সার্জন",
+    "name": "ডা. মোছা. হাসিনা বানু",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমসিপিএস (গাইনী এন্ড অবস্), এফসিপিএস (গাইনী এন্ড অবস্) | সহকারী অধ্যাপক (গাইনী এন্ড অবস্), ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | স্ত্রীরোগ ও প্রসূতি বিদ্যা বিশেষজ্ঞ",
     "specialty": "Gynecology",
     "districts": [
       "Nilphamari"
@@ -987,7 +985,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতিদিন বিকাল ৪টা থেকে রাত ১০টা পর্যন্ত, প্রতি শুক্রবার দুপুর ১ টা - রাত ১০ টা পর্যন্ত।",
+    "schedule": "শনি থেকে বৃহস্পতিবার বিকাল ৪টা থেকে রাত ১০টা পর্যন্ত। শুক্রবার সকাল ১০ টা থেকে রাত ১০ টা পর্যন্ত।",
     "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=200",
@@ -995,8 +993,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-moinul",
-    "name": "Dr. Md. Moynul Haque Chowdhury",
-    "degree": "MBBS, BCS (Health), FCPS (Urology) | Assistant Professor - Department of Urology, National Institute of Kidney Diseases & Urology, Dhaka.",
+    "name": "সহকারী অধ্যাপক ডা. মো. ময়নুল হক চৌধুরী",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (ইউরোলজি), সিপিএ (আমেরিকা) | স্পেশালিটি: কিডনী, প্রোস্টেট, মুত্রনালী, মুত্রথলী, অন্ডোকোষ, পুরুষাঙ্গ, এতি, ফিস্টুলা ও জেনারেল সার্জারী | ন্যাশনাল ইনষ্টিটিউট অব কিডনী ডিজিজেস এন্ড ইউরোলজী, ঢাকা | ইউরোলজী ও কিডনী রোগ বিশেষজ্ঞ",
     "specialty": "Urology",
     "districts": [
       "Nilphamari"
@@ -1004,7 +1002,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি শুক্রবার বিকাল ৫ টা - রাত ১০ টা পর্যন্ত।",
+    "schedule": "প্রতি শুক্রবার বিকাল ৪ টা থেকে রাত ৯ টা পর্যন্ত।",
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
@@ -1012,8 +1010,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-minhaj",
-    "name": "Dr. Md. Minhaz Uddin Razib",
-    "degree": "MBBS, BCS (স্বাস্থ্য), FCPS (সার্জারী - গোল্ড মেডেলিস্ট) | কনসালটেন্ট (সার্জারী), ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | জেনারেল, ব্রেষ্ট, কলোরেক্টাল রোগ বিশেষজ্ঞ, ল্যাপারস্কোপিক ও লেজার সার্জন",
+    "name": "ডা. মো. মিনহাজ উদ্দিন রাজিব",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (সার্জারী) গোল্ড মেডেলিস্ট | কনসালটেন্ট (সার্জারী), ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | জেনারেল, ব্রেস্ট, কলোরেক্টাল রোগ বিশেষজ্ঞ, ল্যাপারস্কোপিক ও লেজার সার্জন",
     "specialty": "Surgery",
     "districts": [
       "Nilphamari"
@@ -1028,26 +1026,9 @@ export const DOCTORS: Doctor[] = [
     "consultationFee": 700
   },
   {
-    "id": "dr-ar-muhid",
-    "name": "Dr. Md. Abdullah Al Muhid",
-    "degree": "MBBS, BCS (Health), D-Ortho (BSMMU) | ঢাকা অর্থোপেডিক্স, ট্রমা বিশেষজ্ঞ ও সার্জন, দিনাজপুর মেডিকেল কলেজ হাসপাতাল | BMDC Reg: A-71774 | হাড় জোড়া, বাত ব্যথা রোগ বিশেষজ্ঞ ও ট্রমা সার্জন",
-    "specialty": "Orthopedics",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-ar"
-    ],
-    "schedule": "প্রতি রবিবার,মঙ্গলবার ও বুধবার বিকাল ৪ টা - রাত ৯ টা পর্যন্ত।",
-    "availableToday": true,
-    "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 700
-  },
-  {
     "id": "dr-ar-rezaul-karim",
-    "name": "Dr. Md. Rezaul Karim",
-    "degree": "MBBS, DPH, CCU (Dhaka) | উপ-পরিচালক (অবঃ), স্বাস্থ্য অধিদপ্তর, ঢাকা | অধ্যক্ষ, ক্রিয়েটিভ ম্যাটস্, নীলফামারী | মেডিসিন ও জেনারেল প্রাকটিশনার",
+    "name": "ডা. মো. রেজাউল করিম",
+    "degree": "এমবিবিএস, ডিপিএইচ, সিসিইউ (ঢাকা) | উপ-পরিচালক (অবঃ), স্বাস্থ্য অধিদপ্তর, ঢাকা | অধ্যক্ষ, ক্রিয়েটিভ ম্যাটস, নীলফামারী | মেডিসিন ও জেনারেল প্রাকটিশনার",
     "specialty": "Medicine",
     "districts": [
       "Nilphamari"
@@ -1055,7 +1036,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি শনিবার - বৃহস্পতিবার সকাল ১০টা - দুপুর ২ টা পর্যন্ত।",
+    "schedule": "প্রতি শনিবার থেকে বৃহস্পতিবার সকাল ১০টা থেকে দুপুর ২টা পর্যন্ত।",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
@@ -1063,8 +1044,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-nihar-ray",
-    "name": "Dr. Nihar R Ray",
-    "degree": "MBBS, MCPS (চক্ষু), Fellow Inje University (কোরিয়া), উচ্চতর ট্রেনিং চায়না ও ORBIS (USA) | সিনিয়র কনসালটেন্ট ও বিভাগীয় প্রধান, চক্ষু বিভাগ, সরকারী কর্মচারী হাসপাতাল | সাবেক সিনিয়র কনসালটেন্ট, চক্ষু বিভাগ, ঢাকা মেডিকেল কলেজ হাসপাতাল | চক্ষু বিশেষজ্ঞ, ফ্যাকো ও লেজার সার্জন",
+    "name": "ডা. নীহার আর রায়",
+    "degree": "এমবিবিএস, বিসিএস, এমসিপিএস (চক্ষু), ফেলো Inje University (কোরিয়া), উচ্চতর ট্রেনিং চায়না ও ORBIS (USA) | সিনিয়র কনসালটেন্ট ও বিভাগীয় প্রধান, চক্ষু বিভাগ, সরকারী কর্মচারী হাসপাতাল | এক্স সিনিয়র কনসালটেন্ট ও আর.এস, ঢাকা মেডিকেল কলেজ হাসপাতাল | চক্ষু বিশেষজ্ঞ, ফ্যাকো ও লেজার সার্জন",
     "specialty": "Ophthalmology",
     "districts": [
       "Nilphamari"
@@ -1072,7 +1053,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি মাসে ১ম ও ২য় বুধবার বিকাল ৪ টা - রাত ৮ টা পর্যন্ত।",
+    "schedule": "মাসের ১ম ও ৩য় বুধবার বিকেল ৪টা থেকে রাত ৮টা।",
     "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -1081,7 +1062,7 @@ export const DOCTORS: Doctor[] = [
   {
     "id": "dr-ar-rezaul-alam",
     "name": "অধ্যাপক ডা. মো. রেজাউল আলম",
-    "degree": "এমবিবিএস, ডিভি (থাইল্যান্ড), এমপিএইচ (ঢাকা), সিসিএস (ইন্ডিয়া), সিসিডি (বারডেম) | অধ্যাপক ও বিভাগীয় প্রধান, চর্ম ও যৌন রোগ বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল, রংপুর | চর্ম-যৌন, এলার্জি ও কুষ্ট রোগ বিশেষজ্ঞ",
+    "degree": "এমবিবিএস, ডিডি (থাইল্যান্ড), এমপিএইচ (ঢাকা), সিসিএল (ইন্ডিয়া), সিসিডি (বারডেম) | অধ্যাপক ও বিভাগীয় প্রধান, চর্ম ও যৌন রোগ বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল, রংপুর | চর্ম-যৌন, এলার্জি ও কুষ্ট রোগ বিশেষজ্ঞ",
     "specialty": "Dermatology",
     "districts": [
       "Nilphamari"
@@ -1089,7 +1070,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি সোমবার বিকাল ৫ টা থেকে রাত ৯ টা পর্যন্ত",
+    "schedule": "প্রতি সোমবার বিকাল ৫টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
@@ -1097,8 +1078,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-ashequr",
-    "name": "Dr. Md. Ashequr Rahman",
-    "degree": "MBBS (Dhaka), BCS (Health), FCPS (Medicine), D-Card (Cardiology), MACP (USA) | Consultant - Cardiology, Rangpur Medical College & Hospital, Rangpur.",
+    "name": "সহকারী অধ্যাপক ডা. মো. আশেকুর রহমান",
+    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এফসিপিএস (মেডিসিন), ডি-কার্ড (বিএমইউ), এমএসিপি (ইউএসএ) | কনসালটেন্ট (কার্ডিওলজি), রংপুর মেডিকেল কলেজ ও হাসপাতাল, রংপুর | মেডিসিন ও হৃদরোগ বিশেষজ্ঞ",
     "specialty": "Cardiology",
     "districts": [
       "Nilphamari"
@@ -1106,7 +1087,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে রাত ৮টা পর্যন্ত।",
+    "schedule": "প্রতি শুক্রবার বিকাল ৪ টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": false,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -1114,8 +1095,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-samiur",
-    "name": "Dr. Md. Samiur Rahman Shah",
-    "degree": "MBBS, BCS (Health), CCD (BIRDEM), MD (Cardiology), FCPS (Medicine-FP), MACP (USA), MACC (USA) | Clinical & Interventional Cardiologist, National Institute of Cardiovascular Diseases & Hospital, Dhaka.",
+    "name": "ডা. মো. সামিউর রহমান শাহ (সামী)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), সিসিডি (বারডেম), এমডি-কার্ডিওলজী, এফসিপিএস-মেডিসিন (এফপি), এমএসিপি (আমেরিকা), এমএসিসি (আমেরিকা) | ক্লিনিক্যাল এন্ড ইন্টারভেনশনাল কার্ডিওলজিস্ট, জাতীয় হৃদরোগ ইনষ্টিটিউট ও হাসপাতাল, ঢাকা | বাতজ্বর-ব্যথা, ডায়াবেটিস, হৃদরোগ, মেডিসিন ও উচ্চরক্তচাপ বিশেষজ্ঞ",
     "specialty": "Cardiology",
     "districts": [
       "Nilphamari"
@@ -1123,7 +1104,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি শুক্রবার সকাল ১০টা থেকে রাত ৮টা পর্যন্ত।",
+    "schedule": "প্রতি শুক্রবার সকাল ১০টা-রাত ৯টা পর্যন্ত।",
     "availableToday": false,
     "rating": 4.7,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
@@ -1131,7 +1112,7 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-shamsur",
-    "name": "ডা. মো. শামসুর রহমান (Dr. Md. Shamsur Rahman)",
+    "name": "ডা. মো. শামসুর রহমান",
     "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (ফিজিক্যাল মেডিসিন এন্ড রিহ্যাবিলিটেশন) | কনসালটেন্ট, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | বাত-ব্যথা, প্যারালাইসিস, স্পোর্টস, মেডিসিন এন্ড রিহ্যাবিলিটেশন বিশেষজ্ঞ",
     "specialty": "Physical Medicine",
     "districts": [
@@ -1140,7 +1121,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি রবি, সোম ও বুধবার বিকাল ৪টা - রাত ৯টা পর্যন্ত।",
+    "schedule": "প্রতি রবি, সোম ও বুধবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -1148,8 +1129,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-ar-mahbubul",
-    "name": "ডা. মো: মাহবুবুল আলম চৌধুরী (Dr. Md. Mahbubul Alam Chowdhury)",
-    "degree": "এমবিবিএস (ঢাকা), বিসিএস (স্বাস্থ্য), এমসিপিএস, ডিএলও (ইএনটি) | সহযোগী অধ্যাপক- ইএনটি, নীলফামারী মেডিকেল কলেজ, নীলফামারী | নাক, কান, গলা রোগ বিশেষজ্ঞ ও হেড নেক সার্জন",
+    "name": "ডা. মো. মাহবুবুল আলম চৌধুরী",
+    "degree": "এমবিবিএস, এমসিপিএস, ডিএলও (ই.এন.টি) | সহযোগী অধ্যাপক (ই.এন.টি), নীলফামারী মেডিকেল কলেজ ও হাসপাতাল, নীলফামারী | নাক, কান, গলা রোগ বিশেষজ্ঞ ও হেড-নেক সার্জন",
     "specialty": "ENT",
     "districts": [
       "Nilphamari"
@@ -1157,7 +1138,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি মঙ্গলবার ও শুক্রবার বিকাল ০৪টা থেকে রাত ০৯ টা পর্যন্ত।",
+    "schedule": "প্রতি শুক্রবার ও মঙ্গলবার বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
@@ -1981,24 +1962,6 @@ export const DOCTORS: Doctor[] = [
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 800
-  },
-  {
-    "id": "mad-sakib",
-    "name": "ডাঃ মোঃ শাহীদুল ইসলাম (সাকিব)",
-    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (নেফ্রোলজি) বিএমইউ, এমএসিপি (মেডিসিন, আমেরিকা), এফসিপিএস (মেডিসিন-এফপি), সিসিডি (বারডেম), এমআইএসএন (ইউএসএ), লাইফ মেম্বার (বাংলাদেশ রেনাল এসোসিয়েশন) | কুষ্টিয়া মেডিকেল কলেজ হাসপাতাল, কুষ্টিয়া | কিডনী রোগ, ডায়ালাইসিস, ডায়াবেটিস, উচ্চ রক্তচাপ, বাত-ব্যথা ও মেডিসিন বিশেষজ্ঞ",
-    "specialty": "Nephrology",
-    "districts": [
-      "Nilphamari",
-      "নীলফামারী"
-    ],
-    "clinics": [
-      "c-ar"
-    ],
-    "schedule": "প্রতি বৃহস্পতিবার বিকাল ০৪ টা থেকে রাত ০৯টা পর্যন্ত",
-    "availableToday": false,
-    "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 800
   },
   {
@@ -4171,8 +4134,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-pradip-kumar-roy",
-    "name": "ডাঃ প্রদীপ কুমার রায়",
-    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), সিসিডি (বারডেম), ডিইএম (এন্ডোক্রাইনোলজি এন্ড মেটাবলিজম) বিএমইউ, ঢাকা, এফসিপিএস (মেডিসিন - এফপি) | মেডিকেল অফিসার, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | মেডিসিন, ডায়াবেটিস, থাইরয়েড ও হরমোন রোগ বিশেষজ্ঞ",
+    "name": "ডা. প্রদীপ কুমার রায়",
+    "degree": "এমবিবিএস (MBBS), বিসিএস (স্বাস্থ্য), সিসিডি (বারডেম), ডিইএম (এন্ডোক্রাইনোলজি অ্যান্ড মেটাবলিজম) বিএমইউটি, ঢাকা, এফসিপিএস (মেডিসিন) এফপি | ইমার্জেন্সি মেডিকেল অফিসার, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | মেডিসিন, ডায়াবেটিস, থাইরয়েড ও হরমোন রোগ বিশেষজ্ঞ",
     "specialty": "Endocrinology",
     "districts": [
       "Nilphamari",
@@ -4184,7 +4147,7 @@ export const DOCTORS: Doctor[] = [
       "c-ar",
       "c-sohel-dimla"
     ],
-    "schedule": "প্রতি শনিবার থেকে বৃহস্পতিবার বিকাল ০৪টা থেকে রাত ১০টা পর্যন্ত",
+    "schedule": "প্রতি শনিবার থেকে বৃহস্পতিবার বিকাল ৪টা থেকে রাত ১০টা পর্যন্ত",
     "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",

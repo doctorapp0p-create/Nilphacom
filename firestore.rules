@@ -197,6 +197,28 @@ service cloud.firestore {
       );
     }
 
+    function isValidServiceInquiry(data) {
+      return data.keys().hasAll(['service_type', 'patient_name', 'address', 'phone', 'item_name', 'status', 'channel', 'created_at']) &&
+        data.keys().hasOnly(['service_type', 'patient_name', 'age', 'address', 'phone', 'item_name', 'attachment_urls', 'status', 'channel', 'created_at']) &&
+        data.service_type in ['medicine', 'labtests', 'accessories', 'emergency'] &&
+        data.patient_name is string && data.patient_name.size() >= 1 && data.patient_name.size() <= 200 &&
+        (!('age' in data) || data.age == null || (data.age is string && data.age.size() <= 50)) &&
+        data.address is string && data.address.size() >= 1 && data.address.size() <= 500 &&
+        data.phone is string && data.phone.size() >= 1 && data.phone.size() <= 40 &&
+        data.item_name is string && data.item_name.size() >= 1 && data.item_name.size() <= 2000 &&
+        (!('attachment_urls' in data) || (data.attachment_urls is list && data.attachment_urls.size() <= 5)) &&
+        data.status == 'pending' &&
+        data.channel == 'whatsapp' &&
+        data.created_at == request.time;
+    }
+
+    // --- হোয়াটসঅ্যাপ সার্ভিস অর্ডার রুলস ---
+    match /service_inquiries/{inquiryId} {
+      allow read, list: if isAdmin();
+      allow create: if isSignedIn() && isValidServiceInquiry(request.resource.data);
+      allow update, delete: if isAdmin();
+    }
+
     // --- এডমিন অডিট লগ রুলস ---
     match /audit_logs/{logId} {
       allow read, list: if isAdmin();

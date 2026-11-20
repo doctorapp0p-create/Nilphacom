@@ -1217,27 +1217,27 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
       {/* ---------------------------------------------------- */}
       <AnimatePresence>
         {showUploadModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="fixed inset-0 z-[450] flex items-start sm:items-center justify-center p-2 pt-3 pb-4 sm:p-4 bg-black/65 backdrop-blur-sm animate-in fade-in">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl max-w-lg w-full max-h-[92dvh] sm:max-h-[88vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden"
+              className="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full max-h-[86dvh] sm:max-h-[88vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden"
             >
               {/* Modal Header (Fixed at top) */}
-              <div className="flex justify-between items-center border-b border-slate-100 p-4 sm:px-6 sm:py-3.5 bg-white shrink-0">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0">
-                    <FilePlus size={22} />
+              <div className="flex justify-between items-center border-b border-slate-100 px-3.5 py-2.5 sm:px-5 sm:py-3 bg-white shrink-0">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0">
+                    <FilePlus size={18} />
                   </div>
                   <div>
-                    <h2 className="text-base font-black text-slate-800">চিকিৎসা পত্র জমা করুন</h2>
-                    <p className="text-[10px] text-slate-400">মোবাইল নাম্বারে সুরক্ষিত রাখা হবে</p>
+                    <h2 className="text-xs sm:text-sm font-black text-slate-800 leading-tight">চিকিৎসা পত্র জমা করুন</h2>
+                    <p className="text-[9px] text-slate-400">সুরক্ষিত ডিজিটাল ভল্ট</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  {/* Top quick save button for easy reach on desktop and mobile */}
+                <div className="flex items-center gap-1.5">
+                  {/* Top quick confirm button always reachable at the top */}
                   <button
                     type="button"
                     disabled={isSubmitting || isProcessingFiles}
@@ -1245,59 +1245,35 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                       const form = document.getElementById('medical-record-form') as HTMLFormElement;
                       if (form) form.requestSubmit();
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-sm transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
-                    title="সংরক্ষণ নিশ্চিত করুন"
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-black shadow-sm transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                    title="কনফার্ম ও সংরক্ষণ করুন"
                   >
-                    {isSubmitting ? <RefreshCw size={13} className="animate-spin" /> : <Check size={13} />}
-                    <span>সংরক্ষণ</span>
+                    {isSubmitting ? <RefreshCw size={12} className="animate-spin" /> : <Check size={12} />}
+                    <span>কনফার্ম</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowUploadModal(false)}
-                    className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
+                    className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
                   >
-                    <X size={18} />
+                    <X size={16} />
                   </button>
                 </div>
               </div>
 
-              {/* Form (Scrollable body) */}
-              <form id="medical-record-form" onSubmit={handleSubmitRecord} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-                {/* 1. Document Type */}
-                <div>
-                  <label className="block text-xs font-black text-slate-700 mb-1">
-                    কাগজ / ডকুমেন্টের ধরণ:
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                    {RECORD_TYPES.map(t => (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => setFormRecordType(t.id)}
-                        className={`p-2 rounded-xl text-[11px] font-black border flex items-center gap-1.5 transition-all text-left ${
-                          formRecordType === t.id
-                            ? 'bg-emerald-50 border-emerald-500 text-emerald-800 shadow-2xs'
-                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                        }`}
-                      >
-                        <span>{t.icon}</span>
-                        <span className="truncate">{t.label}</span>
-                      </button>
-                    ))}
+              {/* Form (Scrollable body - compact sizing for mobile) */}
+              <form id="medical-record-form" onSubmit={handleSubmitRecord} className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-2.5 sm:space-y-3">
+                {/* 1. File Upload Area FIRST & HIGHER UP for instant mobile access */}
+                <div className="bg-emerald-50/60 p-2.5 sm:p-3.5 rounded-2xl border border-emerald-200/80 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-black text-slate-800 flex items-center gap-1">
+                      <UploadCloud size={14} className="text-emerald-600" />
+                      প্রেসক্রিপশন বা কাগজের ছবি: <span className="text-rose-500">*</span>
+                    </span>
+                    <span className="text-[9px] text-emerald-700 font-bold bg-white px-2 py-0.5 rounded-full border border-emerald-200">
+                      একাধিক ছবি দেওয়া যাবে
+                    </span>
                   </div>
-                </div>
-
-                {/* 2. File Upload Area (Front & Center!) */}
-                <div className="bg-emerald-50/50 p-3 sm:p-4 rounded-2xl border border-emerald-200/80 space-y-2.5">
-                  <label className="block text-xs font-black text-slate-800 mb-0.5 flex items-center justify-between">
-                    <span className="flex items-center gap-1.5">
-                      <UploadCloud size={16} className="text-emerald-600" />
-                      প্রেসক্রিপশন বা রিপোর্টের ছবি/ফাইল: <span className="text-rose-500">*</span>
-                    </span>
-                    <span className="text-[10px] text-emerald-700 font-bold bg-white px-2 py-0.5 rounded-full border border-emerald-200">
-                      একাধিক ছবি যোগ করা যাবে
-                    </span>
-                  </label>
 
                   {/* Hidden file inputs for high compatibility across all mobile & desktop browsers */}
                   <input
@@ -1319,69 +1295,67 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                     id="medical-camera-upload-input"
                   />
 
-                  {/* Upload Actions: Camera & Gallery / File */}
+                  {/* Upload Actions: Camera & Gallery / File (Compact for Mobile) */}
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       disabled={isProcessingFiles}
                       onClick={() => cameraInputRef.current?.click()}
-                      className="flex items-center justify-center gap-2 py-3 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition-all cursor-pointer active:scale-95 shadow-md shadow-emerald-200 disabled:opacity-50"
+                      className="flex items-center justify-center gap-1.5 py-2 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-black transition-all cursor-pointer active:scale-95 shadow-sm disabled:opacity-50"
                     >
-                      <Camera size={16} />
-                      <span>ক্যামেরা দিয়ে ছবি তুলুন</span>
+                      <Camera size={14} />
+                      <span>ক্যামেরা দিয়ে তুলুন</span>
                     </button>
 
                     <button
                       type="button"
                       disabled={isProcessingFiles}
                       onClick={() => fileInputRef.current?.click()}
-                      className="flex items-center justify-center gap-2 py-3 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black transition-all cursor-pointer active:scale-95 shadow-md shadow-blue-200 disabled:opacity-50"
+                      className="flex items-center justify-center gap-1.5 py-2 px-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[11px] font-black transition-all cursor-pointer active:scale-95 shadow-sm disabled:opacity-50"
                     >
-                      <Upload size={16} />
-                      <span>গ্যালারি / ফাইল থেকে নিন</span>
+                      <Upload size={14} />
+                      <span>গ্যালারি / ফাইল নিন</span>
                     </button>
                   </div>
 
-                  {/* Drag and drop / Tap box as additional intuitive target */}
+                  {/* Drag and drop / Tap box (Compact) */}
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-emerald-300 hover:border-emerald-500 rounded-xl p-3 text-center bg-white hover:bg-slate-50/80 transition-all cursor-pointer group"
+                    className="border border-dashed border-emerald-300 hover:border-emerald-500 rounded-xl py-2 px-3 text-center bg-white/90 hover:bg-white transition-all cursor-pointer"
                   >
-                    <div className="space-y-0.5">
-                      <p className="text-xs font-black text-slate-700">
-                        {isProcessingFiles ? 'ফাইল প্রসেস হচ্ছে...' : 'ক্লিক করে ছবি বা প্রেসক্রিপশন সিলেক্ট করুন'}
-                      </p>
-                      <p className="text-[10px] text-slate-400">
-                        JPG, PNG, WEBP বা PDF ফরম্যাট (প্রতি ফাইল সর্বোচ্চ ১৫MB)
-                      </p>
-                    </div>
+                    <p className="text-[11px] font-black text-slate-700">
+                      {isProcessingFiles ? 'ফাইল প্রসেস হচ্ছে...' : 'ছবি বা PDF সিলেক্ট করতে এখানে ট্যাপ করুন'}
+                    </p>
+                    <p className="text-[9px] text-slate-400">
+                      JPG, PNG, WEBP বা PDF (সর্বোচ্চ ১৫MB)
+                    </p>
                   </div>
 
                   {/* Upload Error Banner */}
                   {uploadErrorMsg && (
-                    <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-bold flex items-center gap-2">
-                      <AlertCircle size={14} className="shrink-0 text-rose-600" />
+                    <div className="p-2 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-[11px] font-bold flex items-center gap-1.5">
+                      <AlertCircle size={13} className="shrink-0 text-rose-600" />
                       <span>{uploadErrorMsg}</span>
                     </div>
                   )}
 
-                  {/* Attached Files Preview & Immediate Inline Confirm Action */}
+                  {/* Attached Files Preview & Immediate High-Up Confirm Action */}
                   {formFiles.length > 0 && (
-                    <div className="space-y-2 pt-1">
-                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 px-1">
-                        <span>সংযুক্ত ফাইল ({formFiles.length}টি)</span>
+                    <div className="space-y-1.5 pt-1">
+                      <div className="flex items-center justify-between text-[10px] font-bold text-slate-700 px-0.5">
+                        <span>সংযুক্ত ({formFiles.length}টি)</span>
                         <span className="text-emerald-700 font-black">আপলোডের জন্য প্রস্তুত</span>
                       </div>
-                      <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
+                      <div className="flex gap-2 overflow-x-auto no-scrollbar py-0.5">
                         {formFiles.map((file, idx) => (
                           <div
                             key={idx}
-                            className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-emerald-500 bg-white shrink-0 group flex items-center justify-center shadow-xs"
+                            className="relative w-14 h-14 rounded-xl overflow-hidden border-2 border-emerald-500 bg-white shrink-0 flex items-center justify-center shadow-xs"
                           >
                             {file.isPdf ? (
                               <div className="flex flex-col items-center justify-center p-1 text-center">
-                                <FileText size={20} className="text-rose-500" />
-                                <span className="text-[8px] font-bold text-slate-500 truncate max-w-[50px] mt-0.5">PDF</span>
+                                <FileText size={18} className="text-rose-500" />
+                                <span className="text-[8px] font-bold text-slate-500 truncate max-w-[44px]">PDF</span>
                               </div>
                             ) : (
                               <img
@@ -1396,64 +1370,92 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                                 e.stopPropagation();
                                 handleRemoveFile(idx);
                               }}
-                              className="absolute top-1 right-1 bg-rose-600 text-white rounded-full p-0.5 shadow hover:bg-rose-700 transition-colors cursor-pointer"
+                              className="absolute top-0.5 right-0.5 bg-rose-600 text-white rounded-full p-0.5 shadow hover:bg-rose-700 transition-colors cursor-pointer"
                               title="মুছে ফেলুন"
                             >
-                              <X size={12} />
+                              <X size={10} />
                             </button>
                           </div>
                         ))}
                       </div>
 
-                      {/* Immediate Inline Confirm Button right next to uploaded photos */}
-                      <div className="p-2.5 bg-emerald-100 border border-emerald-300 rounded-xl flex items-center justify-between gap-2 shadow-xs">
-                        <div className="text-[11px] font-bold text-emerald-950 leading-tight">
-                          🎉 {formFiles.length}টি ছবি যুক্ত হয়েছে!
-                        </div>
-                        <button
-                          type="submit"
-                          disabled={isSubmitting || isProcessingFiles}
-                          className="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-black flex items-center gap-1 shadow-sm active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-                        >
-                          <Check size={13} />
-                          <span>এখনই নিশ্চিত করুন</span>
-                        </button>
-                      </div>
+                      {/* High-Visibility Inline Confirm Button placed right below thumbnails */}
+                      <button
+                        type="submit"
+                        disabled={isSubmitting || isProcessingFiles}
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white py-2 px-3 rounded-xl text-[11px] font-black flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <RefreshCw size={13} className="animate-spin" />
+                            <span className="truncate">{uploadProgressText || 'সংরক্ষণ হচ্ছে...'}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Check size={14} />
+                            <span>✅ কনফার্ম করুন ({formFiles.length}টি সংরক্ষণ)</span>
+                          </>
+                        )}
+                      </button>
                     </div>
                   )}
                 </div>
 
+                {/* 2. Document Type (Compact pills) */}
+                <div>
+                  <label className="block text-[11px] font-black text-slate-700 mb-1">
+                    কাগজ / ডকুমেন্টের ধরণ:
+                  </label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {RECORD_TYPES.map(t => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setFormRecordType(t.id)}
+                        className={`px-2 py-1.5 rounded-lg text-[10px] font-black border flex items-center gap-1 transition-all text-left ${
+                          formRecordType === t.id
+                            ? 'bg-emerald-50 border-emerald-500 text-emerald-800 shadow-2xs'
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span>{t.icon}</span>
+                        <span className="truncate">{t.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* 3. Visit Date */}
                 <div>
-                  <label className="block text-xs font-black text-slate-700 mb-1 flex items-center gap-1">
-                    <Calendar size={13} className="text-emerald-600" />
+                  <label className="block text-[11px] font-black text-slate-700 mb-1 flex items-center gap-1">
+                    <Calendar size={12} className="text-emerald-600" />
                     ডাক্তার দেখানোর তারিখ: <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="date"
                     value={formVisitDate}
                     onChange={(e) => setFormVisitDate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] font-bold focus:bg-white focus:border-emerald-500 outline-none"
                     required
                   />
                 </div>
 
                 {/* 4. Doctor Name & Specialty (Optional details) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs font-black text-slate-700 mb-1">
-                      ডাক্তারের নাম (যদি জানা থাকে):
+                    <label className="block text-[11px] font-black text-slate-700 mb-0.5">
+                      ডাক্তারের নাম (ঐচ্ছিক):
                     </label>
                     <input
                       type="text"
                       placeholder="যেমন: ডাঃ এম. এ. রহিম"
                       value={formDoctorName}
                       onChange={(e) => setFormDoctorName(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] font-bold focus:bg-white focus:border-emerald-500 outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-black text-slate-700 mb-1">
+                    <label className="block text-[11px] font-black text-slate-700 mb-0.5">
                       বিশেষজ্ঞ ধরণ:
                     </label>
                     <input
@@ -1461,14 +1463,14 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                       placeholder="যেমন: মেডিসিন / হৃদরোগ"
                       value={formDoctorSpecialty}
                       onChange={(e) => setFormDoctorSpecialty(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] font-bold focus:bg-white focus:border-emerald-500 outline-none"
                     />
                   </div>
                 </div>
 
                 {/* 5. Hospital / Clinic */}
                 <div>
-                  <label className="block text-xs font-black text-slate-700 mb-1">
+                  <label className="block text-[11px] font-black text-slate-700 mb-0.5">
                     হাসপাতাল / চেম্বার / ক্লিনিক:
                   </label>
                   <input
@@ -1476,14 +1478,14 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                     placeholder="যেমন: নীলফামারী আধুনিক ডায়াগনস্টিক সেন্টার"
                     value={formHospitalName}
                     onChange={(e) => setFormHospitalName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] font-bold focus:bg-white focus:border-emerald-500 outline-none"
                   />
                 </div>
 
                 {/* 6. Patient Name & Diagnosis */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs font-black text-slate-700 mb-1">
+                    <label className="block text-[11px] font-black text-slate-700 mb-0.5">
                       রোগীর নাম:
                     </label>
                     <input
@@ -1491,11 +1493,11 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                       placeholder="রোগীর নাম"
                       value={formPatientName}
                       onChange={(e) => setFormPatientName(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] font-bold focus:bg-white focus:border-emerald-500 outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-black text-slate-700 mb-1">
+                    <label className="block text-[11px] font-black text-slate-700 mb-0.5">
                       রোগের লক্ষণ / সমস্যা:
                     </label>
                     <input
@@ -1503,40 +1505,40 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                       placeholder="যেমন: জ্বর ও শ্বাসকষ্ট"
                       value={formDiagnosis}
                       onChange={(e) => setFormDiagnosis(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white focus:border-emerald-500 outline-none"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] font-bold focus:bg-white focus:border-emerald-500 outline-none"
                     />
                   </div>
                 </div>
 
                 {/* 7. Advice / Notes */}
                 <div>
-                  <label className="block text-xs font-black text-slate-700 mb-1">
-                    অতিরিক্ত নোট বা পরামর্শ (ঐচ্ছিক):
+                  <label className="block text-[11px] font-black text-slate-700 mb-0.5">
+                    অতিরিক্ত নোট (ঐচ্ছিক):
                   </label>
                   <textarea
                     rows={2}
                     placeholder="ঔষধের নিয়ম বা টেস্টের নির্দেশাবলী..."
                     value={formNotes}
                     onChange={(e) => setFormNotes(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:bg-white focus:border-emerald-500 outline-none resize-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] font-medium focus:bg-white focus:border-emerald-500 outline-none resize-none"
                   />
                 </div>
 
                 {/* Progress message if uploading */}
                 {uploadProgressText && (
-                  <div className="p-2.5 bg-blue-50 text-blue-700 rounded-xl text-xs font-bold flex items-center gap-2 border border-blue-100">
-                    <RefreshCw size={14} className="animate-spin shrink-0" />
+                  <div className="p-2 bg-blue-50 text-blue-700 rounded-xl text-[11px] font-bold flex items-center gap-2 border border-blue-100">
+                    <RefreshCw size={13} className="animate-spin shrink-0" />
                     <span>{uploadProgressText}</span>
                   </div>
                 )}
               </form>
 
-              {/* 8. Sticky Action Footer (ALWAYS VISIBLE on Desktop & Mobile Viewports) */}
-              <div className="p-3 sm:p-4 bg-slate-50/95 backdrop-blur-md border-t border-slate-200 flex items-center gap-2.5 shrink-0 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
+              {/* 8. Compact Sticky Action Footer (ALWAYS VISIBLE above bottom nav at z-[450]) */}
+              <div className="p-2.5 sm:p-3.5 bg-slate-50/95 backdrop-blur-md border-t border-slate-200 flex items-center gap-2 shrink-0 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
                 <button
                   type="button"
                   onClick={() => setShowUploadModal(false)}
-                  className="px-4 py-3 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-black rounded-xl transition-all cursor-pointer"
+                  className="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-black rounded-xl transition-all cursor-pointer"
                 >
                   বাতিল
                 </button>
@@ -1544,20 +1546,20 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
                   type="submit"
                   form="medical-record-form"
                   disabled={isSubmitting || isProcessingFiles}
-                  className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-[0.98] text-white py-3 px-4 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-200 transition-all cursor-pointer disabled:opacity-50"
+                  className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-[0.98] text-white py-2 px-3 rounded-xl font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-200 transition-all cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
-                      <RefreshCw size={16} className="animate-spin" />
-                      <span className="truncate">{uploadProgressText || 'সংরক্ষণ করা হচ্ছে...'}</span>
+                      <RefreshCw size={14} className="animate-spin" />
+                      <span className="truncate">{uploadProgressText || 'সংরক্ষণ হচ্ছে...'}</span>
                     </>
                   ) : (
                     <>
-                      <Check size={18} />
+                      <Check size={15} />
                       <span>
                         {formFiles.length > 0
-                          ? `✅ কনফার্ম করুন (${formFiles.length}টি ফাইল সংরক্ষণ)`
-                          : 'চিকিৎসা পত্র ক্লাউডে সংরক্ষণ করুন'}
+                          ? `কনফার্ম করুন (${formFiles.length}টি)`
+                          : 'কনফার্ম ও সংরক্ষণ করুন'}
                       </span>
                     </>
                   )}
@@ -1573,7 +1575,7 @@ export const MedicalRecordsSection: React.FC<MedicalRecordsSectionProps> = ({
       {/* ---------------------------------------------------- */}
       <AnimatePresence>
         {previewRecord && previewRecord.files[activeFileIndex] && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
+          <div className="fixed inset-0 z-[450] flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
