@@ -468,19 +468,16 @@ export const CLINICS: Clinic[] = [
     "id": "c-newlife",
     "name": "নিউ লাইফ কেয়ার ডায়াগনস্টিক এন্ড কনসালটেশন সেন্টার",
     "district": "Nilphamari",
-    "address": "চৌরঙ্গী মোড়, হাসপাতাল সড়ক, পোস্ট অফিস সংলগ্ন, নার্সিং কলেজের বিপরীতে, নীলফামারী সদর, নীলফামারী",
+    "address": "চৌরঙ্গী মোড় (হাসপাতাল সড়ক), পোস্ট অফিস সংলগ্ন, নার্সিং কলেজের সামনে, নীলফামারী সদর, নীলফামারী।",
     "doctors": [
-      "nl-med1",
-      "nl-gyn1",
-      "nl-med2",
-      "nl-card1",
-      "nl-skin1",
-      "nl-atiar",
-      "j-atiur",
-      "dr-sohanur-rahman-sohag",
+      "dr-iffat-aziz-sumi",
+      "dr-abdullah-al-mamun-hematology",
       "dr-md-abu-sayeed-gastro",
-      "dr-md-najmus-sakib-bari",
-      "dr-abdullah-al-mamun-hematology"
+      "dr-sohanur-rahman-sohag",
+      "dr-mh-rahman-ent",
+      "nl-med2",
+      "nl-gyn1",
+      "dr-md-najmus-sakib-bari"
     ],
     "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800"
   },
@@ -1542,8 +1539,7 @@ export const DOCTORS: Doctor[] = [
       "Nilphamari"
     ],
     "clinics": [
-      "c-janata",
-      "c-newlife"
+      "c-janata"
     ],
     "schedule": "প্রতিদিন দুপুর ০১টা থেকে রাত ০৮টা পর্যন্ত (শুক্রবার বন্ধ)",
     "availableToday": true,
@@ -2205,23 +2201,6 @@ export const DOCTORS: Doctor[] = [
     "consultationFee": 600
   },
   {
-    "id": "nl-med1",
-    "name": "Dr. Md. Masud Parvez",
-    "degree": "MBBS (SSMC), BCS (Health), MD (Internal Medicine) | Rangpur & Nilphamari Medical College",
-    "specialty": "Medicine",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-newlife"
-    ],
-    "schedule": "প্রতিদিন: বিকাল ৫:০০ - রাত ৮:০০",
-    "availableToday": true,
-    "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 600
-  },
-  {
     "id": "nl-gyn1",
     "name": "Dr. Farzana Akter",
     "degree": "MBBS, BCS (Health), CMU, DMU (Ultrasonology) | Medical Officer, Nilphamari",
@@ -2240,70 +2219,20 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "nl-med2",
-    "name": "Dr. Md. Imran Kabir",
-    "degree": "MBBS, BCS (Health), PGT (Medicine), CCD (BIRDEM), CMU | Upazila Health and Family Planning Officer",
+    "name": "ডা. মোঃ ইমরান কবীর",
+    "degree": "এম.বি.বি.এস, বিসিএস (স্বাস্থ্য), পিজিটি (মেডিসিন), সিসিডি (বারডেম) — ডায়াবেটিস, সিএমইউ (আল্ট্রা), মেডিকেল অফিসার (ডিজিজ কন্ট্রোল), উপজেলা স্বাস্থ্য ও পরিবার পরিকল্পনা কর্মকর্তা কার্যালয়, সদর, নীলফামারী | BMDC রেজি: A-90376 | মেডিসিন, ডায়াবেটিস, নিউরোমেডিসিন, বক্ষব্যাধি, মা ও শিশু, বাত-ব্যথা ও গ্যাস্ট্রোএন্টেরোলজি রোগে অভিজ্ঞ",
     "specialty": "Medicine",
     "districts": [
-      "Nilphamari"
+      "Nilphamari",
+      "নীলফামারী"
     ],
     "clinics": [
       "c-newlife"
     ],
-    "schedule": "প্রতিদিন: দুপুর ২:০০ - রাত ১০:০০",
+    "schedule": "প্রতিদিন বিকাল ৩টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 500
-  },
-  {
-    "id": "nl-card1",
-    "name": "Dr. Mehfuz Ali",
-    "degree": "MBBS, BCS (Health), FCPS (Medicine), D-CARD (Cardiology) | Nilphamari Sadar Hospital, Nilphamari",
-    "specialty": "Cardiology",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-newlife"
-    ],
-    "schedule": "শনি-বৃহস্পতি: দুপুর ২:০০ - রাত ৮:০০",
-    "availableToday": true,
-    "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 600
-  },
-  {
-    "id": "nl-skin1",
-    "name": "Dr. Farhanul Hasan Sifat",
-    "degree": "MBBS, PGT (Medicine), D & C (Skin & VD), CCD (BIRDEM) | Rangpur Medical College",
-    "specialty": "Dermatology",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-newlife"
-    ],
-    "schedule": "প্রতি বুধবার দুপুর ২:০০ টা - রাত ৯:০০ টা পর্যন্ত",
-    "availableToday": true,
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
-    "consultationFee": 500
-  },
-  {
-    "id": "nl-atiar",
-    "name": "Dr. Md. Atiur Rahman Sheikh",
-    "degree": "MBBS, BCS (Health) | Medical Officer, Civil Surgeon Office, Nilphamari",
-    "specialty": "Medicine",
-    "districts": [
-      "Nilphamari"
-    ],
-    "clinics": [
-      "c-newlife"
-    ],
-    "schedule": "প্রতিদিন: দুপুর ১:০০ - রাত ৮:০০ (শুক্রবার বন্ধ)",
-    "availableToday": true,
-    "rating": 4.7,
-    "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 500
   },
   {
@@ -4231,8 +4160,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-sohanur-rahman-sohag",
-    "name": "ডাঃ মোঃ সোহানুর রহমান সোহাগ",
-    "degree": "এমবিবিএস (রাজ), এমডি (বক্ষব্যাধি), এমএসিপি (আমেরিকা) | সহকারী অধ্যাপক, মেডিসিন বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল | বক্ষব্যাধি ও মেডিসিন বিশেষজ্ঞ",
+    "name": "ডা. মোঃ সোহানুর রহমান সোহাগ",
+    "degree": "MBBS (রাজশাহী মেডিকেল কলেজ), MD (বক্ষব্যাধি), MCPS (America) | সহকারী অধ্যাপক, মেডিসিন বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল | মেডিসিন, বক্ষব্যাধি, অ্যাজমা, স্লিপ মেডিসিন বিশেষজ্ঞ ও ইন্টারভেনশনাল পালমোনোলজিস্ট",
     "specialty": "Pulmonology",
     "districts": [
       "Nilphamari",
@@ -4242,7 +4171,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-newlife"
     ],
-    "schedule": "প্রতি বৃহস্পতিবার দুপুর ২টা থেকে রাত ৯টা পর্যন্ত",
+    "schedule": "প্রতি বৃহস্পতিবার দুপুর ২টা থেকে রাত ১০টা পর্যন্ত।",
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
@@ -4250,8 +4179,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-md-abu-sayeed-gastro",
-    "name": "ডাঃ মোঃ আবু সাঈদ",
-    "degree": "এমবিবিএস (রাজশাহী মেডিকেল কলেজ), পিজিটি (মেডিসিন), সিএমইউ (আল্ট্রা), এফসিপিএস মেডিসিন (গ্যাস্ট্রোএন্টারোলজি) – ফাইনাল পার্ট, এমআরএইচএমও (মেডিসিন বিভাগ, ঢাকা মেডিকেল কলেজ হাসপাতাল) | মেডিসিন ও গ্যাস্ট্রোএন্টারোলজি রোগ বিশেষজ্ঞ",
+    "name": "ডা. মোঃ আবু সাঈদ",
+    "degree": "এমবিবিএস (রাজশাহী মেডিকেল কলেজ), পিজিটি (মেডিসিন), সিএমইউ (আল্ট্রা), এফসিপিএস মেডিসিন (গ্যাস্ট্রোএন্টারোলজি) – ফাইনাল পার্ট, এম এইচ এম ও (মেডিসিন বিভাগ, ঢাকা মেডিকেল কলেজ হাসপাতাল) | মেডিসিন ও গ্যাস্ট্রোএন্টেরোলজি রোগ বিশেষজ্ঞ",
     "specialty": "Gastroenterology",
     "districts": [
       "Nilphamari",
@@ -4261,7 +4190,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-newlife"
     ],
-    "schedule": "শনি থেকে মঙ্গলবার: সকাল ১০টা - বিকাল ৬টা | বুধ থেকে শুক্রবার: সকাল ১০টা - রাত ১০টা",
+    "schedule": "প্রতিদিন সকাল ১০:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত।",
     "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
@@ -4269,8 +4198,8 @@ export const DOCTORS: Doctor[] = [
   },
   {
     "id": "dr-md-najmus-sakib-bari",
-    "name": "ডাঃ মোঃ নাজমুস সাকিব বারী",
-    "degree": "এমবিবিএস (এসএসএমসি), বিসিএস (স্বাস্থ্য), এফসিপিএস (এফ.পি) অর্থোপেডিক সার্জারী, পিজিটি (জেনারেল সার্জারী) | ইমার্জেন্সি মেডিকেল অফিসার, ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী | হাড়-জোড়া, বাত-ব্যথা, মেরুদণ্ড, অর্থোপেডিক ও জেনারেল সার্জারী বিশেষজ্ঞ",
+    "name": "ডা. মোঃ নাজমুস সাকিব (বাপ্পি)",
+    "degree": "এমবিবিএস (এমএসএমসি), বিসিএস (স্বাস্থ্য), এফসিপিএস (এফ.পি) অর্থোপেডিক সার্জারি, পিজিটি (জেনারেল সার্জারি) | ইমারজেন্সি মেডিকেল অফিসার, ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী। | হাড়-জোড়া, বাত-ব্যথা, মেরুদণ্ড, অর্থোপেডিক ও জেনারেল সার্জারির বিশেষজ্ঞ",
     "specialty": "Orthopedics",
     "districts": [
       "Nilphamari",
@@ -4279,7 +4208,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-newlife"
     ],
-    "schedule": "প্রতিদিন: দুপুর ২টা থেকে রাত ১০টা | শুক্রবার: সকাল ১০টা থেকে রাত ১০টা",
+    "schedule": "প্রতিদিন দুপুর ২টা থেকে রাত ১০টা পর্যন্ত | শুক্রবার সকাল ১০টা থেকে রাত ১০টা পর্যন্ত",
     "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
@@ -5026,7 +4955,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-newlife"
     ],
-    "schedule": "প্রতি বৃহস্পতিবার দুপুর ২ টা থেকে রাত ৯ টা পর্যন্ত",
+    "schedule": "প্রতি শুক্রবার দুপুর ২ টা থেকে রাত ৯ টা পর্যন্ত।",
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300",
@@ -5067,6 +4996,43 @@ export const DOCTORS: Doctor[] = [
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 500
+  },
+  {
+    "id": "dr-iffat-aziz-sumi",
+    "name": "ডাঃ ইফফাত আজিজ (সুমি)",
+    "degree": "এমবিবিএস, এম.এস (গাইনী এন্ড অবস্) বিএমইউ (সাবেক পিজি হাসপাতাল), এফসিপিএস (গাইনী এন্ড অবস্) এফপি, এক্স-রেসিডেন্ট (গাইনী এন্ড অবস্), রেজিস্ট্রার (গাইনী এন্ড অবস্), কনসালটেন্ট (গাইনী এন্ড অবস্), এসএমসি, ঢাকা | গাইনী, প্রসূতি, বন্ধ্যাত্ব বিশেষজ্ঞ ও সার্জন",
+    "specialty": "Gynecology",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-newlife"
+    ],
+    "schedule": "প্রতি বৃহস্পতিবার, বিকাল ৪টা থেকে রাত ৮টা পর্যন্ত।",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
+  },
+  {
+    "id": "dr-mh-rahman-ent",
+    "name": "ডা. এম এইচ রহমান",
+    "degree": "এমবিবিএস (Sh4, ShSMCH), বিসিএস (স্বাস্থ্য), পিজিটি (ENT & HNS), এমএস (ENT & HNS) | ইএনটি ও হেড-নেক সার্জারি বিভাগ, ঢাকা মেডিকেল কলেজ হাসপাতাল, ঢাকা | নাক-কান-গলা, মাথা-ঘাড় ও থাইরয়েডের চিকিৎসক ও সার্জন",
+    "specialty": "ENT",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী",
+      "Dhaka"
+    ],
+    "clinics": [
+      "c-newlife"
+    ],
+    "schedule": "প্রতি বৃহস্পতিবার বিকাল ৩টা থেকে রাত ১০টা পর্যন্ত।",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300",
+    "consultationFee": 700
   }
 ];
 

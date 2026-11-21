@@ -4462,8 +4462,15 @@ export default function App() {
                   role: prof.role
                 }));
               }
-            } catch (error) {
-              handleFirestoreError(error, OperationType.GET, `profiles/${firebaseUser.uid}`);
+            } catch (error: any) {
+              const isPermissionError =
+                error?.code === 'permission-denied' ||
+                (error instanceof Error && error.message.toLowerCase().includes('missing or insufficient permissions'));
+              if (isPermissionError) {
+                handleFirestoreError(error, OperationType.GET, `profiles/${firebaseUser.uid}`);
+              } else {
+                console.warn('Notice: Could not reach Firestore for profile sync (using local state if available):', error?.message || error);
+              }
             }
           } else {
             const hasCustomSession = localStorage.getItem('jb_custom_session');
@@ -4665,10 +4672,10 @@ export default function App() {
           return {
             ...data,
             id: d.id,
-            name: 'ডাঃ মোঃ সোহানুর রহমান সোহাগ',
-            degree: 'এমবিবিএস (রাজ), এমডি (বক্ষব্যাধি), এমএসিপি (আমেরিকা) | সহকারী অধ্যাপক, মেডিসিন বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল | বক্ষব্যাধি ও মেডিসিন বিশেষজ্ঞ',
+            name: 'ডা. মোঃ সোহানুর রহমান সোহাগ',
+            degree: 'MBBS (রাজশাহী মেডিকেল কলেজ), MD (বক্ষব্যাধি), MCPS (America) | সহকারী অধ্যাপক, মেডিসিন বিভাগ, রংপুর কমিউনিটি মেডিকেল কলেজ ও হাসপাতাল | মেডিসিন, বক্ষব্যাধি, অ্যাজমা, স্লিপ মেডিসিন বিশেষজ্ঞ ও ইন্টারভেনশনাল পালমোনোলজিস্ট',
             specialty: 'Pulmonology',
-            schedule: 'প্রতি বৃহস্পতিবার দুপুর ২টা থেকে রাত ৯টা পর্যন্ত',
+            schedule: 'প্রতি বৃহস্পতিবার দুপুর ২টা থেকে রাত ১০টা পর্যন্ত।',
             clinics: ['c-newlife'],
             districts: ['Nilphamari', 'নীলফামারী', 'Rangpur']
           };
@@ -4677,10 +4684,10 @@ export default function App() {
           return {
             ...data,
             id: d.id,
-            name: 'ডাঃ মোঃ আবু সাঈদ',
-            degree: 'এমবিবিএস (রাজশাহী মেডিকেল কলেজ), পিজিটি (মেডিসিন), সিএমইউ (আল্ট্রা), এফসিপিএস মেডিসিন (গ্যাস্ট্রোএন্টারোলজি) – ফাইনাল পার্ট, এমআরএইচএমও (মেডিসিন বিভাগ, ঢাকা মেডিকেল কলেজ হাসপাতাল) | মেডিসিন ও গ্যাস্ট্রোএন্টারোলজি রোগ বিশেষজ্ঞ',
+            name: 'ডা. মোঃ আবু সাঈদ',
+            degree: 'এমবিবিএস (রাজশাহী মেডিকেল কলেজ), পিজিটি (মেডিসিন), সিএমইউ (আল্ট্রা), এফসিপিএস মেডিসিন (গ্যাস্ট্রোএন্টারোলজি) – ফাইনাল পার্ট, এম এইচ এম ও (মেডিসিন বিভাগ, ঢাকা মেডিকেল কলেজ হাসপাতাল) | মেডিসিন ও গ্যাস্ট্রোএন্টেরোলজি রোগ বিশেষজ্ঞ',
             specialty: 'Gastroenterology',
-            schedule: 'শনি থেকে মঙ্গলবার: সকাল ১০টা - বিকাল ৬টা | বুধ থেকে শুক্রবার: সকাল ১০টা - রাত ১০টা',
+            schedule: 'প্রতিদিন সকাল ১০:০০ টা থেকে রাত ১০:০০ টা পর্যন্ত।',
             clinics: ['c-newlife'],
             districts: ['Nilphamari', 'নীলফামারী', 'Dhaka']
           };
@@ -4689,10 +4696,10 @@ export default function App() {
           return {
             ...data,
             id: d.id,
-            name: 'ডাঃ মোঃ নাজমুস সাকিব বারী',
-            degree: 'এমবিবিএস (এসএসএমসি), বিসিএস (স্বাস্থ্য), এফসিপিএস (এফ.পি) অর্থোপেডিক সার্জারী, পিজিটি (জেনারেল সার্জারী) | ইমার্জেন্সি মেডিকেল অফিসার, ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী | হাড়-জোড়া, বাত-ব্যথা, মেরুদণ্ড, অর্থোপেডিক ও জেনারেল সার্জারী বিশেষজ্ঞ',
+            name: 'ডা. মোঃ নাজমুস সাকিব (বাপ্পি)',
+            degree: 'এমবিবিএস (এমএসএমসি), বিসিএস (স্বাস্থ্য), এফসিপিএস (এফ.পি) অর্থোপেডিক সার্জারি, পিজিটি (জেনারেল সার্জারি) | ইমারজেন্সি মেডিকেল অফিসার, ২৫০ শয্যা বিশিষ্ট জেনারেল হাসপাতাল, নীলফামারী। | হাড়-জোড়া, বাত-ব্যথা, মেরুদণ্ড, অর্থোপেডিক ও জেনারেল সার্জারির বিশেষজ্ঞ',
             specialty: 'Orthopedics',
-            schedule: 'প্রতিদিন: দুপুর ২টা থেকে রাত ১০টা | শুক্রবার: সকাল ১০টা থেকে রাত ১০টা',
+            schedule: 'প্রতিদিন দুপুর ২টা থেকে রাত ১০টা পর্যন্ত | শুক্রবার সকাল ১০টা থেকে রাত ১০টা পর্যন্ত',
             clinics: ['c-newlife'],
             districts: ['Nilphamari', 'নীলফামারী']
           };
@@ -4806,7 +4813,7 @@ export default function App() {
           };
         }
         return { id: d.id, ...data } as Doctor;
-      }).filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1');
+      }).filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'nl-med1' && d.id !== 'nl-card1' && d.id !== 'nl-skin1' && d.id !== 'nl-atiar');
 
       // Check if moun-biplab exists in Firestore and clean it up if user is admin/moderator
       const hasBiplabInDb = docRes.docs.some(d => d.id === 'moun-biplab');
@@ -4955,7 +4962,11 @@ export default function App() {
             'dr-allama-iqbal-uro',
             'dr-abdullah-al-mamun-hematology',
             'dr-irfan-rashid-med',
-            'dr-sojib-hossain-med'
+            'dr-sojib-hossain-med',
+            'dr-iffat-aziz-sumi',
+            'dr-mh-rahman-ent',
+            'nl-med2',
+            'j-atiur'
           ];
           // CRITICAL: Only sync if doctor is completely missing from Firestore! Never overwrite existing doctor!
           const missingDocs = DOCTORS.filter(d => targetDoctorSyncIds.includes(d.id) && !docRes.docs.some(docD => docD.id === d.id));
@@ -5101,8 +5112,47 @@ export default function App() {
             }, { merge: true }).catch(e => console.warn(`Updating eb-saiful-ent in DB:`, e));
           }
 
+          // Sync New Life Care (c-newlife) updated doctors in DB
+          const newlifeDoctorIds = [
+            'dr-iffat-aziz-sumi',
+            'dr-abdullah-al-mamun-hematology',
+            'dr-md-abu-sayeed-gastro',
+            'dr-sohanur-rahman-sohag',
+            'dr-mh-rahman-ent',
+            'nl-med2',
+            'dr-md-najmus-sakib-bari',
+            'j-atiur'
+          ];
+          newlifeDoctorIds.forEach(nlDocId => {
+            const dbDoc = docRes.docs.find(docD => docD.id === nlDocId);
+            const freshDoc = DOCTORS.find(d => d.id === nlDocId);
+            if (dbDoc && freshDoc) {
+              const dbData = dbDoc.data();
+              const clinicsChanged = JSON.stringify(dbData?.clinics || []) !== JSON.stringify(freshDoc.clinics);
+              const needsSync =
+                dbData?.name !== freshDoc.name ||
+                dbData?.degree !== freshDoc.degree ||
+                dbData?.specialty !== freshDoc.specialty ||
+                dbData?.schedule !== freshDoc.schedule ||
+                clinicsChanged;
+              if (needsSync) {
+                setDoc(doc(db, 'doctors', nlDocId), {
+                  name: freshDoc.name,
+                  degree: freshDoc.degree,
+                  specialty: freshDoc.specialty,
+                  schedule: freshDoc.schedule,
+                  clinics: freshDoc.clinics,
+                  districts: freshDoc.districts,
+                  availableToday: freshDoc.availableToday,
+                  rating: freshDoc.rating,
+                  consultationFee: freshDoc.consultationFee
+                }, { merge: true }).catch(e => console.warn(`Updating ${nlDocId} in DB:`, e));
+              }
+            }
+          });
+
           // Clean up doctors no longer practicing at clinics from Firestore
-          ['pacific-ayesha', 'pacific-selim', 'eb-rasedul-ent', 'mad-skin1', 'dr-ar-muhid'].forEach(oldId => {
+          ['pacific-ayesha', 'pacific-selim', 'eb-rasedul-ent', 'mad-skin1', 'dr-ar-muhid', 'nl-med1', 'nl-card1', 'nl-skin1', 'nl-atiar'].forEach(oldId => {
             if (docRes.docs.some(docD => docD.id === oldId)) {
               import('firebase/firestore').then(({ doc, deleteDoc }) => {
                 deleteDoc(doc(db, 'doctors', oldId)).catch(e => console.warn(`Auto-deleting ${oldId} from DB: `, e));
@@ -5507,17 +5557,15 @@ export default function App() {
           const newlifeDoc = hospRes.docs.find(docH => docH.id === 'c-newlife');
           const newlifeHosp = CLINICS.find(c => c.id === 'c-newlife');
           if (newlifeHosp) {
-            const currentDocList = (newlifeDoc?.data()?.doctors || []).filter((id: string) => id !== 'nl-uro1');
-            const targetDocList = newlifeHosp.doctors.filter(id => id !== 'nl-uro1');
-            const hasMissingTarget = targetDocList.some(id => !currentDocList.includes(id));
-            const hasUro1InList = (newlifeDoc?.data()?.doctors || []).includes('nl-uro1');
+            const currentDocList = newlifeDoc?.data()?.doctors || [];
+            const listChanged = JSON.stringify(currentDocList) !== JSON.stringify(newlifeHosp.doctors);
             if (!newlifeDoc) {
               setDoc(doc(db, 'hospitals', newlifeHosp.id), newlifeHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-newlife in DB:`, e));
-            } else if (newlifeDoc.data()?.name !== newlifeHosp.name || newlifeDoc.data()?.address !== newlifeHosp.address || hasMissingTarget || hasUro1InList) {
+            } else if (newlifeDoc.data()?.name !== newlifeHosp.name || newlifeDoc.data()?.address !== newlifeHosp.address || listChanged) {
               setDoc(doc(db, 'hospitals', newlifeHosp.id), { 
                 name: newlifeHosp.name, 
                 address: newlifeHosp.address, 
-                doctors: Array.from(new Set([...currentDocList, ...targetDocList])) 
+                doctors: newlifeHosp.doctors
               }, { merge: true }).catch(e => console.warn(`Updating c-newlife in DB:`, e));
             }
           }
@@ -5681,7 +5729,11 @@ export default function App() {
         'dr-allama-iqbal-uro',
         'dr-abdullah-al-mamun-hematology',
         'dr-irfan-rashid-med',
-        'dr-sojib-hossain-med'
+        'dr-sojib-hossain-med',
+        'dr-iffat-aziz-sumi',
+        'dr-mh-rahman-ent',
+        'nl-med2',
+        'j-atiur'
       ];
       const mergedDoctors = dbDoctors.length > 0
         ? [
@@ -5799,7 +5851,7 @@ export default function App() {
                   degree: localDoc?.degree || dbD.degree,
                   specialty: localDoc?.specialty || "Hematology",
                   clinics: Array.from(new Set([...(dbD.clinics || []), 'c-newlife'])),
-                  schedule: localDoc?.schedule || "প্রতি বৃহস্পতিবার দুপুর ২ টা থেকে রাত ৯ টা পর্যন্ত",
+                  schedule: localDoc?.schedule || "প্রতি শুক্রবার দুপুর ২ টা থেকে রাত ৯ টা পর্যন্ত।",
                   districts: Array.from(new Set([...(dbD.districts || []), 'Nilphamari', 'নীলফামারী'])),
                   consultationFee: localDoc?.consultationFee || 800
                 };
@@ -5885,7 +5937,7 @@ export default function App() {
       });
 
       // Filter out deleted doctors
-      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'eb-rasedul-ent' && d.id !== 'mad-skin1' && d.id !== 'dr-ar-muhid');
+      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'eb-rasedul-ent' && d.id !== 'mad-skin1' && d.id !== 'dr-ar-muhid' && d.id !== 'nl-med1' && d.id !== 'nl-card1' && d.id !== 'nl-skin1' && d.id !== 'nl-atiar');
 
       // Sequential list ordering: hospital/clinic/thana doctors appear first in sequential order, and Dr. Habibur Rahman (Dentist) is placed at the very end of the list
       const sortedMergedDoctors = [...doctorsWithOverrides].sort((a, b) => {
@@ -5900,7 +5952,7 @@ export default function App() {
         ? dbHospitals.map(dbH => {
             const localC = CLINICS.find(c => c.id === dbH.id);
             if (localC) {
-              const combinedDoctors = (dbH.id === 'c-ar' || dbH.id === 'c-ebadot' || dbH.id === 'c-pacific' || dbH.id === 'c-madina' || dbH.id === 'c-new-holy-care')
+              const combinedDoctors = (dbH.id === 'c-ar' || dbH.id === 'c-ebadot' || dbH.id === 'c-pacific' || dbH.id === 'c-madina' || dbH.id === 'c-new-holy-care' || dbH.id === 'c-newlife')
                 ? (localC.doctors || [])
                 : Array.from(new Set([...(dbH.doctors || []), ...(localC.doctors || [])]))
                     .filter(id => id !== 'moun-biplab' && !(dbH.id === 'c-greensign' && id === 'pacific-shahjada') && !(dbH.id === 'c-madina' && (id === 'mad-sakib' || id === 'mad-skin1')));
@@ -5971,6 +6023,21 @@ export default function App() {
                   });
                 }
                 return { ...dbH, ...localC, doctors: pacificDocs };
+              }
+
+              // Auto-sync c-newlife (নিউ লাইফ কেয়ার) hospital details in DB if user is admin/moderator
+              if (dbH.id === 'c-newlife') {
+                const newlifeDocs = localC.doctors || [];
+                if (profile && (profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR)) {
+                  import('firebase/firestore').then(({ doc, updateDoc }) => {
+                    updateDoc(doc(db, 'hospitals', 'c-newlife'), {
+                      name: localC.name,
+                      address: localC.address,
+                      doctors: newlifeDocs
+                    }).catch(e => console.warn("Auto-syncing c-newlife in DB: ", e));
+                  });
+                }
+                return { ...dbH, ...localC, doctors: newlifeDocs };
               }
 
               return { ...dbH, ...localC, doctors: combinedDoctors };
