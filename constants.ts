@@ -299,7 +299,8 @@ export const CLINICS: Clinic[] = [
       "dr-ar-towhid-hasan",
       "dr-ar-debabrata-haldar",
       "dr-pradip-kumar-roy",
-      "dr-allama-iqbal-uro"
+      "dr-allama-iqbal-uro",
+      "mad-sakib"
     ],
     "image": "/ar_general_hospital.png"
   },
@@ -1121,7 +1122,7 @@ export const DOCTORS: Doctor[] = [
     "clinics": [
       "c-ar"
     ],
-    "schedule": "প্রতি রবি, সোম ও বুধবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত।",
+    "schedule": "প্রতি রবিবার বিকাল ৪ টা থেকে রাত ৯টা পর্যন্ত।",
     "availableToday": true,
     "rating": 4.8,
     "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
@@ -1962,6 +1963,24 @@ export const DOCTORS: Doctor[] = [
     "availableToday": false,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
+    "consultationFee": 800
+  },
+  {
+    "id": "mad-sakib",
+    "name": "ডা. মোঃ শহিদুল ইসলাম (সাকিব)",
+    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (নেফ্রোলজি) — বিএমইউ, এমএসসিপি (মেডিসিন) — আমেরিকা, এফসিপিএস (মেডিসিন) — আমেরিকা, সিসিডি (বারডেম), এমএনএইচইউএম (ইউএসএ), লাইফ মেম্বার — বাংলাদেশ রেনাল অ্যাসোসিয়েশন | কর্মস্থল: কুষ্টিয়া মেডিকেল কলেজ হাসপাতাল, কুষ্টিয়া | কিডনি রোগ, ডায়ালাইসিস, ডায়াবেটিস, উচ্চ রক্তচাপ, বাত-ব্যথা ও মেডিসিন বিশেষজ্ঞ",
+    "specialty": "Nephrology",
+    "districts": [
+      "Nilphamari",
+      "নীলফামারী"
+    ],
+    "clinics": [
+      "c-ar"
+    ],
+    "schedule": "প্রতি বৃহস্পতিবার বিকাল ৪ টা থেকে রাত ১০টা পর্যন্ত।",
+    "availableToday": false,
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200",
     "consultationFee": 800
   },
   {

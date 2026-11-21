@@ -4632,7 +4632,7 @@ export default function App() {
             name: 'ডা. মো. শামসুর রহমান',
             degree: 'এমবিবিএস, বিসিএস (স্বাস্থ্য), এমডি (ফিজিক্যাল মেডিসিন এন্ড রিহ্যাবিলিটেশন) | কনসালটেন্ট, ২৫০ শয্যা জেনারেল হাসপাতাল, নীলফামারী | বাত-ব্যথা, প্যারালাইসিস, স্পোর্টস, মেডিসিন এন্ড রিহ্যাবিলিটেশন বিশেষজ্ঞ',
             specialty: 'Physical Medicine',
-            schedule: 'প্রতি রবি, সোম ও বুধবার বিকাল ৪টা থেকে রাত ৯টা পর্যন্ত।',
+            schedule: 'প্রতি রবিবার বিকাল ৪ টা থেকে রাত ৯টা পর্যন্ত।',
             clinics: ['c-ar'],
             districts: ['Nilphamari']
           };
@@ -4845,7 +4845,7 @@ export default function App() {
             'dr-ar-ashequr', 'dr-ar-mahbubul', 'dr-ar-rupayan-das', 'dr-ar-raisul-alam',
             'dr-ar-nihar-ray', 'dr-ar-rezaul-karim', 'dr-ar-ruhul-amin', 'dr-ar-hasina-banu',
             'dr-ar-abdul-awal', 'dr-ar-towhid-hasan', 'dr-ar-debabrata-haldar',
-            'dr-pradip-kumar-roy', 'dr-allama-iqbal-uro',
+            'dr-pradip-kumar-roy', 'dr-allama-iqbal-uro', 'mad-sakib',
             'eb-roni-ortho', 'eb-murad-med', 'eb-mostafa-med', 'eb-saiful-card', 'eb-sabur-nephro',
             'eb-firoz-ent', 'eb-nasera-gyn', 'eb-shakera-gyn', 'eb-munira', 'eb-narayan-neuro',
             'eb-resaul-med', 'eb-mahabub-med', 'eb-kaushik-ped', 'eb-sohel-ortho', 'eb-saiful-ent',
@@ -5048,14 +5048,14 @@ export default function App() {
             }, { merge: true }).catch(e => console.warn(`Updating mad-kamrul in DB:`, e));
           }
 
-          // Sync all 21 A.R. Health City (c-ar) doctors in DB
+          // Sync all 22 A.R. Health City (c-ar) doctors in DB
           const arDoctorIds = [
             'dr-ar-abdul-matin', 'dr-ar-moinul', 'dr-ar-samiur', 'dr-ar-deb-dulal-ray',
             'dr-ar-minhaj', 'dr-ar-rezaul-alam', 'dr-ar-monir', 'dr-ar-shamsur',
             'dr-ar-ashequr', 'dr-ar-mahbubul', 'dr-ar-rupayan-das', 'dr-ar-raisul-alam',
             'dr-ar-nihar-ray', 'dr-ar-rezaul-karim', 'dr-ar-ruhul-amin', 'dr-ar-hasina-banu',
             'dr-ar-abdul-awal', 'dr-ar-towhid-hasan', 'dr-ar-debabrata-haldar',
-            'dr-pradip-kumar-roy', 'dr-allama-iqbal-uro'
+            'dr-pradip-kumar-roy', 'dr-allama-iqbal-uro', 'mad-sakib'
           ];
           arDoctorIds.forEach(arDocId => {
             const dbDoc = docRes.docs.find(docD => docD.id === arDocId);
@@ -5102,7 +5102,7 @@ export default function App() {
           }
 
           // Clean up doctors no longer practicing at clinics from Firestore
-          ['pacific-ayesha', 'pacific-selim', 'eb-rasedul-ent', 'mad-skin1', 'dr-ar-muhid', 'mad-sakib'].forEach(oldId => {
+          ['pacific-ayesha', 'pacific-selim', 'eb-rasedul-ent', 'mad-skin1', 'dr-ar-muhid'].forEach(oldId => {
             if (docRes.docs.some(docD => docD.id === oldId)) {
               import('firebase/firestore').then(({ doc, deleteDoc }) => {
                 deleteDoc(doc(db, 'doctors', oldId)).catch(e => console.warn(`Auto-deleting ${oldId} from DB: `, e));
@@ -5578,7 +5578,7 @@ export default function App() {
         'dr-ar-ashequr', 'dr-ar-mahbubul', 'dr-ar-rupayan-das', 'dr-ar-raisul-alam',
         'dr-ar-nihar-ray', 'dr-ar-rezaul-karim', 'dr-ar-ruhul-amin', 'dr-ar-hasina-banu',
         'dr-ar-abdul-awal', 'dr-ar-towhid-hasan', 'dr-ar-debabrata-haldar',
-        'dr-pradip-kumar-roy', 'dr-allama-iqbal-uro',
+        'dr-pradip-kumar-roy', 'dr-allama-iqbal-uro', 'mad-sakib',
         'ev-asad', 'ev-nripen', 'ek-gyn1',
         'dr-aratul-akter-biva',
         'dr-sarwar-alam-pulse',
@@ -5885,7 +5885,7 @@ export default function App() {
       });
 
       // Filter out deleted doctors
-      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'eb-rasedul-ent' && d.id !== 'mad-skin1' && d.id !== 'dr-ar-muhid' && d.id !== 'mad-sakib');
+      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'eb-rasedul-ent' && d.id !== 'mad-skin1' && d.id !== 'dr-ar-muhid');
 
       // Sequential list ordering: hospital/clinic/thana doctors appear first in sequential order, and Dr. Habibur Rahman (Dentist) is placed at the very end of the list
       const sortedMergedDoctors = [...doctorsWithOverrides].sort((a, b) => {
