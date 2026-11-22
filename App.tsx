@@ -4813,7 +4813,7 @@ export default function App() {
           };
         }
         return { id: d.id, ...data } as Doctor;
-      }).filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'nl-med1' && d.id !== 'nl-card1' && d.id !== 'nl-skin1' && d.id !== 'nl-atiar');
+      }).filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'nl-med1' && d.id !== 'nl-card1' && d.id !== 'nl-skin1' && d.id !== 'nl-atiar' && d.id !== 'eb-shakera-gyn');
 
       // Check if moun-biplab exists in Firestore and clean it up if user is admin/moderator
       const hasBiplabInDb = docRes.docs.some(d => d.id === 'moun-biplab');
@@ -4854,7 +4854,7 @@ export default function App() {
             'dr-ar-abdul-awal', 'dr-ar-towhid-hasan', 'dr-ar-debabrata-haldar',
             'dr-pradip-kumar-roy', 'dr-allama-iqbal-uro', 'mad-sakib',
             'eb-roni-ortho', 'eb-murad-med', 'eb-mostafa-med', 'eb-saiful-card', 'eb-sabur-nephro',
-            'eb-firoz-ent', 'eb-nasera-gyn', 'eb-shakera-gyn', 'eb-munira', 'eb-narayan-neuro',
+            'eb-firoz-ent', 'eb-nasera-gyn', 'eb-munira', 'eb-narayan-neuro',
             'eb-resaul-med', 'eb-mahabub-med', 'eb-kaushik-ped', 'eb-sohel-ortho', 'eb-saiful-ent',
             'eb-mezbah-uro', 'eb-tanvir-psych', 'eb-sohrab-surg', 'eb-pavel-surg',
             'pacific-ali', 'pacific-altaf', 'pacific-hafiz', 'pacific-sabuj', 'pacific-shahjada', 'pacific-alamin', 'pacific-robiul', 'pacific-sarwar', 'pacific-kayes',
@@ -5152,7 +5152,7 @@ export default function App() {
           });
 
           // Clean up doctors no longer practicing at clinics from Firestore
-          ['pacific-ayesha', 'pacific-selim', 'eb-rasedul-ent', 'mad-skin1', 'dr-ar-muhid', 'nl-med1', 'nl-card1', 'nl-skin1', 'nl-atiar'].forEach(oldId => {
+          ['pacific-ayesha', 'pacific-selim', 'eb-rasedul-ent', 'eb-shakera-gyn', 'mad-skin1', 'dr-ar-muhid', 'nl-med1', 'nl-card1', 'nl-skin1', 'nl-atiar'].forEach(oldId => {
             if (docRes.docs.some(docD => docD.id === oldId)) {
               import('firebase/firestore').then(({ doc, deleteDoc }) => {
                 deleteDoc(doc(db, 'doctors', oldId)).catch(e => console.warn(`Auto-deleting ${oldId} from DB: `, e));
@@ -5594,11 +5594,11 @@ export default function App() {
           const ebadotHosp = CLINICS.find(c => c.id === 'c-ebadot');
           if (ebadotHosp) {
             const currentDocList = (ebadotDoc?.data()?.doctors || []);
-            const hasRasedulInList = currentDocList.includes('eb-rasedul-ent');
+            const hasRemovedDocInList = currentDocList.includes('eb-rasedul-ent') || currentDocList.includes('eb-shakera-gyn');
             const hasMissingTarget = ebadotHosp.doctors.some(id => !currentDocList.includes(id));
             if (!ebadotDoc) {
               setDoc(doc(db, 'hospitals', ebadotHosp.id), ebadotHosp, { merge: true }).catch(e => console.warn(`Auto-syncing c-ebadot in DB:`, e));
-            } else if (hasRasedulInList || hasMissingTarget || ebadotDoc.data()?.name !== ebadotHosp.name || ebadotDoc.data()?.address !== ebadotHosp.address) {
+            } else if (hasRemovedDocInList || hasMissingTarget || ebadotDoc.data()?.name !== ebadotHosp.name || ebadotDoc.data()?.address !== ebadotHosp.address) {
               setDoc(doc(db, 'hospitals', ebadotHosp.id), { 
                 name: ebadotHosp.name, 
                 address: ebadotHosp.address, 
@@ -5615,7 +5615,7 @@ export default function App() {
       // Merge DB data with local constants: DB version has precedence, but newly updated verified doctor records and local entries not in DB take precedence
       const updatedDoctorTargetIds = [
         'eb-roni-ortho', 'eb-murad-med', 'eb-mostafa-med', 'eb-saiful-card', 'eb-sabur-nephro',
-        'eb-firoz-ent', 'eb-nasera-gyn', 'eb-shakera-gyn', 'eb-munira', 'eb-narayan-neuro',
+        'eb-firoz-ent', 'eb-nasera-gyn', 'eb-munira', 'eb-narayan-neuro',
         'eb-resaul-med', 'eb-mahabub-med', 'eb-kaushik-ped', 'eb-sohel-ortho', 'eb-saiful-ent',
         'eb-mezbah-uro', 'eb-tanvir-psych', 'eb-sohrab-surg', 'eb-pavel-surg',
         'pacific-ali', 'pacific-altaf', 'pacific-hafiz', 'pacific-sabuj', 'pacific-shahjada', 'pacific-alamin', 'pacific-robiul', 'pacific-sarwar', 'pacific-kayes',
@@ -5937,7 +5937,7 @@ export default function App() {
       });
 
       // Filter out deleted doctors
-      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'eb-rasedul-ent' && d.id !== 'mad-skin1' && d.id !== 'dr-ar-muhid' && d.id !== 'nl-med1' && d.id !== 'nl-card1' && d.id !== 'nl-skin1' && d.id !== 'nl-atiar');
+      doctorsWithOverrides = doctorsWithOverrides.filter(d => d.id !== 'moun-biplab' && d.id !== 'nl-uro1' && d.id !== 'eb-rasedul-ent' && d.id !== 'eb-shakera-gyn' && d.id !== 'mad-skin1' && d.id !== 'dr-ar-muhid' && d.id !== 'nl-med1' && d.id !== 'nl-card1' && d.id !== 'nl-skin1' && d.id !== 'nl-atiar');
 
       // Sequential list ordering: hospital/clinic/thana doctors appear first in sequential order, and Dr. Habibur Rahman (Dentist) is placed at the very end of the list
       const sortedMergedDoctors = [...doctorsWithOverrides].sort((a, b) => {

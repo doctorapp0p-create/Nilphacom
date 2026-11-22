@@ -317,7 +317,6 @@ export const CLINICS: Clinic[] = [
       "eb-sabur-nephro",
       "eb-firoz-ent",
       "eb-nasera-gyn",
-      "eb-shakera-gyn",
       "eb-munira",
       "eb-narayan-neuro",
       "eb-resaul-med",
@@ -1282,24 +1281,6 @@ export const DOCTORS: Doctor[] = [
     "availableToday": true,
     "rating": 4.9,
     "image": "https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=300",
-    "consultationFee": 600
-  },
-  {
-    "id": "eb-shakera-gyn",
-    "name": "ডাঃ সাকেরা আকতার",
-    "degree": "এমবিবিএস, বিসিএস (স্বাস্থ্য), এফসিপিএস (গাইনী এন্ড অবস্) | প্রসূতি, স্ত্রী রোগ বিশেষজ্ঞ এবং সার্জন, মুগদা মেডিকেল কলেজ হাসপাতাল, ঢাকা | বিএমডিসি রেজি নং এ-৬১৬৩২ | প্রসূতি, স্ত্রীরোগ ও বন্ধ্যাত্ব বিশেষজ্ঞ ও সার্জন",
-    "specialty": "Gynecology",
-    "districts": [
-      "Nilphamari",
-      "Dhaka"
-    ],
-    "clinics": [
-      "c-ebadot"
-    ],
-    "schedule": "প্রতি শুক্রবার দুপুর ১২টা থেকে রাত ১০টা",
-    "availableToday": false,
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1594824813590-79870196232b?auto=format&fit=crop&q=80&w=300",
     "consultationFee": 600
   },
   {
