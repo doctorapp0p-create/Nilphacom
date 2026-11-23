@@ -28,7 +28,9 @@ import {
   MapPin,
   CreditCard,
   Sparkles,
-  X
+  X,
+  Stethoscope,
+  PlusCircle
 } from 'lucide-react';
 import { initializeApp, deleteApp } from 'firebase/app';
 import { getAuth as getTempAuth, createUserWithEmailAndPassword, signOut as signTempOut } from 'firebase/auth';
@@ -130,6 +132,7 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
   profiles,
   labTests,
   orders,
+  doctors,
   hospitals,
   appointments,
   coupons = [],
@@ -231,13 +234,187 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
     });
   }, [effectiveCoupons]);
 
-  // --- STAFF SERIALS / APPOINTMENTS (DATE-WISE) ---
+  // --- STAFF SERIALS / APPOINTMENTS (DATE-WISE & BOOKING FORM) ---
   const [appScope, setAppScope] = useState<'mine' | 'all'>('mine');
   const [appDateFilter, setAppDateFilter] = useState<string>(''); // '' = all dates, YYYY-MM-DD = specific date
   const [appSearch, setAppSearch] = useState('');
 
+  // Staff Patient Appointment Booking Form State
+  const [showBookingForm, setShowBookingForm] = useState<boolean>(true);
+  const [locallyBookedAppointments, setLocallyBookedAppointments] = useState<any[]>([]);
+  const [bookingDoctorSearch, setBookingDoctorSearch] = useState('');
+  const [bookingHospitalFilter, setBookingHospitalFilter] = useState<string>('all');
+  const [selectedBookingDoctorId, setSelectedBookingDoctorId] = useState<string>(doctors[0]?.id || '');
+  const [bookingClinicName, setBookingClinicName] = useState<string>('');
+  const [bookingType, setBookingType] = useState<'chamber_serial' | 'live_consultation'>('chamber_serial');
+  const [bookingDate, setBookingDate] = useState<string>(todayKey);
+  const [bookingPatientId, setBookingPatientId] = useState<string>('');
+  const [bookingPatientName, setBookingPatientName] = useState('');
+  const [bookingPatientPhone, setBookingPatientPhone] = useState('');
+  const [bookingPatientAge, setBookingPatientAge] = useState('');
+  const [bookingPatientAddress, setBookingPatientAddress] = useState('');
+  const [bookingProblem, setBookingProblem] = useState('');
+  const [bookingPaymentMethod, setBookingPaymentMethod] = useState<'bkash' | 'nagad'>('bkash');
+  const [bookingTrxId, setBookingTrxId] = useState('');
+  const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
+  const [bookingSuccess, setBookingSuccess] = useState<any | null>(null);
+
+  const tomorrowKey = useMemo(() => {
+    const dt = new Date();
+    dt.setDate(dt.getDate() + 1);
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, '0');
+    const d = String(dt.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }, []);
+
+  const filteredDoctorsForBooking = useMemo(() => {
+    const q = bookingDoctorSearch.toLowerCase().trim();
+    return doctors.filter(docItem => {
+      if (bookingHospitalFilter !== 'all') {
+        const matchesClinic = (docItem.clinics || []).includes(bookingHospitalFilter);
+        if (!matchesClinic) return false;
+      }
+      if (q) {
+        return (
+          (docItem.name || '').toLowerCase().includes(q) ||
+          (docItem.specialty || '').toLowerCase().includes(q) ||
+          (docItem.degree || '').toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [doctors, bookingHospitalFilter, bookingDoctorSearch]);
+
+  const selectedBookingDoctor = useMemo(() => {
+    return (
+      filteredDoctorsForBooking.find(d => d.id === selectedBookingDoctorId) ||
+      filteredDoctorsForBooking[0] ||
+      null
+    );
+  }, [filteredDoctorsForBooking, selectedBookingDoctorId]);
+
+  const doctorClinicsList = useMemo(() => {
+    if (!selectedBookingDoctor) return hospitals;
+    const matched = hospitals.filter(h => (selectedBookingDoctor.clinics || []).includes(h.id));
+    return matched.length > 0 ? matched : hospitals;
+  }, [selectedBookingDoctor, hospitals]);
+
+  useEffect(() => {
+    if (doctorClinicsList.length > 0) {
+      setBookingClinicName(prev =>
+        prev && doctorClinicsList.some(c => c.name === prev) ? prev : doctorClinicsList[0].name
+      );
+    }
+  }, [doctorClinicsList]);
+
+  const handleConfirmPatientAppointment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBookingError(null);
+    setBookingSuccess(null);
+
+    if (!selectedBookingDoctor) {
+      setBookingError('অনুগ্রহ করে একজন ডাক্তার নির্বাচন করুন।');
+      return;
+    }
+    if (!bookingDate) {
+      setBookingError('অনুগ্রহ করে অ্যাপয়েন্টমেন্টের তারিখ নির্ধারণ করুন।');
+      return;
+    }
+    if (!bookingPatientName.trim() || bookingPatientName.trim().length < 2) {
+      setBookingError('অনুগ্রহ করে রোগীর পূর্ণ নাম লিখুন।');
+      return;
+    }
+    const cleanPhone = bookingPatientPhone.trim().replace(/[^0-9]/g, '');
+    if (cleanPhone.length < 11) {
+      setBookingError('অনুগ্রহ করে সঠিক ১১-ডিজিটের মোবাইল নম্বর দিন।');
+      return;
+    }
+    if (!bookingPatientAddress.trim() || bookingPatientAddress.trim().length < 2) {
+      setBookingError('অনুগ্রহ করে রোগীর ঠিকানা লিখুন।');
+      return;
+    }
+
+    setIsSubmittingBooking(true);
+    try {
+      await ensureFirebaseAuthSession();
+
+      const matchedProfile =
+        (bookingPatientId && profiles.find(p => p.id === bookingPatientId)) ||
+        profiles.find(p => (p.phone || '').trim() === cleanPhone);
+
+      const resolvedPatientId = matchedProfile?.id || `staff_pat_${cleanPhone}`;
+      const isLive = bookingType === 'live_consultation';
+      const feeAmount = selectedBookingDoctor.consultationFee || (isLive ? 50 : 0);
+
+      const appRecord = {
+        patient_id: resolvedPatientId,
+        patient_name: bookingPatientName.trim(),
+        patient_age: bookingPatientAge.trim() || 'উল্লিখিত নেই',
+        patient_address: bookingPatientAddress.trim(),
+        patient_phone: cleanPhone,
+        doctor_id: selectedBookingDoctor.id,
+        doctor_name: selectedBookingDoctor.name,
+        doctor_specialty: selectedBookingDoctor.specialty || '',
+        clinic_name: bookingClinicName || '',
+        hospital_name: bookingClinicName || '',
+        date: bookingDate,
+        problems: bookingProblem.trim() || 'উল্লিখিত নেই',
+        status: 'pending',
+        referred_by_code: myStaffCode,
+        referred_by_name: currentProfile.full_name,
+        staff_id: currentProfile.id,
+        created_by: currentProfile.id,
+        consultation_fee: feeAmount,
+        booking_type: bookingType,
+        payment_method: isLive ? bookingPaymentMethod : 'chamber_payment',
+        payment_trx_id: isLive ? bookingTrxId.trim() : '',
+        payment_sender_phone: isLive ? cleanPhone : '',
+        payment_status: isLive ? (bookingTrxId.trim() ? 'paid' : 'pending') : 'chamber_payable',
+        created_at: new Date().toISOString()
+      };
+
+      const docRef = await addDoc(collection(db, 'appointments'), appRecord);
+      const savedApp = { id: docRef.id, ...appRecord };
+      setLocallyBookedAppointments(prev => [savedApp, ...prev]);
+      setBookingSuccess(savedApp);
+
+      setBookingPatientId('');
+      setBookingPatientName('');
+      setBookingPatientPhone('');
+      setBookingPatientAge('');
+      setBookingPatientAddress('');
+      setBookingProblem('');
+      setBookingTrxId('');
+
+      if (onRefreshData) {
+        onRefreshData().catch(() => {});
+      }
+    } catch (err) {
+      console.error('Staff appointment booking error:', err);
+      setBookingError('অ্যাপয়েন্টমেন্ট বুকিং সম্পন্ন করতে সমস্যা হয়েছে। ইন্টারনেট সংযোগ যাচাই করে পুনরায় চেষ্টা করুন।');
+    } finally {
+      setIsSubmittingBooking(false);
+    }
+  };
+
+  const mergedAppointments = useMemo(() => {
+    const merged = [...locallyBookedAppointments, ...appointments];
+    const seen = new Set<string>();
+    const unique: any[] = [];
+    merged.forEach(a => {
+      const key = a.id || `${a.patient_phone}_${a.doctor_name}_${a.date}_${a.created_at}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        unique.push(a);
+      }
+    });
+    return unique;
+  }, [locallyBookedAppointments, appointments]);
+
   const myAppointments = useMemo(() => {
-    return appointments.filter(a => {
+    return mergedAppointments.filter(a => {
       const refCode = (a.referred_by_code || '').trim().toUpperCase();
       const matchRef = Boolean(myStaffCode && refCode === myStaffCode);
       const matchCreator = a.created_by === currentProfile.id || a.staff_id === currentProfile.id;
@@ -245,12 +422,12 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
       const matchPhone = Boolean(a.patient_phone && myReferredPhones.has(a.patient_phone.trim()));
       return matchRef || matchCreator || matchPatientId || matchPhone;
     });
-  }, [appointments, myStaffCode, currentProfile.id, myReferredIds, myReferredPhones]);
+  }, [mergedAppointments, myStaffCode, currentProfile.id, myReferredIds, myReferredPhones]);
 
   const baseAppointmentsList = useMemo(() => {
-    if (appScope === 'all' && permissions.manage_appointments) return appointments;
+    if (appScope === 'all' && permissions.manage_appointments) return mergedAppointments;
     return myAppointments;
-  }, [appScope, permissions.manage_appointments, appointments, myAppointments]);
+  }, [appScope, permissions.manage_appointments, mergedAppointments, myAppointments]);
 
   const todayMySerialCount = useMemo(
     () => myAppointments.filter(a => extractDateKey(a) === todayKey).length,
@@ -1166,37 +1343,383 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
-        {/* TAB 1: DATE-WISE PATIENT SERIAL LIST */}
+        {/* TAB 1: PATIENT APPOINTMENT BOOKING FORM & DATE-WISE SERIAL LIST */}
         {activeTab === 'appointments' && (
           <div className="space-y-5 animate-in fade-in">
             <div className="bg-gradient-to-r from-teal-900 via-emerald-900 to-slate-900 text-white p-5 sm:p-6 rounded-[28px] shadow-md flex flex-wrap items-center justify-between gap-4">
               <div>
                 <span className="bg-teal-500/20 text-teal-200 border border-teal-400/30 text-[10px] font-black uppercase px-3 py-1 rounded-full inline-flex items-center gap-1.5 mb-2">
-                  <CalendarCheck size={12} /> তারিখ অনুযায়ী রোগীর সিরিয়াল রিপোর্ট
+                  <CalendarCheck size={12} /> রোগীর অ্যাপয়েন্টমেন্ট বুকিং ও সিরিয়াল রিপোর্ট
                 </span>
                 <h2 className="text-lg sm:text-xl font-black text-white">
-                  আমার দেয়া রোগীর সিরিয়াল ও তালিকা (তারিখ আকারে)
+                  রোগীর সিরিয়াল বুকিং ও তারিখ অনুযায়ী তালিকা
                 </h2>
                 <p className="text-xs text-teal-100/80 font-medium mt-0.5">
-                  কোন তারিখে কতজন রোগীর সিরিয়াল দিয়েছেন তার সম্পূর্ণ হিসাব ও তালিকা এখানে তারিখ অনুযায়ী সাজানো রয়েছে।
+                  এখান থেকেই সরাসরি রোগীর ডাক্তার অ্যাপয়েন্টমেন্ট বুক করুন এবং তারিখ অনুযায়ী আপনার সকল সিরিয়াল হিসাব দেখুন।
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <div className="bg-white/10 backdrop-blur-xs border border-white/15 px-4 py-2.5 rounded-2xl text-center">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowBookingForm(prev => !prev)}
+                  className="bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-2.5 rounded-2xl text-xs font-black shadow-md flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                >
+                  <PlusCircle size={16} />
+                  {showBookingForm ? 'বুকিং ফর্ম লুকান' : '+ নতুন রোগী বুকিং ফর্ম'}
+                </button>
+                <div className="bg-white/10 backdrop-blur-xs border border-white/15 px-3.5 py-2 rounded-2xl text-center">
                   <p className="text-[10px] text-teal-200 font-bold">আজকের সিরিয়াল</p>
-                  <p className="text-lg font-black text-white">{todayMySerialCount} জন</p>
+                  <p className="text-base font-black text-white">{todayMySerialCount} জন</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-xs border border-white/15 px-4 py-2.5 rounded-2xl text-center">
-                  <p className="text-[10px] text-teal-200 font-bold">সর্বমোট সিরিয়াল</p>
-                  <p className="text-lg font-black text-amber-300">{myAppointments.length} জন</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-xs border border-white/15 px-4 py-2.5 rounded-2xl text-center">
-                  <p className="text-[10px] text-teal-200 font-bold">মোট তারিখ</p>
-                  <p className="text-lg font-black text-white">{dateGroupedAppointments.length} দিন</p>
+                <div className="bg-white/10 backdrop-blur-xs border border-white/15 px-3.5 py-2 rounded-2xl text-center">
+                  <p className="text-[10px] text-teal-200 font-bold">মোট সিরিয়াল</p>
+                  <p className="text-base font-black text-amber-300">{myAppointments.length} জন</p>
                 </div>
               </div>
             </div>
+
+            {/* Staff Patient Appointment Booking Form */}
+            {showBookingForm && (
+              <div className="bg-white rounded-[28px] border-2 border-teal-200 shadow-sm p-5 sm:p-6 space-y-5">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2.5 rounded-2xl bg-teal-50 text-teal-700 border border-teal-200">
+                      <Stethoscope size={20} />
+                    </span>
+                    <div>
+                      <h3 className="text-base font-black text-slate-900">
+                        📋 রোগীর ডাক্তার অ্যাপয়েন্টমেন্ট বুকিং ফর্ম
+                      </h3>
+                      <p className="text-[11px] text-slate-500 font-bold">
+                        ডাক্তার, তারিখ ও রোগীর তথ্য দিয়ে সাবমিট করলে আপনার স্টাফ কোড ({myStaffCode || 'N/A'}) সহ সিরিয়াল কনফার্ম হবে।
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowBookingForm(false)}
+                    className="text-xs font-bold text-slate-400 hover:text-slate-600 px-2 py-1"
+                  >
+                    ✕ বন্ধ করুন
+                  </button>
+                </div>
+
+                {bookingSuccess && (
+                  <div className="bg-emerald-50 border-2 border-emerald-300 p-4 rounded-2xl space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="text-sm font-black text-emerald-900 flex items-center gap-2">
+                        <CheckCircle2 className="text-emerald-600" size={18} /> রোগীর অ্যাপয়েন্টমেন্ট সফলভাবে বুকিং হয়েছে!
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => setBookingSuccess(null)}
+                        className="text-xs font-bold text-slate-500 hover:text-slate-700"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div className="bg-white p-3.5 rounded-xl border border-emerald-200 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                      <p><strong>রোগী:</strong> {bookingSuccess.patient_name} ({bookingSuccess.patient_phone})</p>
+                      <p><strong>ডাক্তার:</strong> {bookingSuccess.doctor_name}</p>
+                      <p><strong>তারিখ:</strong> <span className="font-mono font-black text-teal-700">{bookingSuccess.date}</span></p>
+                    </div>
+                  </div>
+                )}
+
+                {bookingError && (
+                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold rounded-xl flex items-center gap-2">
+                    <AlertCircle size={15} className="shrink-0" />
+                    <span>{bookingError}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleConfirmPatientAppointment} className="space-y-4">
+                  {/* Step 1: Doctor & Chamber Selection */}
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-xs font-black text-slate-800 uppercase">
+                        ১. ডাক্তার ও হাসপাতাল / চেম্বার নির্বাচন করুন *
+                      </span>
+                      <span className="text-[11px] font-bold text-teal-700">
+                        মোট ডাক্তার: {filteredDoctorsForBooking.length} জন
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <div className="relative">
+                        <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
+                        <input
+                          type="text"
+                          placeholder="ডাক্তারের নাম বা বিশেষজ্ঞ খুঁজুন..."
+                          value={bookingDoctorSearch}
+                          onChange={e => setBookingDoctorSearch(e.target.value)}
+                          className="w-full bg-white border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-xs font-bold outline-none focus:border-teal-500"
+                        />
+                      </div>
+
+                      <select
+                        value={bookingHospitalFilter}
+                        onChange={e => setBookingHospitalFilter(e.target.value)}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-teal-500"
+                      >
+                        <option value="all">🏥 সকল হাসপাতাল / চেম্বার</option>
+                        {hospitals.map(h => (
+                          <option key={h.id} value={h.id}>{h.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase text-slate-600">ডাক্তার সিলেক্ট করুন *</label>
+                        <select
+                          value={selectedBookingDoctor?.id || ''}
+                          onChange={e => setSelectedBookingDoctorId(e.target.value)}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-black text-slate-900 outline-none focus:border-teal-500"
+                        >
+                          {filteredDoctorsForBooking.length === 0 ? (
+                            <option value="">কোনো ডাক্তার পাওয়া যায়নি</option>
+                          ) : (
+                            filteredDoctorsForBooking.map(d => (
+                              <option key={d.id} value={d.id}>
+                                {d.name} — {d.specialty}
+                              </option>
+                            ))
+                          )}
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase text-slate-600">চেম্বার / ডায়াগনস্টিক সেন্টার</label>
+                        <select
+                          value={bookingClinicName}
+                          onChange={e => setBookingClinicName(e.target.value)}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-teal-500"
+                        >
+                          {doctorClinicsList.map(c => (
+                            <option key={c.id} value={c.name}>{c.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    {selectedBookingDoctor && (
+                      <div className="bg-white p-3 rounded-xl border border-teal-200/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div>
+                          <p className="font-black text-teal-900">{selectedBookingDoctor.name}</p>
+                          <p className="text-[11px] font-bold text-slate-600">
+                            {selectedBookingDoctor.specialty} {selectedBookingDoctor.degree ? `• ${selectedBookingDoctor.degree}` : ''}
+                          </p>
+                          <p className="text-[11px] font-bold text-indigo-700 mt-0.5">
+                            🕒 সময়সূচী: {selectedBookingDoctor.schedule || 'নির্ধারিত সময়'}
+                          </p>
+                        </div>
+                        {selectedBookingDoctor.consultationFee ? (
+                          <span className="px-3 py-1 rounded-xl bg-teal-50 text-teal-800 border border-teal-200 font-black">
+                            ভিজিট ফি: ৳{selectedBookingDoctor.consultationFee}
+                          </span>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Step 2: Date & Booking Type */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase text-slate-600">২. সাক্ষাতের তারিখ (Appointment Date) *</label>
+                      <div className="flex flex-wrap gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setBookingDate(todayKey)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-black border cursor-pointer ${
+                            bookingDate === todayKey
+                              ? 'bg-teal-600 text-white border-teal-600'
+                              : 'bg-slate-50 text-slate-600 border-slate-200'
+                          }`}
+                        >
+                          আজ ({todayKey})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBookingDate(tomorrowKey)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-black border cursor-pointer ${
+                            bookingDate === tomorrowKey
+                              ? 'bg-teal-600 text-white border-teal-600'
+                              : 'bg-slate-50 text-slate-600 border-slate-200'
+                          }`}
+                        >
+                          আগামীকাল ({tomorrowKey})
+                        </button>
+                        <input
+                          type="date"
+                          required
+                          min={todayKey}
+                          value={bookingDate}
+                          onChange={e => setBookingDate(e.target.value)}
+                          className="flex-1 min-w-[140px] px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-teal-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase text-slate-600">বুকিংয়ের ধরন</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setBookingType('chamber_serial')}
+                          className={`py-2 px-3 rounded-xl text-xs font-black border cursor-pointer ${
+                            bookingType === 'chamber_serial'
+                              ? 'bg-teal-600 text-white border-teal-600'
+                              : 'bg-slate-50 text-slate-600 border-slate-200'
+                          }`}
+                        >
+                          🏥 চেম্বার সিরিয়াল
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBookingType('live_consultation')}
+                          className={`py-2 px-3 rounded-xl text-xs font-black border cursor-pointer ${
+                            bookingType === 'live_consultation'
+                              ? 'bg-indigo-600 text-white border-indigo-600'
+                              : 'bg-slate-50 text-slate-600 border-slate-200'
+                          }`}
+                        >
+                          📱 অনলাইন লাইভ
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 3: Patient Info */}
+                  <div className="space-y-3 bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-xs font-black text-slate-800 uppercase">৩. রোগীর তথ্য পূরণ করুন</span>
+                      {myReferredUsers.length > 0 && (
+                        <select
+                          value={bookingPatientId}
+                          onChange={e => {
+                            const id = e.target.value;
+                            setBookingPatientId(id);
+                            const found = myReferredUsers.find(u => u.id === id);
+                            if (found) {
+                              setBookingPatientName(found.full_name || '');
+                              setBookingPatientPhone(found.phone || '');
+                              const addr = [found.village, found.upazila, found.district].filter(Boolean).join(', ');
+                              if (addr) setBookingPatientAddress(addr);
+                            }
+                          }}
+                          className="px-3 py-1.5 bg-violet-50 border border-violet-200 rounded-xl text-xs font-bold text-violet-900 outline-none max-w-xs"
+                        >
+                          <option value="">-- আমার নিবন্ধিত রোগী থেকে বাছুন --</option>
+                          {myReferredUsers.map(u => (
+                            <option key={u.id} value={u.id}>
+                              {u.full_name} ({u.phone})
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase text-slate-600">রোগীর নাম *</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="যেমন: মোঃ রহিম উদ্দিন"
+                          value={bookingPatientName}
+                          onChange={e => setBookingPatientName(e.target.value)}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-teal-500"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase text-slate-600">মোবাইল নম্বর *</label>
+                        <input
+                          type="tel"
+                          required
+                          maxLength={11}
+                          placeholder="017xxxxxxxx"
+                          value={bookingPatientPhone}
+                          onChange={e => setBookingPatientPhone(e.target.value.replace(/[^0-9]/g, ''))}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold outline-none focus:border-teal-500"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase text-slate-600">রোগীর বয়স</label>
+                        <input
+                          type="text"
+                          placeholder="যেমন: ৩৫ বছর"
+                          value={bookingPatientAge}
+                          onChange={e => setBookingPatientAge(e.target.value)}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-teal-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase text-slate-600">ঠিকানা *</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="গ্রাম, উপজেলা, জেলা"
+                          value={bookingPatientAddress}
+                          onChange={e => setBookingPatientAddress(e.target.value)}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-teal-500"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase text-slate-600">রোগের সমস্যা / বিবরণ (ঐচ্ছিক)</label>
+                        <input
+                          type="text"
+                          placeholder="যেমন: জ্বর, ব্যথা, চেকআপ..."
+                          value={bookingProblem}
+                          onChange={e => setBookingProblem(e.target.value)}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-teal-500"
+                        />
+                      </div>
+                    </div>
+
+                    {bookingType === 'live_consultation' && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        <select
+                          value={bookingPaymentMethod}
+                          onChange={e => setBookingPaymentMethod(e.target.value as any)}
+                          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none"
+                        >
+                          <option value="bkash">bKash (বিকাশ)</option>
+                          <option value="nagad">Nagad (নগদ)</option>
+                        </select>
+                        <input
+                          type="text"
+                          placeholder="পেমেন্ট TrxID (যদি পরিশোধ হয়ে থাকে)"
+                          value={bookingTrxId}
+                          onChange={e => setBookingTrxId(e.target.value.toUpperCase())}
+                          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold outline-none"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                    <span className="text-[11px] font-bold text-violet-800 bg-violet-50 border border-violet-200 px-3 py-1.5 rounded-xl">
+                      অটো যুক্ত হবে স্টাফ কোড: <strong className="font-mono">{myStaffCode || 'N/A'}</strong>
+                    </span>
+                    <button
+                      type="submit"
+                      disabled={isSubmittingBooking}
+                      className="px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-2xl text-xs font-black uppercase tracking-wider shadow-md active:scale-95 transition-all disabled:opacity-50 cursor-pointer flex items-center gap-2"
+                    >
+                      <CalendarCheck size={16} />
+                      {isSubmittingBooking ? 'বুকিং হচ্ছে...' : '✓ রোগীর অ্যাপয়েন্টমেন্ট কনফার্ম করুন'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
 
             {/* Filter & Scope Controls */}
             <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-3">

@@ -3973,6 +3973,11 @@ export default function App() {
   });
 
   const handleSwitchAdminViewMode = (mode: 'admin' | 'website') => {
+    if (mode === 'admin' && (!isAdmin || profile?.role === UserRole.EMPLOYEE)) {
+      setAdminViewMode('website');
+      localStorage.removeItem('jb_admin_view_mode');
+      return;
+    }
     setAdminViewMode(mode);
     localStorage.setItem('jb_admin_view_mode', mode);
     if (mode === 'website') {
@@ -3988,8 +3993,11 @@ export default function App() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const isAdmin = useMemo(() => {
     if (!user) return false;
-    if (profile?.role === UserRole.ADMIN || profile?.role === UserRole.MODERATOR) return true;
     const email = (user.email || '').toLowerCase().trim();
+    if (email === 'service_sync_operator@nilpha.com') return false;
+    if (profile) {
+      return profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR;
+    }
     return email === 'doctorapp0p@gmail.com' || email === 'jagadbandhutum@gmail.com' || email === 'jagadbandhu';
   }, [profile, user]);
   const [isLoading, setIsLoading] = useState(true);
@@ -4380,6 +4388,13 @@ export default function App() {
                 displayName: prof.full_name || 'User'
               } as any);
               setProfile(prof);
+              if (prof.role !== UserRole.ADMIN && prof.role !== UserRole.MODERATOR) {
+                setAdminViewMode('website');
+                localStorage.removeItem('jb_admin_view_mode');
+              }
+              if (prof.role === UserRole.EMPLOYEE) {
+                setActiveTab('staff_portal');
+              }
             }
           }
         } catch (e) {
@@ -4389,6 +4404,26 @@ export default function App() {
 
       onAuthStateChanged(auth, async (firebaseUser) => {
         if (firebaseUser) {
+          const fbEmail = (firebaseUser.email || '').toLowerCase().trim();
+          // Background service operator auth is strictly for Firestore rules when custom sessions lack native Auth;
+          // NEVER override active UI user/profile with service_sync_operator.
+          if (fbEmail === 'service_sync_operator@nilpha.com') {
+            return;
+          }
+
+          // If an EMPLOYEE custom session (e.g. emp_... ID) is active, prevent a lingering Firebase Auth session from hijacking it
+          const activeSavedRaw = localStorage.getItem('jb_custom_session');
+          if (activeSavedRaw) {
+            try {
+              const activeSaved = JSON.parse(activeSavedRaw);
+              if (activeSaved?.uid && activeSaved.uid !== firebaseUser.uid && activeSaved.role === UserRole.EMPLOYEE) {
+                return;
+              }
+            } catch {
+              // Ignore parse error
+            }
+          }
+
           setUser(firebaseUser);
             try {
               const profileRef = doc(db, 'profiles', firebaseUser.uid);
@@ -4401,7 +4436,7 @@ export default function App() {
                   id: firebaseUser.uid,
                   full_name: firebaseUser.displayName || 'User',
                   phone: '',
-                  role: (firebaseUser.email === 'jagadbandhutum@gmail.com' || firebaseUser.email === 'doctorapp0p@gmail.com') ? UserRole.ADMIN : UserRole.PATIENT,
+                  role: (fbEmail === 'jagadbandhutum@gmail.com' || fbEmail === 'doctorapp0p@gmail.com') ? UserRole.ADMIN : UserRole.PATIENT,
                   status: 'active',
                   referral_code: refCode,
                   reward_points: 0,
@@ -4432,6 +4467,10 @@ export default function App() {
 
                 await setDoc(profileRef, newProf);
                 setProfile(newProf);
+                if (newProf.role !== UserRole.ADMIN && newProf.role !== UserRole.MODERATOR) {
+                  setAdminViewMode('website');
+                  localStorage.removeItem('jb_admin_view_mode');
+                }
                 localStorage.setItem('jb_custom_session', JSON.stringify({
                   uid: newProf.id,
                   email: firebaseUser.email || '',
@@ -4439,8 +4478,8 @@ export default function App() {
                 }));
               } else {
                 let prof = profileSnap.data() as Profile;
-                // Force update role if it's the owner email
-                if ((firebaseUser.email === 'jagadbandhutum@gmail.com' || firebaseUser.email === 'doctorapp0p@gmail.com') && prof.role !== UserRole.ADMIN) {
+                // Force update role only if it's an owner email (never overwrite EMPLOYEE)
+                if ((fbEmail === 'jagadbandhutum@gmail.com' || fbEmail === 'doctorapp0p@gmail.com') && prof.role !== UserRole.ADMIN) {
                   prof.role = UserRole.ADMIN;
                   await updateDoc(profileRef, { role: UserRole.ADMIN });
                 }
@@ -4467,6 +4506,13 @@ export default function App() {
                   });
                 }
                 setProfile(prof);
+                if (prof.role !== UserRole.ADMIN && prof.role !== UserRole.MODERATOR) {
+                  setAdminViewMode('website');
+                  localStorage.removeItem('jb_admin_view_mode');
+                }
+                if (prof.role === UserRole.EMPLOYEE) {
+                  setActiveTab('staff_portal');
+                }
                 localStorage.setItem('jb_custom_session', JSON.stringify({
                   uid: prof.id,
                   email: firebaseUser.email || prof.virtual_email || '',
@@ -6775,19 +6821,73 @@ export default function App() {
       const validAdminPasswords = ['jagad@01750', 'jagad01750', 'admin123', '123456', 'nilpha2026', 'doctorapp0p', 'admin'];
 
       // 1. Moderator & Admin Universal Handling
-      const isModOrAdminUser = 
-        authMode === 'moderator' ||
-        trimmed === 'moderator' || 
-        trimmed === 'modaretor' || 
-        trimmed === 'moderator@nilpha.com' || 
-        trimmed === 'modaretor@nilpha.com' ||
-        trimmed === 'admin' ||
-        trimmed === 'doctorapp0p' ||
-        trimmed === 'doctorapp0p@gmail.com' ||
-        trimmed === 'jagadbandhu' ||
-        trimmed === 'jagadbandhutum@gmail.com';
+      const explicitAdminIdentifiers = [
+        'moderator',
+        'modaretor',
+        'moderator@nilpha.com',
+        'modaretor@nilpha.com',
+        'admin',
+        'doctorapp0p',
+        'doctorapp0p@gmail.com',
+        'jagadbandhu',
+        'jagadbandhutum@gmail.com'
+      ];
+      const isExplicitAdminId = explicitAdminIdentifiers.includes(trimmed);
+      let effectiveAuthMode = authMode;
+
+      // If moderator tab was selected (or left active), verify first that a Staff/non-admin phone/account is NEVER routed to Admin!
+      if (effectiveAuthMode === 'moderator' && !isExplicitAdminId && trimmed) {
+        try {
+          const checkPhone = normalizePhoneNumber(rawEmail);
+          const checkDigits = rawEmail.replace(/\D/g, '');
+          const checkSnap = await getDocs(collection(db, 'profiles'));
+          const foundNonAdmin = checkSnap.docs.find(d => {
+            const p = d.data() as Profile;
+            if (p.role === UserRole.ADMIN || p.role === UserRole.MODERATOR) return false;
+            const pPhone = normalizePhoneNumber(p.phone || '').replace(/\D/g, '');
+            const pRaw = (p.phone || '').replace(/\D/g, '');
+            const phoneHit = checkDigits && (pPhone === checkDigits || pRaw === checkDigits || (checkDigits.length >= 10 && pPhone.endsWith(checkDigits.slice(-10))));
+            const userHit = p.username && p.username.toLowerCase().trim() === trimmed;
+            const emailHit = p.virtual_email && p.virtual_email.toLowerCase().trim() === trimmed;
+            return phoneHit || userHit || emailHit;
+          });
+          if (foundNonAdmin) {
+            // Switch seamlessly into normal login so Staff/Patient logs ONLY into their own account (never Admin!)
+            effectiveAuthMode = 'login';
+          }
+        } catch {
+          // Ignore lookup error
+        }
+      }
+
+      const isModOrAdminUser =
+        isExplicitAdminId ||
+        effectiveAuthMode === 'moderator';
 
       if (isModOrAdminUser) {
+        if (!isExplicitAdminId) {
+          // Also allow if an explicit ADMIN/MODERATOR profile matches `trimmed`
+          let matchedAdminProf: Profile | null = null;
+          try {
+            const adminQuery = query(collection(db, 'profiles'), where('role', 'in', [UserRole.ADMIN, UserRole.MODERATOR]));
+            const adminSnap = await getDocs(adminQuery);
+            for (const docSnap of adminSnap.docs) {
+              const data = docSnap.data() as Profile;
+              if (
+                (data.username && data.username.toLowerCase().trim() === trimmed) ||
+                (data.virtual_email && data.virtual_email.toLowerCase().trim() === trimmed) ||
+                (data.phone && normalizePhoneNumber(data.phone) === normalizePhoneNumber(rawEmail))
+              ) {
+                matchedAdminProf = { id: docSnap.id, ...data };
+                break;
+              }
+            }
+          } catch {}
+          if (!matchedAdminProf) {
+            throw new Error('এই অ্যাকাউন্টটি এডমিন বা মডারেটর নয়! স্টাফ বা সাধারণ ইউজার হিসেবে লগইন করতে "লগইন করুন" ট্যাব ব্যবহার করুন।');
+          }
+        }
+
         let isPassCorrect = validAdminPasswords.includes(passVal);
 
         // Also check if any stored profile with ADMIN or MODERATOR role has this password
@@ -6807,16 +6907,6 @@ export default function App() {
         }
 
         if (isPassCorrect) {
-          const isSuperAdminEmail = 
-            trimmed === 'moderator' ||
-            trimmed === 'modaretor' ||
-            trimmed === 'moderator@nilpha.com' ||
-            trimmed === 'doctorapp0p' || 
-            trimmed === 'doctorapp0p@gmail.com' || 
-            trimmed === 'jagadbandhu' || 
-            trimmed === 'jagadbandhutum@gmail.com' ||
-            passVal === 'jagad@01750' ||
-            passVal === 'jagad01750';
           const targetEmail = trimmed.includes('@') ? trimmed : 'jagadbandhutum@gmail.com';
           const targetName = 'Super Admin & Moderator';
           const targetUid = 'admin_master_001';
@@ -6890,13 +6980,14 @@ export default function App() {
           }));
           setShowAuthModal(false);
           setAuthErrorMessage('');
+          setAuthMode('login');
           return;
         } else {
           throw new Error('ভুল পাসওয়ার্ড! অনুগ্রহ করে সঠিক পাসওয়ার্ড দিয়ে আবার চেষ্টা করুন।');
         }
       }
 
-      if (authMode === 'login') {
+      if (effectiveAuthMode === 'login') {
         let firebaseUser: any = null;
         let matchedProfile: Profile | null = null;
         const normalizedInputPhone = normalizePhoneNumber(rawEmail);
@@ -7010,6 +7101,13 @@ export default function App() {
               }
             }
 
+            // Sign out any lingering previous Firebase Auth session (e.g. a previous Admin)
+            if (auth.currentUser) {
+              try {
+                await signOut(auth);
+              } catch {}
+            }
+
             // Attempt Firebase Auth sign in if possible
             try {
               const candEmails = Array.from(new Set([
@@ -7038,8 +7136,10 @@ export default function App() {
               displayName: matchedProfile.full_name || 'User'
             };
 
-            setUser(activeUser as any);
-            setProfile(matchedProfile);
+            if (matchedProfile.role !== UserRole.ADMIN && matchedProfile.role !== UserRole.MODERATOR) {
+              setAdminViewMode('website');
+              localStorage.removeItem('jb_admin_view_mode');
+            }
             if (matchedProfile.role === UserRole.EMPLOYEE) {
               setActiveTab('staff_portal');
             }
@@ -7048,12 +7148,20 @@ export default function App() {
               email: activeUser.email,
               role: matchedProfile.role
             }));
+            setUser(activeUser as any);
+            setProfile(matchedProfile);
             setShowAuthModal(false);
             setAuthErrorMessage('');
+            setAuthMode('login');
             return;
           } else {
             // Profile was found, but entered password did NOT match stored password!
             // Check Firebase Auth candidates in case password was changed in Auth
+            if (auth.currentUser) {
+              try {
+                await signOut(auth);
+              } catch {}
+            }
             const candidateEmails = Array.from(new Set([
               matchedProfile.virtual_email,
               `${matchedProfile.phone}@nilpha.com`,
@@ -7079,8 +7187,10 @@ export default function App() {
                 // Ignore
               }
 
-              setUser(firebaseUser);
-              setProfile(matchedProfile);
+              if (matchedProfile.role !== UserRole.ADMIN && matchedProfile.role !== UserRole.MODERATOR) {
+                setAdminViewMode('website');
+                localStorage.removeItem('jb_admin_view_mode');
+              }
               if (matchedProfile.role === UserRole.EMPLOYEE) {
                 setActiveTab('staff_portal');
               }
@@ -7089,8 +7199,11 @@ export default function App() {
                 email: firebaseUser.email,
                 role: matchedProfile.role
               }));
+              setUser(firebaseUser);
+              setProfile(matchedProfile);
               setShowAuthModal(false);
               setAuthErrorMessage('');
+              setAuthMode('login');
               return;
             }
 
@@ -7099,6 +7212,11 @@ export default function App() {
         }
 
         // 3. If no Firestore profile was found initially, try Firebase Auth
+        if (auth.currentUser) {
+          try {
+            await signOut(auth);
+          } catch {}
+        }
         const candidateEmails = getLoginCandidateEmails(trimmed);
         for (const cand of candidateEmails) {
           try {
@@ -7141,15 +7259,23 @@ export default function App() {
           throw new Error('আপনার অ্যাকাউন্টটি সাময়িকভাবে বন্ধ রয়েছে। যোগাযোগের জন্য এডমিনকে বলুন।');
         }
 
-        setUser(firebaseUser);
-        setProfile(prof);
+        if (prof.role !== UserRole.ADMIN && prof.role !== UserRole.MODERATOR) {
+          setAdminViewMode('website');
+          localStorage.removeItem('jb_admin_view_mode');
+        }
+        if (prof.role === UserRole.EMPLOYEE) {
+          setActiveTab('staff_portal');
+        }
         localStorage.setItem('jb_custom_session', JSON.stringify({
           uid: prof.id,
           email: prof.virtual_email || firebaseUser.email,
           role: prof.role
         }));
+        setUser(firebaseUser);
+        setProfile(prof);
         setShowAuthModal(false);
         setAuthErrorMessage('');
+        setAuthMode('login');
       } else {
         const fullName = formData.get('fullName') as string;
         const rawPhoneInput = formData.get('phone') as string;
@@ -7336,6 +7462,8 @@ export default function App() {
         
         await setDoc(doc(db, 'profiles', firebaseUser.uid), newProf);
         
+        setAdminViewMode('website');
+        localStorage.removeItem('jb_admin_view_mode');
         setUser(firebaseUser);
         setProfile(newProf);
         localStorage.setItem('jb_custom_session', JSON.stringify({
@@ -7345,6 +7473,7 @@ export default function App() {
         }));
         setShowAuthModal(false);
         setAuthErrorMessage('');
+        setAuthMode('login');
       }
     } catch (err: any) { 
       console.warn("Auth Notice:", err?.message || err);
@@ -7403,6 +7532,13 @@ export default function App() {
         throw new Error('আপনার অ্যাকাউন্টটি পেন্ডিং অবস্থায় আছে।');
       }
 
+      if (prof.role !== UserRole.ADMIN && prof.role !== UserRole.MODERATOR) {
+        setAdminViewMode('website');
+        localStorage.removeItem('jb_admin_view_mode');
+      }
+      if (prof.role === UserRole.EMPLOYEE) {
+        setActiveTab('staff_portal');
+      }
       setUser(firebaseUser);
       setProfile(prof);
       localStorage.setItem('jb_custom_session', JSON.stringify({
@@ -7411,6 +7547,7 @@ export default function App() {
         role: prof.role
       }));
       setShowAuthModal(false);
+      setAuthMode('login');
     } catch (err: any) {
       console.error("Google Auth Error:", err);
       alert("গুগল লগইন এরর: " + (err.message || 'একটি সমস্যা হয়েছে'));
@@ -7421,6 +7558,9 @@ export default function App() {
 
   const logout = async () => {
     localStorage.removeItem('jb_custom_session');
+    localStorage.removeItem('jb_admin_view_mode');
+    setAdminViewMode('website');
+    setActiveTab('home');
     try {
       await signOut(auth);
     } catch {
@@ -8476,7 +8616,7 @@ export default function App() {
 
         {/* Main App Experience */}
         <Route path="*" element={
-          (isAdmin && adminViewMode === 'admin') ? (
+          (isAdmin && adminViewMode === 'admin' && profile?.role !== UserRole.EMPLOYEE) ? (
             <>
                <AdminDashboard 
                 profile={profile!} 
@@ -11251,6 +11391,7 @@ export default function App() {
         onClose={() => {
           setShowAuthModal(false);
           setAuthErrorMessage('');
+          setAuthMode('login');
         }}
         authMode={authMode}
         setAuthMode={(mode) => {
