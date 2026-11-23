@@ -12,9 +12,11 @@ import {
   Sparkles, 
   Calculator, 
   Info,
-  RefreshCw
+  RefreshCw,
+  Users,
+  ShieldCheck
 } from 'lucide-react';
-import { Coupon } from '../../types';
+import { Coupon, Profile, UserRole } from '../../types';
 import { 
   fetchCoupons, 
   saveCoupon, 
@@ -24,24 +26,34 @@ import {
 } from '../services/couponService';
 
 interface CouponManagerProps {
+  profiles?: Profile[];
   onCouponsUpdated?: (coupons: Coupon[]) => void;
 }
 
-export const CouponManager: React.FC<CouponManagerProps> = ({ onCouponsUpdated }) => {
+export const CouponManager: React.FC<CouponManagerProps> = ({ profiles = [], onCouponsUpdated }) => {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
 
+  const staffProfiles = React.useMemo(
+    () => profiles.filter(p => p.role === UserRole.EMPLOYEE),
+    [profiles]
+  );
+
   // Form states for Add / Edit
   const [formCode, setFormCode] = useState('');
   const [formDiscountPercent, setFormDiscountPercent] = useState<number>(20);
   const [formTitle, setFormTitle] = useState('');
   const [formDescription, setFormDescription] = useState('');
-  const [formApplicableTo, setFormApplicableTo] = useState<'all' | 'tests' | 'services'>('tests');
+  const [formApplicableTo, setFormApplicableTo] = useState<'all' | 'tests' | 'services' | 'medicines'>('all');
   const [formMinOrderAmount, setFormMinOrderAmount] = useState<number>(0);
   const [formIsActive, setFormIsActive] = useState(true);
+  const [formTargetMode, setFormTargetMode] = useState<'general' | 'all_staff' | 'specific_staff'>('general');
+  const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
+  const [manualStaffCodes, setManualStaffCodes] = useState('');
+  const [staffPickerSearch, setStaffPickerSearch] = useState('');
   const [formError, setFormError] = useState('');
   const [formSuccess, setFormSuccess] = useState('');
 
@@ -104,9 +116,36 @@ export const CouponManager: React.FC<CouponManagerProps> = ({ onCouponsUpdated }
     setFormDiscountPercent(coupon.discount_percent);
     setFormTitle(coupon.title);
     setFormDescription(coupon.description || '');
-    setFormApplicableTo(coupon.applicable_to || 'tests');
+    setFormApplicableTo(coupon.applicable_to || 'all');
     setFormMinOrderAmount(coupon.min_order_amount || 0);
     setFormIsActive(coupon.is_active);
+    const hasSpecificStaff = Boolean(
+      (coupon.assigned_staff_ids && coupon.assigned_staff_ids.length > 0) ||
+      (coupon.assigned_staff_codes && coupon.assigned_staff_codes.length > 0)
+    );
+    if (hasSpecificStaff) {
+      setFormTargetMode('specific_staff');
+      setSelectedStaffIds(coupon.assigned_staff_ids || []);
+      const knownCodes = new Set(
+        staffProfiles
+          .filter(s => (coupon.assigned_staff_ids || []).includes(s.id))
+          .map(s => (s.referral_code || '').trim().toUpperCase())
+          .filter(Boolean)
+      );
+      const extraCodes = (coupon.assigned_staff_codes || []).filter(
+        c => !knownCodes.has(c.trim().toUpperCase())
+      );
+      setManualStaffCodes(extraCodes.join(', '));
+    } else if (coupon.staff_only) {
+      setFormTargetMode('all_staff');
+      setSelectedStaffIds([]);
+      setManualStaffCodes('');
+    } else {
+      setFormTargetMode('general');
+      setSelectedStaffIds([]);
+      setManualStaffCodes('');
+    }
+    setStaffPickerSearch('');
     setFormError('');
     setFormSuccess('');
     setShowAddForm(true);
@@ -119,11 +158,21 @@ export const CouponManager: React.FC<CouponManagerProps> = ({ onCouponsUpdated }
     setFormDiscountPercent(20);
     setFormTitle('');
     setFormDescription('');
-    setFormApplicableTo('tests');
+    setFormApplicableTo('all');
     setFormMinOrderAmount(0);
     setFormIsActive(true);
+    setFormTargetMode('general');
+    setSelectedStaffIds([]);
+    setManualStaffCodes('');
+    setStaffPickerSearch('');
     setFormError('');
     setFormSuccess('');
+  };
+
+  const toggleStaffSelection = (staffId: string) => {
+    setSelectedStaffIds(prev =>
+      prev.includes(staffId) ? prev.filter(id => id !== staffId) : [...prev, staffId]
+    );
   };
 
   const handleSaveCoupon = async (e: React.FormEvent) => {
@@ -133,7 +182,7 @@ export const CouponManager: React.FC<CouponManagerProps> = ({ onCouponsUpdated }
 
     const cleanCode = formCode.trim().toUpperCase().replace(/\s+/g, '');
     if (!cleanCode) {
-      setFormError('দয়া করে একটি কুপন কোড (যেমন: TEST20) লিখুন।');
+      setFormError('দয়া করে একটি কুপন/প্রোমো কোড (যেমন: STAFF20) লিখুন।');
       return;
     }
 
@@ -143,8 +192,31 @@ export const CouponManager: React.FC<CouponManagerProps> = ({ onCouponsUpdated }
     }
 
     if (!formTitle.trim()) {
-      setFormError('কুপনের একটি শিরোনাম বা নাম লিখুন।');
+      setFormError('কুপন বা প্রোমো কোডের একটি শিরোনাম লিখুন।');
       return;
+    }
+
+    let assignedIds: string[] = [];
+    let assignedCodes: string[] = [];
+    let assignedNames: string[] = [];
+
+    if (formTargetMode === 'specific_staff') {
+      const selectedStaff = staffProfiles.filter(s => selectedStaffIds.includes(s.id));
+      assignedIds = selectedStaff.map(s => s.id);
+      const selectedCodes = selectedStaff
+        .map(s => (s.referral_code || '').trim().toUpperCase())
+        .filter(Boolean);
+      const extraManualCodes = manualStaffCodes
+        .split(/[\s,]+/)
+        .map(c => c.trim().toUpperCase())
+        .filter(Boolean);
+      assignedCodes = Array.from(new Set([...selectedCodes, ...extraManualCodes]));
+      assignedNames = selectedStaff.map(s => s.full_name);
+
+      if (assignedIds.length === 0 && assignedCodes.length === 0) {
+        setFormError('অনুগ্রহ করে অন্তত একজন স্টাফ সিলেক্ট করুন অথবা স্টাফের কোড লিখুন।');
+        return;
+      }
     }
 
     const couponData: Coupon = {
@@ -156,13 +228,17 @@ export const CouponManager: React.FC<CouponManagerProps> = ({ onCouponsUpdated }
       applicable_to: formApplicableTo,
       min_order_amount: Number(formMinOrderAmount) || 0,
       is_active: formIsActive,
+      staff_only: formTargetMode === 'all_staff' || formTargetMode === 'specific_staff',
+      assigned_staff_ids: assignedIds,
+      assigned_staff_codes: assignedCodes,
+      assigned_staff_names: assignedNames,
       created_at: editingCoupon?.created_at || new Date().toISOString(),
       usage_count: editingCoupon?.usage_count || 0
     };
 
     try {
       await saveCoupon(couponData);
-      setFormSuccess(editingCoupon ? 'কুপন সফলভাবে আপডেট হয়েছে!' : 'নতুন কুপন সফলভাবে যোগ হয়েছে!');
+      setFormSuccess(editingCoupon ? 'প্রোমো কোড সফলভাবে আপডেট হয়েছে!' : 'নতুন প্রোমো কোড সফলভাবে তৈরি হয়েছে!');
       await loadAllCoupons();
       setTimeout(() => {
         resetForm();
@@ -170,15 +246,20 @@ export const CouponManager: React.FC<CouponManagerProps> = ({ onCouponsUpdated }
       }, 1200);
     } catch (err) {
       console.error(err);
-      setFormError('কুপন সংরক্ষণ করতে সমস্যা হয়েছে, অনুগ্রহ করে পুনরায় চেষ্টা করুন।');
+      setFormError('প্রোমো কোড সংরক্ষণ করতে সমস্যা হয়েছে, অনুগ্রহ করে পুনরায় চেষ্টা করুন।');
     }
   };
 
   const runSimulation = () => {
-    const res = validateCoupon(simCouponCode, simTestPrice, true, coupons);
+    const res = validateCoupon(simCouponCode, simTestPrice, 'all', coupons, {
+      id: 'admin_sim',
+      full_name: 'Admin Simulator',
+      role: UserRole.ADMIN,
+      status: 'active'
+    });
     if (res.valid) {
       const discounted = simTestPrice - (res.discountAmount || 0);
-      setSimResult(`✅ কুপন ${res.coupon?.code} প্রযোজ্য হয়েছে (${res.discountPercent}% ছাড়)! টেস্টের মূল মূল্য ৳${simTestPrice}, ডিসকাউন্ট -৳${res.discountAmount}, রোগীকে দিতে হবে ৳${discounted} টাকা।`);
+      setSimResult(`✅ কোড ${res.coupon?.code} প্রযোজ্য হয়েছে (${res.discountPercent}% ছাড়)! মূল মূল্য ৳${simTestPrice}, ডিসকাউন্ট -৳${res.discountAmount}, প্রদেয় ৳${discounted} টাকা।`);
     } else {
       setSimResult(res.message);
     }
@@ -379,11 +460,141 @@ export const CouponManager: React.FC<CouponManagerProps> = ({ onCouponsUpdated }
                   onChange={e => setFormApplicableTo(e.target.value as any)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white"
                 >
-                  <option value="tests">🧪 শুধুমাত্র ল্যাব ও ডায়াগনস্টিক টেস্ট (Recommended)</option>
-                  <option value="all">🌟 সকল টেস্ট এবং স্বাস্থ্য সেবা</option>
-                  <option value="services">🏥 অন্যান্য সেবা</option>
+                  <option value="all">🌟 সকল অর্ডার (ল্যাব টেস্ট, ঔষধ ও অন্যান্য পণ্য)</option>
+                  <option value="tests">🧪 শুধুমাত্র ল্যাব ও ডায়াগনস্টিক টেস্ট</option>
+                  <option value="medicines">💊 শুধুমাত্র ঔষধ ও মেডিকেল পণ্য অর্ডার</option>
+                  <option value="services">🏥 অন্যান্য হেলথ সেবা</option>
                 </select>
               </div>
+            </div>
+
+            {/* Staff Promo Targeting */}
+            <div className="bg-violet-50/70 border border-violet-200 rounded-2xl p-4 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <label className="text-xs font-black text-violet-900 uppercase flex items-center gap-1.5">
+                  <ShieldCheck size={15} className="text-violet-600" /> কারা এই প্রোমো কোড ব্যবহার করতে পারবেন?
+                </label>
+                <span className="text-[10px] font-bold text-violet-600">
+                  স্টাফ-নির্দিষ্ট প্রোমো অ্যাসাইনমেন্ট
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormTargetMode('general')}
+                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    formTargetMode === 'general'
+                      ? 'bg-white border-blue-500 ring-2 ring-blue-200 text-blue-900 shadow-xs'
+                      : 'bg-white/70 border-slate-200 text-slate-600 hover:bg-white'
+                  }`}
+                >
+                  <p className="text-xs font-black">🌐 সবার জন্য</p>
+                  <p className="text-[10px] font-medium text-slate-500 mt-0.5">সকল রোগী ও স্টাফ ব্যবহার করতে পারবে</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setFormTargetMode('all_staff')}
+                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    formTargetMode === 'all_staff'
+                      ? 'bg-white border-violet-500 ring-2 ring-violet-200 text-violet-900 shadow-xs'
+                      : 'bg-white/70 border-slate-200 text-slate-600 hover:bg-white'
+                  }`}
+                >
+                  <p className="text-xs font-black">💼 সকল স্টাফের জন্য</p>
+                  <p className="text-[10px] font-medium text-slate-500 mt-0.5">শুধুমাত্র স্টাফ প্যানেল থেকে প্রযোজ্য</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setFormTargetMode('specific_staff')}
+                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    formTargetMode === 'specific_staff'
+                      ? 'bg-white border-emerald-500 ring-2 ring-emerald-200 text-emerald-900 shadow-xs'
+                      : 'bg-white/70 border-slate-200 text-slate-600 hover:bg-white'
+                  }`}
+                >
+                  <p className="text-xs font-black">🎯 নির্দিষ্ট স্টাফদের জন্য</p>
+                  <p className="text-[10px] font-medium text-slate-500 mt-0.5">বাছাইকৃত স্টাফরা স্টাফ ড্যাশবোর্ডে পাবে</p>
+                </button>
+              </div>
+
+              {formTargetMode === 'specific_staff' && (
+                <div className="bg-white rounded-xl border border-violet-200 p-3.5 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-[11px] font-black text-slate-800 flex items-center gap-1.5">
+                      <Users size={14} className="text-violet-600" />
+                      স্টাফ নির্বাচন করুন ({selectedStaffIds.length} জন সিলেক্টেড)
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="নাম বা কোড দিয়ে স্টাফ খুঁজুন..."
+                      value={staffPickerSearch}
+                      onChange={e => setStaffPickerSearch(e.target.value)}
+                      className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] font-bold outline-none focus:border-violet-500 w-full sm:w-56"
+                    />
+                  </div>
+
+                  {staffProfiles.length === 0 ? (
+                    <p className="text-[11px] text-amber-700 bg-amber-50 p-2.5 rounded-lg font-bold">
+                      কোনো স্টাফ প্রোফাইল পাওয়া যায়নি। নিচে সরাসরি স্টাফের রেফারেল কোড লিখতে পারেন।
+                    </p>
+                  ) : (
+                    <div className="max-h-44 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2 pr-1">
+                      {staffProfiles
+                        .filter(s => {
+                          if (!staffPickerSearch.trim()) return true;
+                          const q = staffPickerSearch.toLowerCase().trim();
+                          return (
+                            (s.full_name || '').toLowerCase().includes(q) ||
+                            (s.referral_code || '').toLowerCase().includes(q) ||
+                            (s.phone || '').includes(q)
+                          );
+                        })
+                        .map(staff => {
+                          const checked = selectedStaffIds.includes(staff.id);
+                          return (
+                            <label
+                              key={staff.id}
+                              className={`flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all ${
+                                checked
+                                  ? 'bg-violet-50 border-violet-400 text-violet-900'
+                                  : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => toggleStaffSelection(staff.id)}
+                                className="w-4 h-4 accent-violet-600 rounded shrink-0"
+                              />
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs font-black truncate">{staff.full_name}</p>
+                                <p className="text-[10px] font-mono text-violet-700 font-bold truncate">
+                                  কোড: {staff.referral_code || 'N/A'} • {staff.phone || ''}
+                                </p>
+                              </div>
+                            </label>
+                          );
+                        })}
+                    </div>
+                  )}
+
+                  <div className="space-y-1 pt-1">
+                    <label className="text-[10px] font-black text-slate-600 uppercase">
+                      অতিরিক্ত স্টাফ কোড (ঐচ্ছিক, কমা দিয়ে আলাদা করুন যেমন: EMP101, EMP205)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="যেমন: EMP101, EMP205"
+                      value={manualStaffCodes}
+                      onChange={e => setManualStaffCodes(e.target.value.toUpperCase())}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold outline-none focus:border-violet-500"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Description */}
@@ -393,7 +604,7 @@ export const CouponManager: React.FC<CouponManagerProps> = ({ onCouponsUpdated }
               </label>
               <input
                 type="text"
-                placeholder="যেমন: যেকোনো রক্ত ও ইউরিন টেস্ট বুকিং এ ২০% অটোমেটিক ছাড় প্রযোজ্য হবে।"
+                placeholder="যেমন: যেকোনো ঔষধ ও ল্যাব টেস্ট অর্ডারে স্টাফের জন্য বিশেষ ২০% ছাড়।"
                 value={formDescription}
                 onChange={e => setFormDescription(e.target.value)}
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 outline-none focus:border-blue-500 focus:bg-white"
@@ -519,10 +730,27 @@ export const CouponManager: React.FC<CouponManagerProps> = ({ onCouponsUpdated }
                       </p>
                     )}
 
-                    <div className="flex items-center gap-2 pt-1 flex-wrap">
+                    <div className="flex items-center gap-1.5 pt-1 flex-wrap">
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
-                        {coupon.applicable_to === 'tests' ? '🧪 টেস্ট স্পেশাল' : '🌟 সার্বজনীন'}
+                        {coupon.applicable_to === 'tests'
+                          ? '🧪 টেস্ট স্পেশাল'
+                          : coupon.applicable_to === 'medicines'
+                          ? '💊 ঔষধ ও পণ্য'
+                          : coupon.applicable_to === 'services'
+                          ? '🏥 হেলথ সেবা'
+                          : '🌟 সার্বজনীন'}
                       </span>
+                      {(coupon.assigned_staff_codes && coupon.assigned_staff_codes.length > 0) || (coupon.assigned_staff_ids && coupon.assigned_staff_ids.length > 0) ? (
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-violet-100 text-violet-800 border border-violet-200">
+                          🎯 স্টাফ: {(coupon.assigned_staff_names && coupon.assigned_staff_names.length > 0)
+                            ? coupon.assigned_staff_names.join(', ')
+                            : (coupon.assigned_staff_codes || []).join(', ')}
+                        </span>
+                      ) : coupon.staff_only ? (
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800 border border-indigo-200">
+                          💼 সকল স্টাফের জন্য
+                        </span>
+                      ) : null}
                       {coupon.min_order_amount && coupon.min_order_amount > 0 ? (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
                           মিনিমাম ৳{coupon.min_order_amount}

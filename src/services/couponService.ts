@@ -1,6 +1,6 @@
 import { collection, getDocs, doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase';
-import { Coupon } from '../../types';
+import { Coupon, Profile, UserRole } from '../../types';
 
 export const DEFAULT_COUPONS: Coupon[] = [
   {
@@ -20,7 +20,7 @@ export const DEFAULT_COUPONS: Coupon[] = [
     code: 'SPECIAL15',
     discount_percent: 15,
     title: 'স্পেশাল ১৫% হেলথ ছাড়',
-    description: 'সকল টেস্ট ও জরুরি হোম স্বাস্থ্য সার্ভিসে ১৫% ডিসকাউন্ট।',
+    description: 'সকল টেস্ট, ঔষধ ও জরুরি হোম স্বাস্থ্য সার্ভিসে ১৫% ডিসকাউন্ট।',
     applicable_to: 'all',
     min_order_amount: 0,
     is_active: true,
@@ -91,22 +91,23 @@ export async function fetchCoupons(): Promise<Coupon[]> {
 export async function saveCoupon(coupon: Coupon): Promise<void> {
   // Update local storage
   const current = await fetchCoupons();
-  const index = current.findIndex(c => c.id === coupon.id || c.code.toUpperCase() === coupon.code.toUpperCase());
+  const cleanCoupon: Coupon = {
+    ...coupon,
+    code: coupon.code.toUpperCase().trim()
+  };
+  const index = current.findIndex(c => c.id === cleanCoupon.id || c.code.toUpperCase() === cleanCoupon.code);
   let updated: Coupon[];
   if (index >= 0) {
     updated = [...current];
-    updated[index] = { ...coupon, code: coupon.code.toUpperCase().trim() };
+    updated[index] = cleanCoupon;
   } else {
-    updated = [
-      { ...coupon, code: coupon.code.toUpperCase().trim() },
-      ...current
-    ];
+    updated = [cleanCoupon, ...current];
   }
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
 
   // Sync to firestore
   try {
-    await setDoc(doc(db, 'coupons', coupon.id), coupon, { merge: true });
+    await setDoc(doc(db, 'coupons', cleanCoupon.id), cleanCoupon, { merge: true });
   } catch (err) {
     console.error('Error saving coupon to Firestore:', err);
   }
@@ -136,6 +137,30 @@ export async function toggleCouponStatus(couponId: string, isActive: boolean): P
   }
 }
 
+export function isCouponAssignedToStaff(coupon: Coupon, staffProfile?: Profile | null): boolean {
+  if (!coupon || coupon.is_active === false) return false;
+  const hasSpecificIds = (coupon.assigned_staff_ids && coupon.assigned_staff_ids.length > 0) || false;
+  const hasSpecificCodes = (coupon.assigned_staff_codes && coupon.assigned_staff_codes.length > 0) || false;
+
+  if (!coupon.staff_only && !hasSpecificIds && !hasSpecificCodes) {
+    return false;
+  }
+
+  if (!staffProfile) return false;
+
+  // All-staff coupon (staff_only=true with no specific IDs/codes)
+  if (!hasSpecificIds && !hasSpecificCodes) {
+    return staffProfile.role === UserRole.EMPLOYEE || staffProfile.role === UserRole.ADMIN || staffProfile.role === UserRole.MODERATOR;
+  }
+
+  const staffCode = (staffProfile.referral_code || '').trim().toUpperCase();
+  const matchesId = Boolean(coupon.assigned_staff_ids?.includes(staffProfile.id));
+  const matchesCode = Boolean(
+    staffCode && coupon.assigned_staff_codes?.some(c => c.trim().toUpperCase() === staffCode)
+  );
+  return matchesId || matchesCode;
+}
+
 export interface CouponValidationResult {
   valid: boolean;
   coupon?: Coupon;
@@ -147,33 +172,80 @@ export interface CouponValidationResult {
 export function validateCoupon(
   code: string,
   orderAmount: number,
-  isTest: boolean = true,
-  couponsList: Coupon[] = []
+  orderCategory: boolean | 'tests' | 'medicines' | 'services' | 'all' = 'tests',
+  couponsList: Coupon[] = [],
+  userProfile?: Profile | null
 ): CouponValidationResult {
   const cleanCode = (code || '').trim().toUpperCase();
   if (!cleanCode) {
-    return { valid: false, message: 'দয়া করে একটি কুপন কোড লিখুন।' };
+    return { valid: false, message: 'দয়া করে একটি কুপন বা প্রোমো কোড লিখুন।' };
   }
+
+  const normalizedCategory: 'tests' | 'medicines' | 'services' | 'all' =
+    typeof orderCategory === 'boolean'
+      ? (orderCategory ? 'tests' : 'services')
+      : orderCategory;
 
   const list = couponsList.length > 0 ? couponsList : DEFAULT_COUPONS;
   const coupon = list.find(c => c.code.toUpperCase() === cleanCode);
 
   if (!coupon) {
-    return { valid: false, message: `❌ "${cleanCode}" কোনো কার্যকর কুপন কোড নয়।` };
+    return { valid: false, message: `❌ "${cleanCode}" কোনো কার্যকর প্রোমো/কুপন কোড নয়।` };
   }
 
   if (coupon.is_active === false) {
-    return { valid: false, message: `❌ দুঃখিত, "${cleanCode}" কুপনটি বর্তমানে স্থগিত রাখা হয়েছে।` };
+    return { valid: false, message: `❌ দুঃখিত, "${cleanCode}" প্রোমো কোডটি বর্তমানে স্থগিত রাখা হয়েছে।` };
   }
 
-  if (coupon.applicable_to === 'tests' && !isTest) {
-    return { valid: false, message: `❌ "${cleanCode}" কুপনটি শুধুমাত্র ল্যাব টেস্ট অর্ডারের জন্য প্রযোজ্য।` };
+  // Staff-specific / Staff-only promo validation
+  const hasSpecificStaff = Boolean(
+    (coupon.assigned_staff_ids && coupon.assigned_staff_ids.length > 0) ||
+    (coupon.assigned_staff_codes && coupon.assigned_staff_codes.length > 0)
+  );
+  if (coupon.staff_only || hasSpecificStaff) {
+    const isStaffOrAdmin = userProfile && (
+      userProfile.role === UserRole.EMPLOYEE ||
+      userProfile.role === UserRole.ADMIN ||
+      userProfile.role === UserRole.MODERATOR
+    );
+    if (!isStaffOrAdmin) {
+      return {
+        valid: false,
+        message: `❌ "${cleanCode}" শুধুমাত্র অনুমোদিত স্টাফদের জন্য নির্ধারিত প্রোমো কোড।`
+      };
+    }
+    if (hasSpecificStaff && userProfile?.role === UserRole.EMPLOYEE) {
+      const staffCode = (userProfile.referral_code || '').trim().toUpperCase();
+      const matchesId = Boolean(coupon.assigned_staff_ids?.includes(userProfile.id));
+      const matchesCode = Boolean(
+        staffCode && coupon.assigned_staff_codes?.some(c => c.trim().toUpperCase() === staffCode)
+      );
+      if (!matchesId && !matchesCode) {
+        return {
+          valid: false,
+          message: `❌ দুঃখিত, "${cleanCode}" প্রোমো কোডটি আপনার স্টাফ আইডির জন্য নির্ধারিত নয়।`
+        };
+      }
+    }
+  }
+
+  // Category restriction checks
+  if (normalizedCategory !== 'all') {
+    if (coupon.applicable_to === 'tests' && normalizedCategory !== 'tests') {
+      return { valid: false, message: `❌ "${cleanCode}" প্রোমো কোডটি শুধুমাত্র ল্যাব টেস্ট অর্ডারের জন্য প্রযোজ্য।` };
+    }
+    if (coupon.applicable_to === 'medicines' && normalizedCategory !== 'medicines') {
+      return { valid: false, message: `❌ "${cleanCode}" প্রোমো কোডটি শুধুমাত্র ঔষধ ও মেডিকেল পণ্যের অর্ডারের জন্য প্রযোজ্য।` };
+    }
+    if (coupon.applicable_to === 'services' && normalizedCategory !== 'services') {
+      return { valid: false, message: `❌ "${cleanCode}" প্রোমো কোডটি শুধুমাত্র হেলথ সার্ভিসের জন্য প্রযোজ্য।` };
+    }
   }
 
   if (coupon.min_order_amount && orderAmount < coupon.min_order_amount) {
     return { 
       valid: false, 
-      message: `❌ "${cleanCode}" কুপন ব্যবহারের জন্য ন্যূনতম ৳${coupon.min_order_amount} টাকার অর্ডার প্রয়োজন।` 
+      message: `❌ "${cleanCode}" প্রোমো কোড ব্যবহারের জন্য ন্যূনতম ৳${coupon.min_order_amount} টাকার অর্ডার প্রয়োজন।` 
     };
   }
 
@@ -185,6 +257,7 @@ export function validateCoupon(
     coupon,
     discountPercent: percent,
     discountAmount,
-    message: `🎉 কুপন "${cleanCode}" সফলভাবে প্রয়োগ করা হয়েছে! আপনি ${percent}% ছাড় (৳${discountAmount} BDT) পেয়েছেন।`
+    message: `🎉 প্রোমো কোড "${cleanCode}" সফলভাবে প্রয়োগ করা হয়েছে! আপনি ${percent}% ছাড় (৳${discountAmount} BDT) পেয়েছেন।`
   };
 }
+

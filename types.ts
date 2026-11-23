@@ -110,6 +110,7 @@ export interface Order {
   user_id: string;
   user_email: string;
   item_name: string;
+  order_type?: 'lab_test' | 'medicine' | 'accessory' | 'service';
   amount: number;
   original_amount?: number;
   shipping: number;
@@ -126,6 +127,10 @@ export interface Order {
   pharmacy_store_name?: string;
   delivery_address?: string;
   referred_by_code?: string;
+  staff_id?: string;
+  staff_name?: string;
+  staff_code?: string;
+  items?: Array<{ id: string; name: string; price: number; quantity: number; category?: string }>;
   subscription_plan_name?: string;
   coupon_code?: string;
   coupon_discount_percent?: number;
@@ -138,11 +143,15 @@ export interface Coupon {
   discount_percent: number;
   title: string;
   description?: string;
-  applicable_to?: 'all' | 'tests' | 'services';
+  applicable_to?: 'all' | 'tests' | 'services' | 'medicines';
   min_order_amount?: number;
   is_active: boolean;
   usage_count?: number;
   created_at?: string;
+  staff_only?: boolean;
+  assigned_staff_ids?: string[];
+  assigned_staff_codes?: string[];
+  assigned_staff_names?: string[];
 }
 
 export interface SponsorHospital {

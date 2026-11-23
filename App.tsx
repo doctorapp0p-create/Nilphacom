@@ -2199,7 +2199,7 @@ const AdminDashboard: React.FC<{
         {/* Coupons Management Subtab */}
         {activeSubTab === 'coupons' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 text-left">
-            <CouponManager onCouponsUpdated={onCouponsUpdated} />
+            <CouponManager profiles={profiles} onCouponsUpdated={onCouponsUpdated} />
           </div>
         )}
 
@@ -2251,10 +2251,15 @@ const AdminDashboard: React.FC<{
                     <div key={order.id} className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-md space-y-4 text-left">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
                         <div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider border ${statusBadgeColor}`}>
                               {statusLabel}
                             </span>
+                            {order.staff_name && (
+                              <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-violet-100 text-violet-800 border border-violet-200">
+                                💼 স্টাফ: {order.staff_name} {order.staff_code ? `(${order.staff_code})` : ''}
+                              </span>
+                            )}
                             <span className="text-[10px] font-mono text-slate-400">ID: {order.id?.substring(0, 8)}</span>
                           </div>
                           <h3 className="text-base font-black text-slate-800 mt-1">
@@ -4047,7 +4052,13 @@ export default function App() {
       setCouponError('অনুগ্রহ করে কুপন কোড লিখুন।');
       return;
     }
-    const result = validateCoupon(code, showPayment.amount, !!showPayment.isTest, couponsList);
+    const result = validateCoupon(
+      code,
+      showPayment.amount,
+      showPayment.isTest ? 'tests' : 'services',
+      couponsList,
+      profile
+    );
     if (result.valid && result.coupon) {
       setAppliedCoupon(result.coupon);
       setCouponSuccess(result.message);
@@ -6075,13 +6086,20 @@ export default function App() {
 
   useEffect(() => {
     if (user) {
-      if (isAdmin) {
-        fetchAdminData();
+      if (isAdmin || profile?.role === UserRole.EMPLOYEE) {
+        ensureFirebaseAuthSession()
+          .then(() => {
+            fetchAdminData();
+            fetchCouponsList();
+          })
+          .catch(() => {
+            fetchAdminData();
+          });
       } else {
         fetchUserData();
       }
     }
-  }, [user, isAdmin, activeTab]);
+  }, [user, isAdmin, profile?.role, activeTab]);
 
   const fetchAdminData = async () => {
     let rawProfiles: Profile[] = [];
@@ -8452,9 +8470,9 @@ export default function App() {
         <Route path="/districts/:slug" element={<DistrictLandingPage doctorsList={doctors} />} />
         <Route path="/doctor-portal" element={<DoctorPortal currentProfile={profile || { id: 'guest', full_name: 'Doctor', role: UserRole.DOCTOR, phone: '' }} doctorsList={doctors} labTestsList={labTests} onLogout={logout} />} />
         <Route path="/doctor" element={<DoctorPortal currentProfile={profile || { id: 'guest', full_name: 'Doctor', role: UserRole.DOCTOR, phone: '' }} doctorsList={doctors} labTestsList={labTests} onLogout={logout} />} />
-        <Route path="/employee-portal" element={<EmployeePortal currentProfile={profile || { id: 'guest', full_name: 'Staff', role: UserRole.EMPLOYEE, phone: '' }} profiles={allProfiles} labTests={labTests} orders={allOrders} doctors={doctors} hospitals={hospitals} appointments={allAppointments} onLogout={logout} onRefreshData={fetchAdminData} onNavigateHome={() => navigate('/')} />} />
-        <Route path="/employee" element={<EmployeePortal currentProfile={profile || { id: 'guest', full_name: 'Staff', role: UserRole.EMPLOYEE, phone: '' }} profiles={allProfiles} labTests={labTests} orders={allOrders} doctors={doctors} hospitals={hospitals} appointments={allAppointments} onLogout={logout} onRefreshData={fetchAdminData} onNavigateHome={() => navigate('/')} />} />
-        <Route path="/staff" element={<EmployeePortal currentProfile={profile || { id: 'guest', full_name: 'Staff', role: UserRole.EMPLOYEE, phone: '' }} profiles={allProfiles} labTests={labTests} orders={allOrders} doctors={doctors} hospitals={hospitals} appointments={allAppointments} onLogout={logout} onRefreshData={fetchAdminData} onNavigateHome={() => navigate('/')} />} />
+        <Route path="/employee-portal" element={<EmployeePortal currentProfile={profile || { id: 'guest', full_name: 'Staff', role: UserRole.EMPLOYEE, phone: '' }} profiles={allProfiles} labTests={labTests} orders={allOrders} doctors={doctors} hospitals={hospitals} appointments={allAppointments} coupons={couponsList} onLogout={logout} onRefreshData={fetchAdminData} onRefreshCoupons={fetchCouponsList} onNavigateHome={() => navigate('/')} />} />
+        <Route path="/employee" element={<EmployeePortal currentProfile={profile || { id: 'guest', full_name: 'Staff', role: UserRole.EMPLOYEE, phone: '' }} profiles={allProfiles} labTests={labTests} orders={allOrders} doctors={doctors} hospitals={hospitals} appointments={allAppointments} coupons={couponsList} onLogout={logout} onRefreshData={fetchAdminData} onRefreshCoupons={fetchCouponsList} onNavigateHome={() => navigate('/')} />} />
+        <Route path="/staff" element={<EmployeePortal currentProfile={profile || { id: 'guest', full_name: 'Staff', role: UserRole.EMPLOYEE, phone: '' }} profiles={allProfiles} labTests={labTests} orders={allOrders} doctors={doctors} hospitals={hospitals} appointments={allAppointments} coupons={couponsList} onLogout={logout} onRefreshData={fetchAdminData} onRefreshCoupons={fetchCouponsList} onNavigateHome={() => navigate('/')} />} />
 
         {/* Main App Experience */}
         <Route path="*" element={
@@ -8641,8 +8659,10 @@ export default function App() {
                     doctors={doctors} 
                     hospitals={hospitals} 
                     appointments={allAppointments} 
+                    coupons={couponsList}
                     onLogout={logout} 
                     onRefreshData={fetchAdminData} 
+                    onRefreshCoupons={fetchCouponsList}
                     onNavigateHome={() => setActiveTab('home')} 
                   />
                 )}

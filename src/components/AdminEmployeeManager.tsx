@@ -115,7 +115,7 @@ const DEFAULT_EMPLOYEE_PERMISSIONS: EmployeePermissions = {
   view_my_referred_users: true,
   view_user_passwords: true,
   manage_appointments: true,
-  manage_medicine_orders: false,
+  manage_medicine_orders: true,
   manage_blood_donors: false,
   manage_ambulance_emergency: false,
   manage_donations: false,
