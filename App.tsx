@@ -68,7 +68,8 @@ import { Coupon } from './types';
 import { AdminEmployeeManager } from './src/components/AdminEmployeeManager';
 import { EmployeePortal } from './src/components/EmployeePortal';
 import { AdminBackupExportSection } from './src/components/AdminBackupExportSection';
-import { Share2, Bot, Video, Microscope, Ambulance, Star, ShieldCheck, Zap, MessageSquare, ArrowRight, X, Download, Smartphone, Stethoscope, Percent, MapPin, Calendar, Clock, Phone, BadgeCheck, Search, ChevronRight, FileText, Youtube, User, HelpCircle, Wallet, LogOut, Gift, Building, HeartHandshake, Baby, Heart, CreditCard, Plus, CheckCircle2, AlertCircle, RefreshCw, Tag, Camera, Database } from 'lucide-react';
+import { buildOrderWhatsAppMessage, buildWhatsAppHref, getOrderBreakdown } from './src/utils/orderWhatsApp';
+import { Share2, Bot, Video, Microscope, Ambulance, Star, ShieldCheck, Zap, MessageSquare, ArrowRight, X, Download, Smartphone, Stethoscope, Percent, MapPin, Calendar, Clock, Phone, BadgeCheck, Search, ChevronRight, FileText, Youtube, User, HelpCircle, Wallet, LogOut, Gift, Building, HeartHandshake, Baby, Heart, CreditCard, Plus, CheckCircle2, AlertCircle, RefreshCw, Tag, Camera, Database, Copy, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const WHATSAPP_NUMBER = '8801352669100';
@@ -2260,6 +2261,11 @@ const AdminDashboard: React.FC<{
                                 💼 স্টাফ: {order.staff_name} {order.staff_code ? `(${order.staff_code})` : ''}
                               </span>
                             )}
+                            {order.confirmed_by_staff_name && (
+                              <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
+                                ✓ কনফার্মকারী স্টাফ: {order.confirmed_by_staff_name} ({order.confirmed_by_staff_code || order.confirmed_by_staff_id})
+                              </span>
+                            )}
                             <span className="text-[10px] font-mono text-slate-400">ID: {order.id?.substring(0, 8)}</span>
                           </div>
                           <h3 className="text-base font-black text-slate-800 mt-1">
@@ -3994,12 +4000,39 @@ export default function App() {
   const isAdmin = useMemo(() => {
     if (!user) return false;
     const email = (user.email || '').toLowerCase().trim();
-    if (email === 'service_sync_operator@nilpha.com') return false;
+    if (
+      email === 'service_sync_operator@nilpha.com' ||
+      user.uid === 'rt63aB6TmyQcH8Lo62CEeQcyHyH3'
+    ) {
+      return false;
+    }
     if (profile) {
+      if (
+        profile.id === 'rt63aB6TmyQcH8Lo62CEeQcyHyH3' ||
+        profile.full_name === 'System Sync Operator'
+      ) {
+        return false;
+      }
       return profile.role === UserRole.ADMIN || profile.role === UserRole.MODERATOR;
     }
     return email === 'doctorapp0p@gmail.com' || email === 'jagadbandhutum@gmail.com' || email === 'jagadbandhu';
   }, [profile, user]);
+
+  const lastEmployeeAutoRoutedIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (profile?.role === UserRole.EMPLOYEE) {
+      if (adminViewMode !== 'website') {
+        setAdminViewMode('website');
+      }
+      localStorage.removeItem('jb_admin_view_mode');
+      if (lastEmployeeAutoRoutedIdRef.current !== profile.id) {
+        lastEmployeeAutoRoutedIdRef.current = profile.id;
+        setActiveTab('staff_portal');
+      }
+    } else {
+      lastEmployeeAutoRoutedIdRef.current = null;
+    }
+  }, [profile?.id, profile?.role, adminViewMode]);
   const [isLoading, setIsLoading] = useState(true);
   const [contactPhone, setContactPhone] = useState('');
   const [patientName, setPatientName] = useState('');
@@ -4039,7 +4072,10 @@ export default function App() {
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'moderator'>('login');
   const [authErrorMessage, setAuthErrorMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showPayment, setShowPayment] = useState<{show: boolean, amount: number, item: string, shipping: number, isVideo?: boolean, isClinic?: boolean, isTest?: boolean, hospitalName?: string}>({show: false, amount: 0, item: '', shipping: 0});
+  const [showPayment, setShowPayment] = useState<{show: boolean, amount: number, item: string, shipping: number, isVideo?: boolean, isClinic?: boolean, isTest?: boolean, hospitalName?: string, items?: Array<{ id: string; name: string; price: number; quantity: number; category?: string }>}>({show: false, amount: 0, item: '', shipping: 0});
+  const [lastSubmittedOrder, setLastSubmittedOrder] = useState<Order | null>(null);
+  const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
+  const [expandedPatientOrderPreviewId, setExpandedPatientOrderPreviewId] = useState<string | null>(null);
   const [selectedTestHospital, setSelectedTestHospital] = useState<string>('none');
   const [paymentMethod, setPaymentMethod] = useState<'bkash' | 'nagad' | null>(null);
   const [paymentType, setPaymentType] = useState<'online' | 'offline'>('online');
@@ -4301,15 +4337,40 @@ export default function App() {
     const couponDiscPct = appliedCoupon ? appliedCoupon.discount_percent : 0;
     const couponDiscAmt = appliedCoupon ? Math.round((showPayment.amount * couponDiscPct) / 100) : 0;
     const discServiceAmount = Math.max(0, showPayment.amount - couponDiscAmt);
-    const totalAmount = discServiceAmount + transportFee;
-    const couponInfo = appliedCoupon ? `\n🎟️ কুপন ডিসকাউন্ট: ${appliedCoupon.code} (${couponDiscPct}% ছাড় = -৳${couponDiscAmt} BDT)` : '';
-    const testHospitalInfo = showPayment.isTest
-      ? `\n🏥 নির্বাচিত টেস্টের হাসপাতাল: ${selectedTestHospital === 'none' ? 'নির্দিষ্ট কোনো হাসপাতাল নেই (অন্য যেকোনো স্থান/বিশ্বস্ত ল্যাব)' : selectedTestHospital}`
-      : (showPayment.hospitalName ? `\n🏥 হাসপাতাল: ${showPayment.hospitalName}` : '');
     const userRefCode = profile?.referred_by_code || profile?.referral_code || localStorage.getItem('prefilled_referral_code') || '';
-    const refCodeInfo = userRefCode ? `\n🔑 রেফার কোড: ${userRefCode}` : '';
-    const message = `হ্যালো নিলফা হেলথকেয়ার,\n\nআমি একটি সার্ভিস/পণ্য বুক করতে চাই:\n📝 আইটেম: ${showPayment.item}${testHospitalInfo}${refCodeInfo}\n💰 সার্ভিস মূল্য: ৳${showPayment.amount}${couponInfo}\n🚗 যাতায়াত/ডেলিভারি ফি: ৳${transportFee} (${distanceLabel})\n💳 সর্বমোট প্রদেয়: ৳${totalAmount} BDT\n\n👤 সেবা গ্রহণকারী/রোগী: ${patientName}\n📱 মোবাইল: ${contactPhone}\n📍 ঠিকানা: ${deliveryAddress || 'উলেখিত নেই'}\n💳 পেমেন্ট পদ্ধতি: ${paymentType === 'offline' ? 'ক্যাশ অন সার্ভিস' : (paymentMethod || 'bkash') + ' (TrxID: ' + (trxId || 'N/A') + ')'}\n\nদয়া করে আমার এই বুকিং টি দ্রুত কনফার্ম করুন।`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+    const hospitalLabel = showPayment.isTest
+      ? (selectedTestHospital === 'none' ? 'নির্দিষ্ট কোনো হাসপাতাল নেই (অন্য যেকোনো স্থান/বিশ্বস্ত ল্যাব)' : selectedTestHospital)
+      : (showPayment.hospitalName || '');
+
+    const previewOrder: Order = {
+      id: 'NEW-WHATSAPP-BOOKING',
+      user_id: user?.uid || user?.id || 'guest',
+      user_email: user?.email || 'guest@nilpha.com',
+      item_name: showPayment.item || 'সাধারণ হেলথ সেবা',
+      order_type: showPayment.isTest ? 'lab_test' : 'service',
+      amount: discServiceAmount,
+      original_amount: showPayment.amount,
+      shipping: transportFee,
+      delivery_distance_label: distanceLabel,
+      payment_method: paymentType === 'offline' ? 'ক্যাশ অন সার্ভিস' : (paymentMethod || 'bkash'),
+      payment_type: paymentType,
+      sender_name: patientName,
+      sender_contact: contactPhone,
+      patient_name: patientName,
+      delivery_address: deliveryAddress || 'উল্লেখিত নেই',
+      trx_id: trxId || 'N/A',
+      hospital_name: hospitalLabel,
+      referred_by_code: userRefCode || undefined,
+      items: showPayment.items,
+      coupon_code: appliedCoupon ? appliedCoupon.code : undefined,
+      coupon_discount_percent: appliedCoupon ? couponDiscPct : undefined,
+      coupon_discount_amount: couponDiscAmt > 0 ? couponDiscAmt : undefined,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    };
+
+    const message = buildOrderWhatsAppMessage(previewOrder, undefined, 'clinic_confirmation');
+    window.open(buildWhatsAppHref(WHATSAPP_NUMBER, message, true), '_blank', 'noopener,noreferrer');
   };
 
   useEffect(() => {
@@ -4377,23 +4438,42 @@ export default function App() {
       if (savedSessionRaw) {
         try {
           const savedSession = JSON.parse(savedSessionRaw);
-          if (savedSession && savedSession.uid) {
+          const savedEmailLower = (savedSession?.email || '').toLowerCase().trim();
+          const isStaleSyncSession =
+            savedSession?.uid === 'rt63aB6TmyQcH8Lo62CEeQcyHyH3' ||
+            savedEmailLower === 'service_sync_operator@nilpha.com';
+
+          if (isStaleSyncSession) {
+            localStorage.removeItem('jb_custom_session');
+            localStorage.removeItem('jb_admin_view_mode');
+            setAdminViewMode('website');
+          } else if (savedSession && savedSession.uid) {
             const profileRef = doc(db, 'profiles', savedSession.uid);
             const profileSnap = await getDoc(profileRef);
             if (profileSnap.exists()) {
               const prof = profileSnap.data() as Profile;
-              setUser({
-                uid: savedSession.uid,
-                email: savedSession.email || prof.virtual_email || '',
-                displayName: prof.full_name || 'User'
-              } as any);
-              setProfile(prof);
-              if (prof.role !== UserRole.ADMIN && prof.role !== UserRole.MODERATOR) {
-                setAdminViewMode('website');
+              if (
+                prof.id === 'rt63aB6TmyQcH8Lo62CEeQcyHyH3' ||
+                prof.full_name === 'System Sync Operator' ||
+                (prof.virtual_email || '').toLowerCase().trim() === 'service_sync_operator@nilpha.com'
+              ) {
+                localStorage.removeItem('jb_custom_session');
                 localStorage.removeItem('jb_admin_view_mode');
-              }
-              if (prof.role === UserRole.EMPLOYEE) {
-                setActiveTab('staff_portal');
+                setAdminViewMode('website');
+              } else {
+                setUser({
+                  uid: savedSession.uid,
+                  email: savedSession.email || prof.virtual_email || '',
+                  displayName: prof.full_name || 'User'
+                } as any);
+                setProfile(prof);
+                if (prof.role !== UserRole.ADMIN && prof.role !== UserRole.MODERATOR) {
+                  setAdminViewMode('website');
+                  localStorage.removeItem('jb_admin_view_mode');
+                }
+                if (prof.role === UserRole.EMPLOYEE) {
+                  setActiveTab('staff_portal');
+                }
               }
             }
           }
@@ -4407,7 +4487,10 @@ export default function App() {
           const fbEmail = (firebaseUser.email || '').toLowerCase().trim();
           // Background service operator auth is strictly for Firestore rules when custom sessions lack native Auth;
           // NEVER override active UI user/profile with service_sync_operator.
-          if (fbEmail === 'service_sync_operator@nilpha.com') {
+          if (
+            fbEmail === 'service_sync_operator@nilpha.com' ||
+            firebaseUser.uid === 'rt63aB6TmyQcH8Lo62CEeQcyHyH3'
+          ) {
             return;
           }
 
@@ -6489,14 +6572,34 @@ export default function App() {
       console.error("Prescriptions fetch error:", err);
     }
 
-    // 2. Fetch orders
+    // 2. Fetch orders (by user_id AND by patient phone so staff-confirmed orders appear for the patient)
     try {
-      const ordersQuery = query(
-        collection(db, 'orders'),
-        where('user_id', '==', user.uid || user.id)
+      const uid = user.uid || user.id;
+      const ordersByUidSnap = await getDocs(
+        query(collection(db, 'orders'), where('user_id', '==', uid))
       );
-      const ordSnap = await getDocs(ordersQuery);
-      const orders = ordSnap.docs.map(d => ({ id: d.id, ...d.data() } as Order));
+      const mergedMap = new Map<string, Order>();
+      ordersByUidSnap.docs.forEach(d => {
+        mergedMap.set(d.id, { id: d.id, ...d.data() } as Order);
+      });
+
+      const cleanUserPhone = (profile?.phone || '').trim();
+      if (cleanUserPhone) {
+        try {
+          const ordersByPhoneSnap = await getDocs(
+            query(collection(db, 'orders'), where('sender_contact', '==', cleanUserPhone))
+          );
+          ordersByPhoneSnap.docs.forEach(d => {
+            if (!mergedMap.has(d.id)) {
+              mergedMap.set(d.id, { id: d.id, ...d.data() } as Order);
+            }
+          });
+        } catch (phoneQueryErr) {
+          console.warn('Orders by phone query fallback:', phoneQueryErr);
+        }
+      }
+
+      const orders = Array.from(mergedMap.values());
       orders.sort((a, b) => {
         const tA = getTimestampMs(a.created_at);
         const tB = getTimestampMs(b.created_at);
@@ -6838,7 +6941,6 @@ export default function App() {
       // If moderator tab was selected (or left active), verify first that a Staff/non-admin phone/account is NEVER routed to Admin!
       if (effectiveAuthMode === 'moderator' && !isExplicitAdminId && trimmed) {
         try {
-          const checkPhone = normalizePhoneNumber(rawEmail);
           const checkDigits = rawEmail.replace(/\D/g, '');
           const checkSnap = await getDocs(collection(db, 'profiles'));
           const foundNonAdmin = checkSnap.docs.find(d => {
@@ -6849,7 +6951,8 @@ export default function App() {
             const phoneHit = checkDigits && (pPhone === checkDigits || pRaw === checkDigits || (checkDigits.length >= 10 && pPhone.endsWith(checkDigits.slice(-10))));
             const userHit = p.username && p.username.toLowerCase().trim() === trimmed;
             const emailHit = p.virtual_email && p.virtual_email.toLowerCase().trim() === trimmed;
-            return phoneHit || userHit || emailHit;
+            const staffCodeHit = p.role === UserRole.EMPLOYEE && p.referral_code && p.referral_code.toLowerCase().trim() === trimmed;
+            return phoneHit || userHit || emailHit || staffCodeHit;
           });
           if (foundNonAdmin) {
             // Switch seamlessly into normal login so Staff/Patient logs ONLY into their own account (never Admin!)
@@ -7050,8 +7153,9 @@ export default function App() {
               const userMatches = pData.username && pData.username.toLowerCase().trim() === trimmed;
               const emailMatches = pData.virtual_email && pData.virtual_email.toLowerCase().trim() === trimmed;
               const phoneExact = pData.phone && pData.phone.trim() === trimmed;
+              const staffCodeMatches = pData.role === UserRole.EMPLOYEE && pData.referral_code && pData.referral_code.toLowerCase().trim() === trimmed;
 
-              if (phoneMatches || userMatches || emailMatches || phoneExact) {
+              if (phoneMatches || userMatches || emailMatches || phoneExact || staffCodeMatches) {
                 matchedProfile = { id: d.id, ...pData };
                 break;
               }
@@ -7590,7 +7694,14 @@ export default function App() {
     if (!patientName && profile?.full_name) setPatientName(profile.full_name);
     if (!contactPhone && profile?.phone) setContactPhone(profile.phone);
     
-    setShowPayment({ show: true, amount: totalAmount, item: itemNames, shipping, isTest: hasTest });
+    const cartOrderItems = cart.map(c => ({
+      id: c.id,
+      name: c.name,
+      price: c.price,
+      quantity: 1,
+      category: c.type
+    }));
+    setShowPayment({ show: true, amount: totalAmount, item: itemNames, shipping, isTest: hasTest, items: cartOrderItems });
   };
 
   const submitOrder = async () => {
@@ -7637,6 +7748,7 @@ export default function App() {
       user_id: user.uid || user.id,
       user_email: user.email || 'guest@jb.com',
       item_name: showPayment.item || 'সাধারণ হেলথ সেবা',
+      order_type: showPayment.isTest ? 'lab_test' : 'service',
       amount: discountedServiceAmount,
       original_amount: showPayment.amount,
       shipping: calculatedShipping,
@@ -7651,15 +7763,19 @@ export default function App() {
       hospital_name: showPayment.isTest
         ? (selectedTestHospital === 'none' ? 'নির্দিষ্ট কোনো হাসপাতাল নেই' : selectedTestHospital)
         : (showPayment.hospitalName || ''),
+      items: showPayment.items,
       coupon_code: appliedCoupon ? appliedCoupon.code : undefined,
       coupon_discount_percent: appliedCoupon ? appliedCoupon.discount_percent : undefined,
       coupon_discount_amount: couponDiscAmt > 0 ? couponDiscAmt : undefined,
       subscription_plan_name: profile?.active_subscription?.plan_name || (profile?.active_subscription ? `${profile.active_subscription.package_type === 'test_discount_only' ? 'Package 1 (Test 20% Discount)' : 'Package 2 (Test 20% + Free Doctor Consultation)'} - ${profile.active_subscription.years} Years` : ''),
       referred_by_code: profile?.referred_by_code || profile?.referral_code || localStorage.getItem('prefilled_referral_code') || '',
-      status: 'pending'
+      status: 'pending',
+      created_at: new Date().toISOString()
     };
 
-    const finalizeSuccess = () => {
+    const finalizeSuccess = (savedId?: string) => {
+      const orderWithId: Order = { ...newOrder, id: savedId || `ORD-${Date.now().toString().slice(-6)}` };
+      setLastSubmittedOrder(orderWithId);
       setShowPayment({ show: false, amount: 0, item: '', shipping: 0 });
       setCart([]);
       setTrxId('');
@@ -7668,16 +7784,13 @@ export default function App() {
       setDeliveryAddress('');
       setPaymentType('online');
       handleRemoveCoupon();
-      alert('আপনার অর্ডার রিকুয়েস্ট সফলভাবে গ্রহণ করা হয়েছে! অ্যাডমিন প্যানেল থেকে রিভিউর পর আপনাকে নিশ্চিত করা হবে।');
+      setActiveTab('orders');
       fetchUserData();
     };
 
-    // --- INSTANT FEEDBACK ---
-    finalizeSuccess();
-
     try {
       const ordersRef = collection(db, 'orders');
-      
+
       // Fire and forget PHP notification
       fetch('./api.php?path=orders', {
         method: 'POST',
@@ -7685,11 +7798,12 @@ export default function App() {
         body: JSON.stringify(newOrder)
       }).catch(e => console.log("PHP notify fail:", e));
 
-      // Background Firestore operation
-      await addDoc(ordersRef, { ...newOrder, created_at: serverTimestamp() });
-      await fetchAdminData();
+      const docRef = await addDoc(ordersRef, { ...newOrder, created_at: serverTimestamp() });
+      finalizeSuccess(docRef.id);
+      fetchAdminData().catch(() => {});
     } catch (error) {
-      console.error("Order submission background logic failure:", error);
+      console.error("Order submission failure:", error);
+      finalizeSuccess();
     } finally {
       setIsProcessing(false);
     }
@@ -8616,7 +8730,7 @@ export default function App() {
 
         {/* Main App Experience */}
         <Route path="*" element={
-          (isAdmin && adminViewMode === 'admin' && profile?.role !== UserRole.EMPLOYEE) ? (
+          (isAdmin && adminViewMode === 'admin' && profile?.role !== UserRole.EMPLOYEE && profile?.id !== 'rt63aB6TmyQcH8Lo62CEeQcyHyH3') ? (
             <>
                <AdminDashboard 
                 profile={profile!} 
@@ -10174,7 +10288,8 @@ export default function App() {
                                                item: `${t.name}`,
                                                shipping: 0,
                                                isTest: true,
-                                               hospitalName: t.hospital_name || 'JB Diagnostic Center'
+                                               hospitalName: t.hospital_name || 'JB Diagnostic Center',
+                                               items: [{ id: t.id, name: t.name, price: finalPrice, quantity: 1, category: 'lab_test' }]
                                              });
                                            }}
                                            className={`px-3 py-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1 ${
@@ -10800,9 +10915,74 @@ export default function App() {
                         📜 আপনার সার্ভিস ও অর্ডার ইতিহাস ({allOrders.length})
                       </h2>
                       <p className="text-[10px] text-slate-500 font-bold">
-                        আপনার বুকিংকৃত রক্ত পরীক্ষা, অক্সিজেন, ঔষধ বা হোম সার্ভিসের লাইভ স্ট্যাটাস।
+                        আপনার জন্য কী কী অর্ডার করা হয়েছে, কত টাকা ডিসকাউন্ট ছাড় পেয়েছেন এবং স্টাফ আইডি কনফার্মেশন — সব বিস্তারিত এখানে ও সরাসরি হোয়াটসঅ্যাপে দেখতে ও কনফার্ম করতে পারবেন।
                       </p>
                     </div>
+
+                    {lastSubmittedOrder && (() => {
+                      const waMsg = buildOrderWhatsAppMessage(lastSubmittedOrder, undefined, 'clinic_confirmation');
+                      const waHref = buildWhatsAppHref(WHATSAPP_NUMBER, waMsg, true);
+                      const breakdown = getOrderBreakdown(lastSubmittedOrder);
+
+                      return (
+                        <div className="bg-emerald-50 border-2 border-emerald-300 p-5 rounded-[28px] shadow-md space-y-3 animate-in fade-in">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <h3 className="text-sm font-black text-emerald-900 flex items-center gap-2">
+                                <CheckCircle2 size={18} className="text-emerald-600" />
+                                আপনার অর্ডারটি সফলভাবে জমা হয়েছে!
+                              </h3>
+                              <p className="text-[11px] font-bold text-emerald-800 mt-0.5">
+                                এখন সরাসরি WhatsApp-এর মাধ্যমে অর্ডার তালিকা ও ডিসকাউন্ট হিসাব দেখে অর্ডারটি কনফার্ম করতে পারেন।
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setLastSubmittedOrder(null)}
+                              className="text-xs font-bold text-slate-500 hover:text-slate-700"
+                            >
+                              ✕
+                            </button>
+                          </div>
+
+                          <div className="bg-white p-3.5 rounded-2xl border border-emerald-200 text-xs space-y-1.5">
+                            <p className="font-black text-slate-900">📦 আইটেম: {lastSubmittedOrder.item_name}</p>
+                            <div className="flex flex-wrap gap-3 text-[11px] font-bold text-slate-700">
+                              <span>মূল মূল্য: ৳{breakdown.originalAmount}</span>
+                              {breakdown.discountAmount > 0 && (
+                                <span className="text-pink-700 font-black">
+                                  🎟️ ডিসকাউন্ট: -৳{breakdown.discountAmount} ({breakdown.discountPercent}%)
+                                </span>
+                              )}
+                              <span className="text-emerald-700 font-black">সর্বমোট প্রদেয়: ৳{breakdown.finalTotal}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            <a
+                              href={waHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 min-w-[210px] py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-sm transition-all"
+                            >
+                              <MessageSquare size={15} /> সরাসরি WhatsApp-এ অর্ডার ও ডিসকাউন্ট কনফার্ম করুন
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                navigator.clipboard.writeText(waMsg);
+                                setCopiedOrderId('last_order');
+                                setTimeout(() => setCopiedOrderId(null), 2000);
+                              }}
+                              className="py-2.5 px-4 bg-white border border-emerald-300 text-emerald-800 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer"
+                            >
+                              {copiedOrderId === 'last_order' ? <Check size={14} /> : <Copy size={14} />}
+                              {copiedOrderId === 'last_order' ? 'কপি হয়েছে' : 'মেসেজ কপি'}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {allOrders.length === 0 ? (
                       <Card className="p-10 text-center text-slate-400 font-bold text-xs space-y-2">
@@ -10812,6 +10992,12 @@ export default function App() {
                     ) : (
                       <div className="space-y-4">
                         {allOrders.map(order => {
+                          const breakdown = getOrderBreakdown(order);
+                          const waMessage = buildOrderWhatsAppMessage(order, undefined, 'clinic_confirmation');
+                          const waHref = buildWhatsAppHref(WHATSAPP_NUMBER, waMessage, true);
+                          const ordKey = order.id || `${order.created_at}_${order.item_name}`;
+                          const isPreviewOpen = expandedPatientOrderPreviewId === ordKey;
+
                           const statusBadgeColor = 
                             order.status === 'verified' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
                             order.status === 'completed' ? 'bg-blue-100 text-blue-800 border-blue-200' :
@@ -10819,26 +11005,77 @@ export default function App() {
                             'bg-amber-100 text-amber-800 border-amber-200';
 
                           const statusLabel = 
-                            order.status === 'verified' ? '✅ একসেপ্টেড (Verified)' :
+                            order.status === 'verified' ? '✅ একসেপ্টেড / কনফার্মকৃত (Verified)' :
                             order.status === 'completed' ? '🎉 সম্পন্ন (Completed)' :
                             order.status === 'cancelled' ? '❌ ডিনাই / বাতিল (Cancelled)' :
                             '⏳ পেন্ডিং রিভিউ';
 
                           return (
-                            <Card key={order.id} className="p-5 border border-slate-100 hover:shadow-md transition-all space-y-3">
+                            <Card key={ordKey} className="p-5 border border-slate-100 hover:shadow-md transition-all space-y-3">
                               <div className="flex justify-between items-start gap-2 border-b border-slate-100 pb-2.5">
                                 <div>
                                   <span className={`text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider border ${statusBadgeColor}`}>
                                     {statusLabel}
                                   </span>
+                                  {order.id && (
+                                    <span className="ml-2 text-[9px] font-mono text-slate-400">ID: {order.id.slice(0, 10)}</span>
+                                  )}
                                   <h4 className="text-sm font-black text-slate-800 mt-1.5">{order.item_name}</h4>
                                   {order.hospital_name && (
                                     <p className="text-[10px] text-blue-600 font-bold">🏥 {order.hospital_name}</p>
                                   )}
                                 </div>
-                                <div className="text-right">
+                                <div className="text-right shrink-0">
                                   <p className="text-[9px] text-slate-400 font-bold uppercase">সর্বমোট প্রদেয়:</p>
-                                  <p className="text-sm font-black text-emerald-600">৳{(order.amount || 0) + (order.shipping || 0)} BDT</p>
+                                  <p className="text-sm font-black text-emerald-600">৳{breakdown.finalTotal} BDT</p>
+                                </div>
+                              </div>
+
+                              {(order.confirmed_by_staff_name || order.confirmed_by_staff_code || order.staff_name) && (
+                                <div className="bg-indigo-50 border border-indigo-200 px-3 py-2 rounded-xl flex flex-wrap items-center justify-between gap-2 text-[11px] font-black text-indigo-900">
+                                  <span>
+                                    👨‍💼 কনফার্মকারী স্টাফ: {order.confirmed_by_staff_name || order.staff_name}
+                                  </span>
+                                  {(order.confirmed_by_staff_code || order.staff_code || order.confirmed_by_staff_id) && (
+                                    <span className="font-mono bg-white px-2 py-0.5 rounded border border-indigo-200 text-indigo-700">
+                                      স্টাফ আইডি/কোড: {order.confirmed_by_staff_code || order.staff_code || order.confirmed_by_staff_id}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+
+                              {Array.isArray(order.items) && order.items.length > 0 && (
+                                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/70 space-y-1">
+                                  <p className="text-[10px] font-black text-slate-500 uppercase">📦 আপনার জন্য অর্ডারকৃত তালিকা:</p>
+                                  {order.items.map((it, iIdx) => (
+                                    <div key={iIdx} className="flex justify-between text-xs font-bold text-slate-800">
+                                      <span>{iIdx + 1}. {it.name} ({it.quantity || 1}টি × ৳{it.price})</span>
+                                      <span>৳{(Number(it.price) || 0) * (Number(it.quantity) || 1)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+
+                              <div className="bg-emerald-50/70 p-3 rounded-xl border border-emerald-200/80 text-[11px] font-bold space-y-1">
+                                <div className="flex justify-between text-slate-700">
+                                  <span>মোট মূল মূল্য:</span>
+                                  <span>৳{breakdown.originalAmount}</span>
+                                </div>
+                                <div className="flex justify-between text-pink-700 font-black">
+                                  <span>🎟️ ডিসকাউন্ট / ছাড় {order.coupon_code ? `(${order.coupon_code})` : ''}:</span>
+                                  <span>
+                                    {breakdown.discountAmount > 0
+                                      ? `-৳${breakdown.discountAmount} (${breakdown.discountPercent}% ছাড়)`
+                                      : '৳০'}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between text-slate-700">
+                                  <span>ডেলিভারি / স্যাম্পল চার্জ:</span>
+                                  <span>+৳{breakdown.shipping}</span>
+                                </div>
+                                <div className="flex justify-between text-xs font-black text-emerald-800 pt-1 border-t border-emerald-200">
+                                  <span>সর্বমোট প্রদেয়:</span>
+                                  <span>৳{breakdown.finalTotal} BDT</span>
                                 </div>
                               </div>
 
@@ -10850,6 +11087,42 @@ export default function App() {
                                   💳 পেমেন্ট: {order.payment_method} {order.trx_id ? `| TrxID: ${order.trx_id}` : ''}
                                 </p>
                               </div>
+
+                              <div className="flex flex-wrap gap-2 pt-1">
+                                <a
+                                  href={waHref}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 min-w-[200px] py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-black flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                                >
+                                  <MessageSquare size={14} /> WhatsApp-এ বিস্তারিত দেখে অর্ডার কনফার্ম করুন
+                                </a>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(waMessage);
+                                    setCopiedOrderId(ordKey);
+                                    setTimeout(() => setCopiedOrderId(null), 2000);
+                                  }}
+                                  className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-[11px] font-black flex items-center gap-1 cursor-pointer"
+                                >
+                                  {copiedOrderId === ordKey ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                                  {copiedOrderId === ordKey ? 'কপি' : 'কপি'}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setExpandedPatientOrderPreviewId(isPreviewOpen ? null : ordKey)}
+                                  className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-[11px] font-black cursor-pointer"
+                                >
+                                  {isPreviewOpen ? 'মেসেজ লুকান' : 'মেসেজ দেখুন'}
+                                </button>
+                              </div>
+
+                              {isPreviewOpen && (
+                                <pre className="bg-slate-900 text-emerald-100 p-3 rounded-2xl text-[11px] whitespace-pre-wrap font-sans leading-relaxed border border-slate-700">
+                                  {waMessage}
+                                </pre>
+                              )}
                             </Card>
                           );
                         })}
@@ -11279,7 +11552,7 @@ export default function App() {
                   onClick={handleWhatsAppBooking}
                   className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wide rounded-2xl shadow-md flex items-center justify-center gap-2 active:scale-95 transition-all"
                 >
-                  <MessageSquare size={14} /> হোয়াটসঅ্যাপে বুকিং তথ্য পাঠান
+                  <MessageSquare size={14} /> সরাসরি WhatsApp-এ অর্ডার ও ডিসকাউন্ট কনফার্ম করুন
                 </button>
               </div>
             </div>

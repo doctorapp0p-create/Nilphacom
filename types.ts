@@ -135,6 +135,12 @@ export interface Order {
   coupon_code?: string;
   coupon_discount_percent?: number;
   coupon_discount_amount?: number;
+  manual_discount_amount?: number;
+  confirmed_by_staff_id?: string;
+  confirmed_by_staff_name?: string;
+  confirmed_by_staff_code?: string;
+  confirmed_by_staff_designation?: string;
+  confirmed_at?: string;
 }
 
 export interface Coupon {

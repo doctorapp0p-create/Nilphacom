@@ -110,4 +110,40 @@ export async function ensureFirebaseAuthSession() {
   return authSessionPromise;
 }
 
+/**
+ * Executes a Firestore write callback using a temporary service-operator session
+ * without disturbing the user's primary Firebase Auth session.
+ */
+export async function runWithServiceOperatorFirestore<T>(
+  operation: (serviceDb: ReturnType<typeof getFirestore>) => Promise<T>
+): Promise<T> {
+  const { initializeApp: initTempApp, deleteApp: deleteTempApp } = await import('firebase/app');
+  const { getAuth: getTempAuth, signInWithEmailAndPassword, signOut: signTempOut } = await import('firebase/auth');
 
+  const tempAppName = `ServiceOp_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+  const tempApp = initTempApp(firebaseConfig, tempAppName);
+  const tempAuth = getTempAuth(tempApp);
+  const dbId = firebaseConfig.firestoreDatabaseId || '(default)';
+  let tempDb: ReturnType<typeof getFirestore>;
+  try {
+    tempDb = initializeFirestore(tempApp, { experimentalForceLongPolling: true }, dbId);
+  } catch {
+    tempDb = getFirestore(tempApp, dbId);
+  }
+
+  try {
+    await signInWithEmailAndPassword(tempAuth, SERVICE_EMAIL, SERVICE_PASS);
+    return await operation(tempDb);
+  } finally {
+    try {
+      await signTempOut(tempAuth);
+    } catch {
+      // Ignore
+    }
+    try {
+      await deleteTempApp(tempApp);
+    } catch {
+      // Ignore
+    }
+  }
+}

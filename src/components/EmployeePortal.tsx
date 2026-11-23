@@ -30,12 +30,16 @@ import {
   Sparkles,
   X,
   Stethoscope,
-  PlusCircle
+  PlusCircle,
+  MessageCircle,
+  ChevronDown,
+  ChevronUp,
+  BadgeCheck
 } from 'lucide-react';
 import { initializeApp, deleteApp } from 'firebase/app';
 import { getAuth as getTempAuth, createUserWithEmailAndPassword, signOut as signTempOut } from 'firebase/auth';
-import { doc, setDoc, addDoc, collection } from 'firebase/firestore';
-import { auth, db, ensureFirebaseAuthSession } from '../../services/firebase';
+import { doc, setDoc, addDoc, updateDoc, collection } from 'firebase/firestore';
+import { auth, db, ensureFirebaseAuthSession, runWithServiceOperatorFirestore } from '../../services/firebase';
 import { Profile, UserRole, LabTest, Order, Doctor, Clinic, Coupon } from '../../types';
 import {
   ALL_MEDICINES_DATA,
@@ -48,6 +52,12 @@ import {
   validateCoupon,
   isCouponAssignedToStaff
 } from '../services/couponService';
+import {
+  buildOrderWhatsAppMessage,
+  buildWhatsAppHref,
+  getOrderBreakdown,
+  getOrderStatusLabelBn
+} from '../utils/orderWhatsApp';
 
 interface EmployeePortalProps {
   currentProfile: Profile;
@@ -467,9 +477,19 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
     });
   }, [filteredScopedAppointments]);
 
-  // --- STAFF ORDERS LIST (Created locally + fetched) ---
+  // --- ALL ORDERS & STAFF CONFIRMATION WITH STAFF ID ---
   const [locallyCreatedOrders, setLocallyCreatedOrders] = useState<Order[]>([]);
-  const myStaffOrders = useMemo(() => {
+  const [locallyUpdatedOrders, setLocallyUpdatedOrders] = useState<Record<string, Partial<Order>>>({});
+  const [orderScope, setOrderScope] = useState<'all' | 'mine'>('all');
+  const [orderStatusFilter, setOrderStatusFilter] = useState<'all' | 'pending' | 'verified' | 'completed'>('all');
+  const [orderHistoryFilter, setOrderHistoryFilter] = useState<'all' | 'medicine' | 'lab_test'>('all');
+  const [orderSearchQuery, setOrderSearchQuery] = useState('');
+  const [confirmingOrderId, setConfirmingOrderId] = useState<string | null>(null);
+  const [orderConfirmFeedback, setOrderConfirmFeedback] = useState<{ type: 'ok' | 'err'; orderId?: string; text: string } | null>(null);
+  const [expandedWhatsAppPreviewId, setExpandedWhatsAppPreviewId] = useState<string | null>(null);
+  const [orderDiscountEdits, setOrderDiscountEdits] = useState<Record<string, string>>({});
+
+  const allMergedOrders = useMemo(() => {
     const merged = [...locallyCreatedOrders, ...orders];
     const seen = new Set<string>();
     const unique: Order[] = [];
@@ -477,26 +497,135 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
       const key = o.id || `${o.created_at}_${o.item_name}_${o.sender_contact}`;
       if (!seen.has(key)) {
         seen.add(key);
-        unique.push(o);
+        const patch = o.id && locallyUpdatedOrders[o.id] ? locallyUpdatedOrders[o.id] : {};
+        unique.push({ ...o, ...patch });
       }
     });
-    return unique.filter(o => {
-      const matchStaffId = o.staff_id === currentProfile.id || o.user_id === currentProfile.id;
+    return unique;
+  }, [locallyCreatedOrders, locallyUpdatedOrders, orders]);
+
+  const myStaffOrders = useMemo(() => {
+    return allMergedOrders.filter(o => {
+      const matchStaffId =
+        o.staff_id === currentProfile.id ||
+        o.user_id === currentProfile.id ||
+        o.confirmed_by_staff_id === currentProfile.id;
       const matchStaffCode = Boolean(
         myStaffCode &&
           ((o.staff_code || '').trim().toUpperCase() === myStaffCode ||
+            (o.confirmed_by_staff_code || '').trim().toUpperCase() === myStaffCode ||
             (o.referred_by_code || '').trim().toUpperCase() === myStaffCode)
       );
       return matchStaffId || matchStaffCode;
     });
-  }, [locallyCreatedOrders, orders, currentProfile.id, myStaffCode]);
+  }, [allMergedOrders, currentProfile.id, myStaffCode]);
 
-  const [orderHistoryFilter, setOrderHistoryFilter] = useState<'all' | 'medicine' | 'lab_test'>('all');
-  const filteredMyStaffOrders = useMemo(() => {
-    if (orderHistoryFilter === 'all') return myStaffOrders;
-    if (orderHistoryFilter === 'lab_test') return myStaffOrders.filter(o => o.order_type === 'lab_test');
-    return myStaffOrders.filter(o => o.order_type !== 'lab_test');
-  }, [myStaffOrders, orderHistoryFilter]);
+  const pendingOrdersCount = useMemo(
+    () => allMergedOrders.filter(o => !o.status || o.status === 'pending').length,
+    [allMergedOrders]
+  );
+
+  const filteredStaffPanelOrders = useMemo(() => {
+    const baseList = orderScope === 'all' ? allMergedOrders : myStaffOrders;
+    const q = orderSearchQuery.toLowerCase().trim();
+    return baseList.filter(o => {
+      if (orderHistoryFilter === 'lab_test' && o.order_type !== 'lab_test') return false;
+      if (orderHistoryFilter === 'medicine' && o.order_type === 'lab_test') return false;
+      if (orderStatusFilter === 'pending' && o.status !== 'pending') return false;
+      if (orderStatusFilter === 'verified' && o.status !== 'verified') return false;
+      if (orderStatusFilter === 'completed' && o.status !== 'completed') return false;
+      if (q) {
+        const hit =
+          (o.id || '').toLowerCase().includes(q) ||
+          (o.patient_name || '').toLowerCase().includes(q) ||
+          (o.sender_name || '').toLowerCase().includes(q) ||
+          (o.sender_contact || '').toLowerCase().includes(q) ||
+          (o.item_name || '').toLowerCase().includes(q) ||
+          (o.coupon_code || '').toLowerCase().includes(q) ||
+          (o.confirmed_by_staff_code || '').toLowerCase().includes(q) ||
+          (o.confirmed_by_staff_name || '').toLowerCase().includes(q);
+        if (!hit) return false;
+      }
+      return true;
+    });
+  }, [allMergedOrders, myStaffOrders, orderScope, orderHistoryFilter, orderStatusFilter, orderSearchQuery]);
+
+  const handleConfirmOrderWithStaffId = async (order: Order, nextStatus: 'verified' | 'completed' = 'verified') => {
+    if (!order.id) return;
+    setConfirmingOrderId(order.id);
+    setOrderConfirmFeedback(null);
+
+    try {
+      await ensureFirebaseAuthSession();
+
+      const breakdown = getOrderBreakdown(order);
+      const rawDiscountInput = orderDiscountEdits[order.id];
+      const hasCustomDiscount = rawDiscountInput !== undefined && rawDiscountInput.trim() !== '';
+      const parsedDiscount = hasCustomDiscount ? Math.max(0, Math.round(Number(rawDiscountInput) || 0)) : null;
+
+      const updatePayload: Record<string, any> = {
+        status: nextStatus,
+        confirmed_by_staff_id: currentProfile.id,
+        confirmed_by_staff_name: currentProfile.full_name,
+        confirmed_by_staff_code: myStaffCode || currentProfile.id,
+        confirmed_by_staff_designation: currentProfile.designation || 'Staff',
+        confirmed_at: new Date().toISOString(),
+        ...(order.staff_id ? {} : { staff_id: currentProfile.id }),
+        ...(order.staff_name ? {} : { staff_name: currentProfile.full_name }),
+        ...(order.staff_code ? {} : { staff_code: myStaffCode || currentProfile.id })
+      };
+
+      if (parsedDiscount !== null) {
+        const clampedDiscount = Math.min(parsedDiscount, breakdown.originalAmount);
+        updatePayload.original_amount = breakdown.originalAmount;
+        updatePayload.manual_discount_amount = clampedDiscount;
+        updatePayload.coupon_discount_amount = clampedDiscount;
+        if (breakdown.originalAmount > 0) {
+          updatePayload.coupon_discount_percent = Math.round((clampedDiscount / breakdown.originalAmount) * 100);
+        }
+        updatePayload.amount = Math.max(0, breakdown.originalAmount - clampedDiscount);
+      }
+
+      try {
+        await updateDoc(doc(db, 'orders', order.id), updatePayload);
+      } catch (primaryErr: any) {
+        const msg = String(primaryErr?.code || primaryErr?.message || '');
+        if (msg.includes('permission-denied') || msg.includes('PERMISSION_DENIED') || msg.includes('unauthenticated')) {
+          await runWithServiceOperatorFirestore(async serviceDb => {
+            await updateDoc(doc(serviceDb, 'orders', order.id!), updatePayload);
+          });
+        } else {
+          throw primaryErr;
+        }
+      }
+
+      setLocallyUpdatedOrders(prev => ({
+        ...prev,
+        [order.id!]: { ...prev[order.id!], ...updatePayload }
+      }));
+
+      setOrderConfirmFeedback({
+        type: 'ok',
+        orderId: order.id,
+        text: `অর্ডার (${order.patient_name || order.sender_name}) আপনার স্টাফ আইডি (${myStaffCode || currentProfile.id}) দিয়ে সফলভাবে ${
+          nextStatus === 'completed' ? 'সম্পন্ন (Completed)' : 'কনফার্ম (Verified)'
+        } করা হয়েছে! এখন নিচের হোয়াটসঅ্যাপ বাটনে ক্লিক করে রোগীকে সম্পূর্ণ বিবরণ পাঠান।`
+      });
+
+      if (onRefreshData) {
+        onRefreshData().catch(() => {});
+      }
+    } catch (err: any) {
+      console.error('Staff order confirmation error:', err);
+      setOrderConfirmFeedback({
+        type: 'err',
+        orderId: order.id,
+        text: 'অর্ডার কনফার্ম করতে সমস্যা হয়েছে। ইন্টারনেট সংযোগ যাচাই করে পুনরায় চেষ্টা করুন।'
+      });
+    } finally {
+      setConfirmingOrderId(null);
+    }
+  };
 
   // --- CREATE USER WITH STAFF CODE ---
   const [newPatientName, setNewPatientName] = useState('');
@@ -836,9 +965,14 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
           ? '৫ কিমি এরিয়া (৳৫০)'
           : '১০ কিমি এরিয়া (৳৮০)';
 
+      const cleanCustomerPhone = medCustomerPhone.trim().replace(/[^0-9]/g, '');
+      const matchedPatient = profiles.find(
+        p => (p.phone || '').replace(/[^0-9]/g, '') === cleanCustomerPhone
+      );
+
       const newOrder: Order = {
-        user_id: currentProfile.id,
-        user_email: currentProfile.virtual_email || `${currentProfile.phone || 'staff'}@nilpha.com`,
+        user_id: matchedPatient?.id || currentProfile.id,
+        user_email: matchedPatient?.virtual_email || currentProfile.virtual_email || `${currentProfile.phone || 'staff'}@nilpha.com`,
         item_name: `স্টাফ অর্ডার (${hasMedicine ? 'ঔষধ ও পণ্য' : 'মেডিকেল পণ্য/সেবা'}): ${itemsText}`,
         order_type: hasMedicine ? 'medicine' : 'accessory',
         amount: discountedAmount,
@@ -859,6 +993,11 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
         staff_id: currentProfile.id,
         staff_name: currentProfile.full_name,
         staff_code: myStaffCode,
+        confirmed_by_staff_id: currentProfile.id,
+        confirmed_by_staff_name: currentProfile.full_name,
+        confirmed_by_staff_code: myStaffCode || currentProfile.id,
+        confirmed_by_staff_designation: currentProfile.designation || 'Staff',
+        confirmed_at: new Date().toISOString(),
         items: medCart.map(i => ({
           id: i.id,
           name: i.name,
@@ -869,7 +1008,7 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
         coupon_code: medAppliedCoupon ? medAppliedCoupon.code : undefined,
         coupon_discount_percent: medAppliedCoupon ? medAppliedCoupon.discount_percent : undefined,
         coupon_discount_amount: medDiscountAmount > 0 ? medDiscountAmount : undefined,
-        status: 'pending',
+        status: 'verified',
         created_at: new Date().toISOString()
       };
 
@@ -1001,9 +1140,14 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
           ? 'ডায়াগনস্টিক সেন্টারে উপস্থিত হয়ে টেস্ট (৳০)'
           : `বাসা থেকে স্যাম্পল সংগ্রহ (৳${labCollectionFee})`;
 
+      const cleanLabPhone = labPatientPhone.trim().replace(/[^0-9]/g, '');
+      const matchedLabPatient = profiles.find(
+        p => (p.phone || '').replace(/[^0-9]/g, '') === cleanLabPhone
+      );
+
       const newOrder: Order = {
-        user_id: currentProfile.id,
-        user_email: currentProfile.virtual_email || `${currentProfile.phone || 'staff'}@nilpha.com`,
+        user_id: matchedLabPatient?.id || currentProfile.id,
+        user_email: matchedLabPatient?.virtual_email || currentProfile.virtual_email || `${currentProfile.phone || 'staff'}@nilpha.com`,
         item_name: `ল্যাব টেস্ট অর্ডার (স্টাফ): ${testNames}`,
         order_type: 'lab_test',
         amount: discountedAmount,
@@ -1025,6 +1169,11 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
         staff_id: currentProfile.id,
         staff_name: currentProfile.full_name,
         staff_code: myStaffCode,
+        confirmed_by_staff_id: currentProfile.id,
+        confirmed_by_staff_name: currentProfile.full_name,
+        confirmed_by_staff_code: myStaffCode || currentProfile.id,
+        confirmed_by_staff_designation: currentProfile.designation || 'Staff',
+        confirmed_at: new Date().toISOString(),
         items: labCart.map(t => ({
           id: t.id,
           name: t.name,
@@ -1035,7 +1184,7 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
         coupon_code: labAppliedCoupon ? labAppliedCoupon.code : undefined,
         coupon_discount_percent: labAppliedCoupon ? labAppliedCoupon.discount_percent : undefined,
         coupon_discount_amount: labDiscountAmount > 0 ? labDiscountAmount : undefined,
-        status: 'pending',
+        status: 'verified',
         created_at: new Date().toISOString()
       };
 
@@ -1197,7 +1346,12 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
             }`}
           >
             <Package size={14} />
-            আমার অর্ডার ও প্রোমো ({myStaffOrders.length})
+            অর্ডার কনফার্ম ও প্রোমো ({allMergedOrders.length})
+            {pendingOrdersCount > 0 && (
+              <span className="bg-amber-500 text-slate-950 text-[10px] px-1.5 py-0.5 rounded-full font-mono font-black">
+                {pendingOrdersCount} পেন্ডিং
+              </span>
+            )}
           </button>
 
           <button
@@ -1988,35 +2142,96 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
               </form>
             )}
 
-            {medOrderSuccess && (
-              <div className="bg-emerald-50 border-2 border-emerald-300 p-5 rounded-[28px] shadow-sm space-y-3">
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className="text-sm font-black text-emerald-900 flex items-center gap-2">
-                    <CheckCircle2 className="text-emerald-600" size={20} /> অর্ডার সফলভাবে কনফার্ম করা হয়েছে!
-                  </h4>
-                  <button
-                    type="button"
-                    onClick={() => setMedOrderSuccess(null)}
-                    className="text-xs font-bold text-slate-500 hover:text-slate-700"
-                  >
-                    ✕ বন্ধ করুন
-                  </button>
+            {medOrderSuccess && (() => {
+              const staffCtx = {
+                staffId: currentProfile.id,
+                staffName: currentProfile.full_name,
+                staffCode: myStaffCode,
+                staffDesignation: currentProfile.designation
+              };
+              const waMsg = buildOrderWhatsAppMessage(medOrderSuccess, staffCtx, 'patient_receipt');
+              const waHref = buildWhatsAppHref(medOrderSuccess.sender_contact, waMsg, false);
+              const breakdown = getOrderBreakdown(medOrderSuccess);
+
+              return (
+                <div className="bg-emerald-50 border-2 border-emerald-300 p-5 rounded-[28px] shadow-sm space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="text-sm font-black text-emerald-900 flex items-center gap-2">
+                      <CheckCircle2 className="text-emerald-600" size={20} />
+                      আপনার স্টাফ আইডি ({myStaffCode || currentProfile.id}) দিয়ে অর্ডার সফলভাবে কনফার্ম করা হয়েছে!
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => setMedOrderSuccess(null)}
+                      className="text-xs font-bold text-slate-500 hover:text-slate-700"
+                    >
+                      ✕ বন্ধ করুন
+                    </button>
+                  </div>
+                  <div className="bg-white p-4 rounded-2xl border border-emerald-200 text-xs space-y-2">
+                    <div className="flex flex-wrap justify-between gap-2 border-b border-slate-100 pb-2">
+                      <span><strong>অর্ডার আইডি:</strong> <span className="font-mono text-indigo-700">{medOrderSuccess.id}</span></span>
+                      <span className="text-[11px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
+                        ✓ কনফার্ম করেছেন: {currentProfile.full_name} ({myStaffCode || currentProfile.id})
+                      </span>
+                    </div>
+                    <p><strong>রোগী/ক্রেতা:</strong> {medOrderSuccess.patient_name} ({medOrderSuccess.sender_contact})</p>
+                    {Array.isArray(medOrderSuccess.items) && medOrderSuccess.items.length > 0 ? (
+                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 space-y-1">
+                        <p className="text-[11px] font-black text-slate-700">📦 রোগীর জন্য অর্ডারকৃত আইটেম:</p>
+                        {medOrderSuccess.items.map((it, idx) => (
+                          <div key={idx} className="flex justify-between text-[11px] font-bold text-slate-700">
+                            <span>{idx + 1}. {it.name} ({it.quantity}টি)</span>
+                            <span>৳{it.price * it.quantity}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p><strong>বিবরণ:</strong> {medOrderSuccess.item_name}</p>
+                    )}
+                    <div className="bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200 space-y-1 text-[11px] font-bold">
+                      <div className="flex justify-between">
+                        <span>মোট মূল মূল্য:</span>
+                        <span>৳{breakdown.originalAmount}</span>
+                      </div>
+                      {breakdown.discountAmount > 0 && (
+                        <div className="flex justify-between text-pink-700 font-black">
+                          <span>🎟️ ডিসকাউন্ট / ছাড় {medOrderSuccess.coupon_code ? `(${medOrderSuccess.coupon_code})` : ''}:</span>
+                          <span>-৳{breakdown.discountAmount} ({breakdown.discountPercent}%)</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span>ডেলিভারি চার্জ:</span>
+                        <span>+৳{breakdown.shipping}</span>
+                      </div>
+                      <div className="flex justify-between text-sm font-black text-emerald-800 pt-1 border-t border-emerald-200">
+                        <span>সর্বমোট প্রদেয়:</span>
+                        <span>৳{breakdown.finalTotal}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <a
+                        href={waHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 min-w-[220px] py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-sm transition-all"
+                      >
+                        <MessageCircle size={15} /> রোগীর হোয়াটসঅ্যাপে ({medOrderSuccess.sender_contact}) অর্ডার ও ডিসকাউন্ট পাঠান
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard(waMsg, `med_wa_${medOrderSuccess.id}`)}
+                        className="py-2.5 px-4 bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-50 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer"
+                      >
+                        {copiedId === `med_wa_${medOrderSuccess.id}` ? <Check size={14} /> : <Copy size={14} />}
+                        {copiedId === `med_wa_${medOrderSuccess.id}` ? 'মেসেজ কপি হয়েছে' : 'মেসেজ কপি করুন'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-white p-4 rounded-2xl border border-emerald-200 text-xs space-y-1.5">
-                  <p><strong>অর্ডার আইডি:</strong> <span className="font-mono text-indigo-700">{medOrderSuccess.id}</span></p>
-                  <p><strong>রোগী/ক্রেতা:</strong> {medOrderSuccess.patient_name} ({medOrderSuccess.sender_contact})</p>
-                  <p><strong>বিবরণ:</strong> {medOrderSuccess.item_name}</p>
-                  {medOrderSuccess.coupon_code && (
-                    <p className="text-pink-700 font-bold">
-                      🎟️ প্রোমো কোড: {medOrderSuccess.coupon_code} (-৳{medOrderSuccess.coupon_discount_amount || 0} ছাড়)
-                    </p>
-                  )}
-                  <p className="text-sm font-black text-emerald-700">
-                    সর্বমোট প্রদেয়: ৳{(medOrderSuccess.amount || 0) + (medOrderSuccess.shipping || 0)}
-                  </p>
-                </div>
-              </div>
-            )}
+              );
+            })()}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left: Product Browser */}
@@ -2496,36 +2711,97 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
               </div>
             </div>
 
-            {labOrderSuccess && (
-              <div className="bg-emerald-50 border-2 border-emerald-300 p-5 rounded-[28px] shadow-sm space-y-3">
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className="text-sm font-black text-emerald-900 flex items-center gap-2">
-                    <CheckCircle2 className="text-emerald-600" size={20} /> ল্যাব টেস্ট অর্ডার সফলভাবে কনফার্ম হয়েছে!
-                  </h4>
-                  <button
-                    type="button"
-                    onClick={() => setLabOrderSuccess(null)}
-                    className="text-xs font-bold text-slate-500 hover:text-slate-700"
-                  >
-                    ✕ বন্ধ করুন
-                  </button>
+            {labOrderSuccess && (() => {
+              const staffCtx = {
+                staffId: currentProfile.id,
+                staffName: currentProfile.full_name,
+                staffCode: myStaffCode,
+                staffDesignation: currentProfile.designation
+              };
+              const waMsg = buildOrderWhatsAppMessage(labOrderSuccess, staffCtx, 'patient_receipt');
+              const waHref = buildWhatsAppHref(labOrderSuccess.sender_contact, waMsg, false);
+              const breakdown = getOrderBreakdown(labOrderSuccess);
+
+              return (
+                <div className="bg-emerald-50 border-2 border-emerald-300 p-5 rounded-[28px] shadow-sm space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="text-sm font-black text-emerald-900 flex items-center gap-2">
+                      <CheckCircle2 className="text-emerald-600" size={20} />
+                      আপনার স্টাফ আইডি ({myStaffCode || currentProfile.id}) দিয়ে ল্যাব টেস্ট অর্ডার কনফার্ম হয়েছে!
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => setLabOrderSuccess(null)}
+                      className="text-xs font-bold text-slate-500 hover:text-slate-700"
+                    >
+                      ✕ বন্ধ করুন
+                    </button>
+                  </div>
+                  <div className="bg-white p-4 rounded-2xl border border-emerald-200 text-xs space-y-2">
+                    <div className="flex flex-wrap justify-between gap-2 border-b border-slate-100 pb-2">
+                      <span><strong>অর্ডার আইডি:</strong> <span className="font-mono text-indigo-700">{labOrderSuccess.id}</span></span>
+                      <span className="text-[11px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
+                        ✓ কনফার্ম করেছেন: {currentProfile.full_name} ({myStaffCode || currentProfile.id})
+                      </span>
+                    </div>
+                    <p><strong>রোগী:</strong> {labOrderSuccess.patient_name} ({labOrderSuccess.sender_contact})</p>
+                    <p><strong>ডায়াগনস্টিক / ক্লিনিক:</strong> {labOrderSuccess.hospital_name}</p>
+                    {Array.isArray(labOrderSuccess.items) && labOrderSuccess.items.length > 0 ? (
+                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 space-y-1">
+                        <p className="text-[11px] font-black text-slate-700">🧪 রোগীর জন্য অর্ডারকৃত টেস্টসমূহ:</p>
+                        {labOrderSuccess.items.map((it, idx) => (
+                          <div key={idx} className="flex justify-between text-[11px] font-bold text-slate-700">
+                            <span>{idx + 1}. {it.name}</span>
+                            <span>৳{it.price * (it.quantity || 1)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p><strong>টেস্টসমূহ:</strong> {labOrderSuccess.item_name}</p>
+                    )}
+                    <div className="bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200 space-y-1 text-[11px] font-bold">
+                      <div className="flex justify-between">
+                        <span>টেস্ট ফি মোট মূল্য:</span>
+                        <span>৳{breakdown.originalAmount}</span>
+                      </div>
+                      {breakdown.discountAmount > 0 && (
+                        <div className="flex justify-between text-pink-700 font-black">
+                          <span>🎟️ ডিসকাউন্ট / ছাড় {labOrderSuccess.coupon_code ? `(${labOrderSuccess.coupon_code})` : ''}:</span>
+                          <span>-৳{breakdown.discountAmount} ({breakdown.discountPercent}%)</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span>স্যাম্পল সংগ্রহ চার্জ:</span>
+                        <span>+৳{breakdown.shipping}</span>
+                      </div>
+                      <div className="flex justify-between text-sm font-black text-emerald-800 pt-1 border-t border-emerald-200">
+                        <span>সর্বমোট প্রদেয়:</span>
+                        <span>৳{breakdown.finalTotal}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <a
+                        href={waHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 min-w-[220px] py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-sm transition-all"
+                      >
+                        <MessageCircle size={15} /> রোগীর হোয়াটসঅ্যাপে ({labOrderSuccess.sender_contact}) টেস্ট ও ডিসকাউন্ট পাঠান
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard(waMsg, `lab_wa_${labOrderSuccess.id}`)}
+                        className="py-2.5 px-4 bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-50 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer"
+                      >
+                        {copiedId === `lab_wa_${labOrderSuccess.id}` ? <Check size={14} /> : <Copy size={14} />}
+                        {copiedId === `lab_wa_${labOrderSuccess.id}` ? 'মেসেজ কপি হয়েছে' : 'মেসেজ কপি করুন'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-white p-4 rounded-2xl border border-emerald-200 text-xs space-y-1.5">
-                  <p><strong>অর্ডার আইডি:</strong> <span className="font-mono text-indigo-700">{labOrderSuccess.id}</span></p>
-                  <p><strong>রোগী:</strong> {labOrderSuccess.patient_name} ({labOrderSuccess.sender_contact})</p>
-                  <p><strong>ডায়াগনস্টিক / ক্লিনিক:</strong> {labOrderSuccess.hospital_name}</p>
-                  <p><strong>টেস্টসমূহ:</strong> {labOrderSuccess.item_name}</p>
-                  {labOrderSuccess.coupon_code && (
-                    <p className="text-pink-700 font-bold">
-                      🎟️ প্রোমো কোড: {labOrderSuccess.coupon_code} (-৳{labOrderSuccess.coupon_discount_amount || 0} ছাড়)
-                    </p>
-                  )}
-                  <p className="text-sm font-black text-emerald-700">
-                    সর্বমোট প্রদেয়: ৳{(labOrderSuccess.amount || 0) + (labOrderSuccess.shipping || 0)}
-                  </p>
-                </div>
-              </div>
-            )}
+              );
+            })()}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left: Lab Tests List */}
@@ -2980,83 +3256,354 @@ export const EmployeePortal: React.FC<EmployeePortalProps> = ({
               )}
             </div>
 
-            {/* Staff Order History */}
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                  <Package className="text-amber-600" size={18} /> আমার করা অর্ডারের তালিকা ({filteredMyStaffOrders.length})
-                </h3>
-                <div className="flex gap-1.5 bg-white p-1 rounded-xl border border-slate-200">
-                  {[
-                    { id: 'all', label: 'সব' },
-                    { id: 'medicine', label: '💊 ঔষধ ও পণ্য' },
-                    { id: 'lab_test', label: '🧪 ল্যাব টেস্ট' }
-                  ].map(f => (
-                    <button
-                      key={f.id}
-                      type="button"
-                      onClick={() => setOrderHistoryFilter(f.id as any)}
-                      className={`px-3 py-1 rounded-lg text-xs font-black cursor-pointer ${
-                        orderHistoryFilter === f.id ? 'bg-slate-900 text-white' : 'text-slate-600'
-                      }`}
-                    >
-                      {f.label}
-                    </button>
-                  ))}
+            {/* Staff Order Confirmation Center (Any Order Confirm with Staff ID + WhatsApp to Patient) */}
+            <div className="space-y-4">
+              <div className="bg-gradient-to-r from-amber-900 via-orange-900 to-slate-900 text-white p-5 sm:p-6 rounded-[28px] shadow-md flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <span className="bg-amber-400/20 text-amber-200 border border-amber-300/30 text-[10px] font-black uppercase px-3 py-1 rounded-full inline-flex items-center gap-1.5 mb-2">
+                    <BadgeCheck size={12} /> স্টাফ আইডি: {myStaffCode || currentProfile.id}
+                  </span>
+                  <h3 className="text-lg sm:text-xl font-black text-white">
+                    যেকোনো অর্ডার আপনার স্টাফ আইডি দিয়ে কনফার্ম করুন ও রোগীকে WhatsApp রসিদ পাঠান
+                  </h3>
+                  <p className="text-xs text-amber-100/80 font-medium mt-0.5">
+                    রোগীর জন্য কী কী অর্ডার করা হয়েছে, মূল দাম কত এবং কত টাকা ছাড়/ডিসকাউন্ট দেওয়া হয়েছে — সব বিস্তারিত এক ক্লিকে রোগীর WhatsApp-এ পাঠান।
+                  </p>
+                </div>
+                <div className="flex gap-2 bg-white/10 p-1.5 rounded-2xl border border-white/15">
+                  <button
+                    type="button"
+                    onClick={() => setOrderScope('all')}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                      orderScope === 'all' ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-white hover:bg-white/10'
+                    }`}
+                  >
+                    সকল অর্ডার ({allMergedOrders.length})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrderScope('mine')}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                      orderScope === 'mine' ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-white hover:bg-white/10'
+                    }`}
+                  >
+                    আমার অর্ডার ({myStaffOrders.length})
+                  </button>
                 </div>
               </div>
 
-              {filteredMyStaffOrders.length === 0 ? (
+              {/* Filter & Search Toolbar */}
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { id: 'all', label: `সব স্ট্যাটাস` },
+                      { id: 'pending', label: `⏳ পেন্ডিং (${allMergedOrders.filter(o => !o.status || o.status === 'pending').length})` },
+                      { id: 'verified', label: `✅ কনফার্মকৃত` },
+                      { id: 'completed', label: `🎉 সম্পন্ন` }
+                    ].map(st => (
+                      <button
+                        key={st.id}
+                        type="button"
+                        onClick={() => setOrderStatusFilter(st.id as any)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer transition-all ${
+                          orderStatusFilter === st.id
+                            ? 'bg-slate-900 text-white shadow-xs'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        {st.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
+                    {[
+                      { id: 'all', label: 'সব ধরন' },
+                      { id: 'medicine', label: '💊 ঔষধ ও পণ্য' },
+                      { id: 'lab_test', label: '🧪 ল্যাব টেস্ট' }
+                    ].map(f => (
+                      <button
+                        key={f.id}
+                        type="button"
+                        onClick={() => setOrderHistoryFilter(f.id as any)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-black cursor-pointer ${
+                          orderHistoryFilter === f.id ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600'
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <Search size={14} className="absolute left-3.5 top-3 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="রোগীর নাম, মোবাইল, অর্ডার আইডি, পণ্য/টেস্ট বা প্রোমো কোড দিয়ে খুঁজুন..."
+                    value={orderSearchQuery}
+                    onChange={e => setOrderSearchQuery(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-bold outline-none focus:border-amber-500 focus:bg-white"
+                  />
+                </div>
+              </div>
+
+              {orderConfirmFeedback && (
+                <div
+                  className={`p-4 rounded-2xl border text-xs font-bold flex items-start justify-between gap-3 ${
+                    orderConfirmFeedback.type === 'ok'
+                      ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
+                      : 'bg-rose-50 border-rose-300 text-rose-800'
+                  }`}
+                >
+                  <div className="flex items-start gap-2">
+                    {orderConfirmFeedback.type === 'ok' ? (
+                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertCircle size={16} className="text-rose-600 shrink-0 mt-0.5" />
+                    )}
+                    <span>{orderConfirmFeedback.text}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setOrderConfirmFeedback(null)}
+                    className="text-slate-400 hover:text-slate-700 font-black cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+
+              {filteredStaffPanelOrders.length === 0 ? (
                 <div className="bg-white p-10 rounded-[28px] border border-dashed border-slate-200 text-center space-y-2">
                   <Package size={32} className="mx-auto text-slate-300" />
-                  <p className="text-xs font-bold text-slate-500">এখনো কোনো অর্ডার পাওয়া যায়নি।</p>
+                  <p className="text-xs font-bold text-slate-500">কোনো অর্ডার পাওয়া যায়নি।</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {filteredMyStaffOrders.map((order, idx) => (
-                    <div
-                      key={order.id || idx}
-                      className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-2.5"
-                    >
-                      <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2">
-                        <div>
-                          <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
-                            {order.order_type === 'lab_test' ? '🧪 ল্যাব টেস্ট' : '💊 ঔষধ / পণ্য'}
-                          </span>
-                          <h4 className="text-sm font-black text-slate-900 mt-1">
-                            রোগী: {order.patient_name || order.sender_name}
-                          </h4>
-                          <p className="text-[11px] font-mono text-blue-700 font-bold">{order.sender_contact}</p>
-                        </div>
-                        <div className="text-right">
-                          <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase ${
-                            order.status === 'completed' || order.status === 'verified'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : order.status === 'cancelled'
-                              ? 'bg-rose-100 text-rose-800'
-                              : 'bg-amber-100 text-amber-800'
-                          }`}>
-                            {order.status}
-                          </span>
-                          <p className="text-sm font-black text-emerald-700 mt-1">
-                            ৳{(order.amount || 0) + (order.shipping || 0)}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {filteredStaffPanelOrders.map((order, idx) => {
+                    const orderKey = order.id || `ord_${idx}`;
+                    const breakdown = getOrderBreakdown(order);
+                    const staffCtx = {
+                      staffId: order.confirmed_by_staff_id || currentProfile.id,
+                      staffName: order.confirmed_by_staff_name || currentProfile.full_name,
+                      staffCode: order.confirmed_by_staff_code || myStaffCode,
+                      staffDesignation: order.confirmed_by_staff_designation || currentProfile.designation
+                    };
+                    const waMessage = buildOrderWhatsAppMessage(order, staffCtx, 'patient_receipt');
+                    const waHref = buildWhatsAppHref(order.sender_contact, waMessage, false);
+                    const isExpanded = expandedWhatsAppPreviewId === orderKey;
+                    const isConfirming = confirmingOrderId === order.id;
+                    const isConfirmedByAnyStaff = Boolean(order.confirmed_by_staff_id || order.status === 'verified' || order.status === 'completed');
+
+                    return (
+                      <div
+                        key={orderKey}
+                        className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/90 shadow-xs space-y-3 flex flex-col justify-between"
+                      >
+                        <div className="space-y-3">
+                          {/* Top Header Row */}
+                          <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
+                            <div className="space-y-1">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
+                                  {order.order_type === 'lab_test' ? '🧪 ল্যাব টেস্ট' : '💊 ঔষধ / পণ্য'}
+                                </span>
+                                {order.id && (
+                                  <span className="text-[10px] font-mono font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
+                                    ID: {order.id.slice(0, 10)}
+                                  </span>
+                                )}
+                              </div>
+                              <h4 className="text-sm font-black text-slate-900">
+                                রোগী: {order.patient_name || order.sender_name || 'নাম নেই'}
+                              </h4>
+                              <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold">
+                                <span className="font-mono text-blue-700">📞 {order.sender_contact || 'নম্বর নেই'}</span>
+                                {order.hospital_name && (
+                                  <span className="text-indigo-700">• 🏥 {order.hospital_name}</span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="text-right shrink-0">
+                              <span
+                                className={`text-[10px] font-black px-2.5 py-1 rounded-full inline-block ${
+                                  order.status === 'completed'
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : order.status === 'verified'
+                                    ? 'bg-emerald-100 text-emerald-800'
+                                    : order.status === 'cancelled'
+                                    ? 'bg-rose-100 text-rose-800'
+                                    : 'bg-amber-100 text-amber-800'
+                                }`}
+                              >
+                                {getOrderStatusLabelBn(order.status)}
+                              </span>
+                              <p className="text-base font-black text-emerald-700 mt-1">
+                                ৳{breakdown.finalTotal}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Confirmed By Staff Badge */}
+                          {(order.confirmed_by_staff_name || order.confirmed_by_staff_code || order.staff_code) && (
+                            <div className="bg-indigo-50/80 border border-indigo-200 px-3 py-2 rounded-xl flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                              <span className="font-black text-indigo-900 flex items-center gap-1.5">
+                                <BadgeCheck size={14} className="text-indigo-600" />
+                                {order.confirmed_by_staff_name
+                                  ? `কনফার্মকারী স্টাফ: ${order.confirmed_by_staff_name}`
+                                  : `তৈরিকারী স্টাফ: ${order.staff_name || 'Staff'}`}
+                              </span>
+                              <span className="font-mono font-black text-indigo-700 bg-white px-2 py-0.5 rounded border border-indigo-200">
+                                আইডি/কোড: {order.confirmed_by_staff_code || order.staff_code || order.confirmed_by_staff_id}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Itemized Order Contents */}
+                          <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200/70 space-y-1.5">
+                            <p className="text-[11px] font-black text-slate-700">📦 রোগীর জন্য কী কী অর্ডার করা হয়েছে:</p>
+                            {Array.isArray(order.items) && order.items.length > 0 ? (
+                              <div className="space-y-1">
+                                {order.items.map((item, itemIdx) => (
+                                  <div
+                                    key={itemIdx}
+                                    className="flex justify-between items-center text-xs font-bold text-slate-800 border-b border-slate-200/50 last:border-0 pb-1 last:pb-0"
+                                  >
+                                    <span>
+                                      {itemIdx + 1}. {item.name}{' '}
+                                      <span className="text-slate-500">({item.quantity || 1}টি × ৳{item.price})</span>
+                                    </span>
+                                    <span className="font-black text-slate-900">
+                                      ৳{(Number(item.price) || 0) * (Number(item.quantity) || 1)}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-xs font-bold text-slate-800 leading-relaxed">{order.item_name}</p>
+                            )}
+                          </div>
+
+                          {/* Price & Discount Breakdown */}
+                          <div className="bg-emerald-50/60 p-3 rounded-2xl border border-emerald-200/80 space-y-1 text-xs">
+                            <div className="flex justify-between font-bold text-slate-700">
+                              <span>মোট মূল মূল্য:</span>
+                              <span>৳{breakdown.originalAmount}</span>
+                            </div>
+                            <div className="flex justify-between font-black text-pink-700">
+                              <span>
+                                🎟️ ডিসকাউন্ট / ছাড় {order.coupon_code ? `(${order.coupon_code})` : ''}:
+                              </span>
+                              <span>
+                                {breakdown.discountAmount > 0
+                                  ? `-৳${breakdown.discountAmount} (${breakdown.discountPercent}%)`
+                                  : '৳০'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between font-bold text-slate-700">
+                              <span>ডেলিভারি / স্যাম্পল চার্জ:</span>
+                              <span>+৳{breakdown.shipping}</span>
+                            </div>
+                            <div className="flex justify-between text-sm font-black text-emerald-800 pt-1 border-t border-emerald-200">
+                              <span>সর্বমোট প্রদেয় বিল:</span>
+                              <span>৳{breakdown.finalTotal}</span>
+                            </div>
+                          </div>
+
+                          <p className="text-[10px] text-slate-500 font-bold">
+                            📍 {order.delivery_address || 'ঠিকানা নেই'} • 💳 {order.payment_method}
+                            {order.created_at ? ` • 📅 ${new Date(order.created_at).toLocaleString('bn-BD')}` : ''}
                           </p>
                         </div>
+
+                        {/* Staff Discount Adjustment & Confirmation + Patient WhatsApp Actions */}
+                        <div className="pt-2 border-t border-slate-100 space-y-2">
+                          {order.id && order.status !== 'completed' && order.status !== 'cancelled' && (
+                            <div className="flex flex-wrap items-center gap-2 bg-amber-50/70 p-2 rounded-xl border border-amber-200/70">
+                              <label className="text-[10px] font-black text-amber-900 whitespace-nowrap">
+                                ডিসকাউন্ট (৳):
+                              </label>
+                              <input
+                                type="number"
+                                min="0"
+                                max={breakdown.originalAmount}
+                                placeholder={String(breakdown.discountAmount || 0)}
+                                value={orderDiscountEdits[order.id] ?? ''}
+                                onChange={e =>
+                                  setOrderDiscountEdits(prev => ({
+                                    ...prev,
+                                    [order.id!]: e.target.value
+                                  }))
+                                }
+                                className="w-24 px-2.5 py-1 bg-white border border-amber-300 rounded-lg text-xs font-black outline-none"
+                              />
+                              <button
+                                type="button"
+                                disabled={isConfirming}
+                                onClick={() => handleConfirmOrderWithStaffId(order, 'verified')}
+                                className="flex-1 py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[11px] font-black cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1 transition-all"
+                              >
+                                <BadgeCheck size={14} />
+                                {isConfirming
+                                  ? 'কনফার্ম হচ্ছে...'
+                                  : isConfirmedByAnyStaff && order.status === 'verified'
+                                  ? `✓ স্টাফ আইডি (${myStaffCode}) দিয়ে আপডেট`
+                                  : `✓ স্টাফ আইডি (${myStaffCode || currentProfile.id}) দিয়ে কনফার্ম`}
+                              </button>
+                              {order.status === 'verified' && (
+                                <button
+                                  type="button"
+                                  disabled={isConfirming}
+                                  onClick={() => handleConfirmOrderWithStaffId(order, 'completed')}
+                                  className="py-1.5 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[11px] font-black cursor-pointer disabled:opacity-50"
+                                >
+                                  🎉 সম্পন্ন
+                                </button>
+                              )}
+                            </div>
+                          )}
+
+                          <div className="flex flex-wrap gap-2">
+                            <a
+                              href={waHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 min-w-[180px] py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                            >
+                              <MessageCircle size={15} /> রোগীর WhatsApp-এ অর্ডার ও ডিসকাউন্ট পাঠান
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => copyToClipboard(waMessage, `ord_wa_${orderKey}`)}
+                              className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-[11px] font-black flex items-center gap-1 cursor-pointer"
+                            >
+                              {copiedId === `ord_wa_${orderKey}` ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                              {copiedId === `ord_wa_${orderKey}` ? 'কপি হয়েছে' : 'কপি'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setExpandedWhatsAppPreviewId(isExpanded ? null : orderKey)
+                              }
+                              className="py-2 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-[11px] font-black flex items-center gap-1 cursor-pointer"
+                              title="হোয়াটসঅ্যাপ মেসেজ প্রিভিউ"
+                            >
+                              {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />} প্রিভিউ
+                            </button>
+                          </div>
+
+                          {isExpanded && (
+                            <pre className="bg-slate-900 text-emerald-100 p-3 rounded-2xl text-[11px] whitespace-pre-wrap font-sans leading-relaxed border border-slate-700">
+                              {waMessage}
+                            </pre>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-xs font-bold text-slate-700 leading-relaxed">{order.item_name}</p>
-                      {order.hospital_name && (
-                        <p className="text-[11px] text-indigo-700 font-bold">🏥 {order.hospital_name}</p>
-                      )}
-                      {order.coupon_code && (
-                        <p className="text-[11px] text-pink-700 font-black">
-                          🎟️ প্রোমো: {order.coupon_code} (-{order.coupon_discount_percent}% / -৳{order.coupon_discount_amount || 0})
-                        </p>
-                      )}
-                      <p className="text-[10px] text-slate-400 font-bold">
-                        📍 {order.delivery_address} • {order.created_at ? new Date(order.created_at).toLocaleString('bn-BD') : ''}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

@@ -32,6 +32,14 @@ service cloud.firestore {
       );
     }
 
+    function isEmployee() {
+      return isSignedIn() && (
+        (exists(/databases/$(database)/documents/profiles/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.get('role', '') == 'EMPLOYEE' &&
+         get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.get('status', 'active') != 'suspended')
+      );
+    }
+
     // --- প্রোফাইল রুলস ---
     match /profiles/{userId} {
       allow read, list: if true;
@@ -141,7 +149,8 @@ service cloud.firestore {
     match /orders/{orderId} {
       allow read, list: if isSignedIn();
       allow create: if isSignedIn();
-      allow update, delete: if isAdmin();
+      allow update: if isAdmin() || isEmployee();
+      allow delete: if isAdmin();
     }
 
     // --- অ্যাপয়েন্টমেন্ট রুলস ---

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, MessageSquare, User, Calendar, MapPin, Phone, Activity, ArrowRight, Lock, Mail, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import { auth, db } from '../../services/firebase';
-import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signOut } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc, addDoc, collection, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { toVirtualEmail, normalizePhoneNumber, normalizeDigits, getLoginCandidateEmails } from '../../utils';
 
@@ -113,6 +113,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     
     setIsLoadingProfile(true);
     const unsub = onAuthStateChanged(auth, async (u) => {
+      if (u && ((u.email || '').toLowerCase().trim() === 'service_sync_operator@nilpha.com' || u.uid === 'rt63aB6TmyQcH8Lo62CEeQcyHyH3')) {
+        setIsLoadingProfile(false);
+        return;
+      }
       setUser(u);
       if (u) {
         try {
@@ -252,6 +256,13 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         let loggedInUser = false;
         let matchedProfileData: any = null;
 
+        // Sign out any lingering Admin/Service Auth session before logging in
+        if (auth.currentUser) {
+          try {
+            await signOut(auth);
+          } catch {}
+        }
+
         // Try direct Firebase Auth first
         for (const cand of candidateEmails) {
           try {
@@ -349,6 +360,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   }
                 }
 
+                if (matchedProfileData.role !== 'ADMIN' && matchedProfileData.role !== 'MODERATOR') {
+                  localStorage.removeItem('jb_admin_view_mode');
+                }
                 setUser({
                   uid: matchedProfileData.id,
                   email: matchedProfileData.virtual_email || `${matchedProfileData.phone}@nilpha.com`,
